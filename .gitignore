@@ -1,0 +1,23 @@
+# Node modules
+**/node_modules/
+
+# Environment variables
+**/.env
+
+# Build files
+**/build/
+**/dist/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.vscode/
+.idea/
+
+# Personal or temporary folders
+PreCode/

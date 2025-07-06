@@ -1,0 +1,247 @@
+/* 
+body {
+    font-family: 'JetBrains Mono', monospace;
+}
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .duration-500 {
+    transition-duration: 500ms;
+  }
+  
+  .opacity-0 {
+    opacity: 0;
+  }
+  
+  .opacity-100 {
+    opacity: 1;
+  }
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.blink {
+    animation: blink 1s infinite ease-in-out;
+}
+
+
+.formatted {
+   
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    margin: 5px 0.5rem;
+    line-height: 1.5;
+}
+
+.formatted.errorLine {
+    text-decoration: underline;
+    text-decoration-color: #7e2a33;
+    text-underline-offset: 6px;
+}
+
+
+.letter.correct {
+    color: rgb(203, 203, 203);
+}
+
+.letter.incorrect {
+    color: rgb(191, 8, 8);
+}
+
+.incorrect.extra.letter {
+    color: rgba(156, 39, 23, 0.774);
+}
+.words:focus {
+    outline: none;
+}
+
+ */
+
+
+
+
+
+
+/* ========================
+   Theme Variable Overrides
+   ======================== */
+
+#app[data-theme="light"] {
+    --bg-color: #ffffff;
+    --text-color: #1f2937;
+    --primary-color: #2563eb;
+    --formatted-color: rgb(188, 188, 188);
+    --correct-color: #555a60;
+    --incorrect-color: #dc2626;
+    --extra-color: rgba(220, 38, 38, 0.7);
+    --error-line: #7e2a33;
+
+    --header-bg: #dddddd;
+    --header-text: #616161;
+
+
+    --active: #717171;
+    --inactive: #b9b9b9;
+
+}
+
+#app[data-theme="dark"] {
+    --bg-color: #1f2937;
+    --text-color: #f3f4f6;
+    --primary-color: #061f26;
+    --formatted-color: rgb(90, 90, 98);
+    --correct-color: #b7c3d5;
+    --incorrect-color: #f87171;
+    --extra-color: rgba(248, 113, 113, 0.7);
+    --error-line: #dc2626;
+
+    --header-bg: #1a1a27;
+    --header-text: #616161;
+
+    --active:    #9197a3;
+    /* yellow-400 */
+    --inactive: #4e5052;
+    /* gray-500 */
+}
+
+#app[data-theme="blue"] {
+    --bg-color: #e0f2fe;
+    --text-color: #0c4a6e;
+    --primary-color: #0284c7;
+    --formatted-color: #5a6368;
+    --correct-color: #74a7c0;
+    --incorrect-color: #ef4444;
+    --extra-color: rgba(239, 68, 68, 0.7);
+    --error-line: #b91c1c;
+
+    --header-bg: #282d47;
+    --header-text: #616161;
+
+    --active: #0284c7;
+    --inactive: #64748b;
+}
+
+#app[data-theme="yellow"] {
+    --bg-color: #f3edd3;
+    --text-color: #92400e;
+    --primary-color: #f59e0b;
+    --formatted-color: #625b50;
+    --correct-color: #78350f;
+    --incorrect-color: #b91c1c;
+    --extra-color: rgba(185, 28, 28, 0.7);
+    --error-line: #9a3412;
+
+
+    --header-bg: #7d7f57;
+    --header-text: #616161;
+
+
+    --active: #e79f22;
+    --inactive: #faddc8;
+}
+
+.header-theme {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+}
+
+/* ========================
+     Base Theme Application
+     ======================== */
+
+body,
+#app {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ========================
+     Transition Utilities
+     ======================== */
+
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duration-500 {
+    transition-duration: 500ms;
+}
+
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+/* ========================
+     Cursor Animation
+     ======================== */
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.blink {
+    animation: blink 1s infinite ease-in-out;
+}
+
+/* ========================
+     Typing Area Styling
+     ======================== */
+
+.formatted {
+    color: var(--formatted-color);
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    margin: 5px 0.5rem;
+    line-height: 1.5;
+}
+
+.formatted.errorLine {
+    text-decoration: underline;
+    text-decoration-color: var(--error-line);
+    text-underline-offset: 6px;
+}
+
+.letter.correct {
+    color: var(--correct-color);
+}
+
+.letter.incorrect {
+    color: var(--incorrect-color);
+}
+
+.incorrect.extra.letter {
+    color: var(--extra-color);
+}
+
+.words:focus {
+    outline: none;
+}

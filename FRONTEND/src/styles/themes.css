@@ -1,0 +1,26 @@
+/* themes.css */
+:root[data-theme="light"] {
+    --color-bg: #ffffff;
+    --color-text: #1f2937;
+    --color-primary: #2563eb;
+  }
+  
+  :root[data-theme="dark"] {
+    --color-bg: #1f2937;
+    --color-text: #f3f4f6;
+    --color-primary: #3b82f6;
+  }
+  
+  :root[data-theme="blue"] {
+    --color-bg: #e0f2fe;
+    --color-text: #0c4a6e;
+    --color-primary: #0284c7;
+  }
+  
+  
+  :root[data-theme="yellow"] {
+    --color-bg: #e0f2fe;
+    --color-text: #d29d00;
+    --color-primary: #676704;
+  }
+  
