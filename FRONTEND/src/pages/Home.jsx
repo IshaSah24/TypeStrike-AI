@@ -289,6 +289,8 @@ function Home() {
 
   const handleLetter = (typed, expected, letterEl, wordEl) => {
     if (letterEl) {
+      console.log(`Typed: ${typed}, Expected: ${expected}`);
+      
       addClass(letterEl, typed === expected ? "correct" : "incorrect");
       removeClass(letterEl, "current");
       if (letterEl.nextSibling) {
@@ -300,12 +302,15 @@ function Home() {
       extra.textContent = typed;
       wordEl.appendChild(extra);
     }
+
+    // show  wpm  when the  last letter of last word is typed
+    checkIfTypingCompleted(letterEl?.parentElement, mode);
   };
 
   const handleSpace = (wordEl, letterEl, expected) => {
     if (!wordEl) return;
 
-    // Prevent space on first letter of word
+    // Preventing  space on first letter of the Word
     if (letterEl === wordEl.firstChild) return;
 
     // Mark remaining letters as incorrect
@@ -337,6 +342,26 @@ function Home() {
         removeClass(letterEl, "current");
       }
     }
+
+    // showing  wpm after  typing  space at  the  last word
+    checkIfTypingCompleted(wordEl, mode);
+  };
+
+  const checkIfTypingCompleted = (wordEl, mode) => {
+    const isLastWord = !wordEl?.nextSibling;
+    const allowedModes = ["words", "custom", "quote", "time", "zen", "custom"];
+
+    if (isLastWord && allowedModes.includes(mode) && !isTypingOver) {
+      const letters = [...wordEl.querySelectorAll(".letter")];
+      const allTyped = letters.every(
+        (l) =>
+          l.classList.contains("correct") || l.classList.contains("incorrect")
+      );
+
+      if (allTyped) {
+        endGame();
+      }
+    }
   };
 
   const handleBackspace = (wordEl, letterEl) => {
@@ -348,7 +373,7 @@ function Home() {
       removeErrorLine(wordEl, "errorLine");
     }
 
-    // Handle backspace at start of word
+    // Handling backspace at start of word
     if (letterEl === wordEl.firstChild) {
       removeClass(wordEl, "current");
       if (wordEl.previousSibling) {
@@ -367,7 +392,7 @@ function Home() {
       removeClass(letterEl, "incorrect");
       removeClass(letterEl, "correct");
 
-      // Move current to the previous letter
+      // Move "current" from the letter to the previous letter
       addClass(letterEl.previousSibling, "current");
       removeClass(letterEl.previousSibling, "incorrect");
       removeClass(letterEl.previousSibling, "correct");
