@@ -1,26 +1,49 @@
 import React from "react";
+import TypingGraph from "./TypingGraph";
+import TypingStats from "./TypingStats";
+import TypingTestInterface from "./TypingTestInterface";
 
 function ShowWpm({ timerVal, typedChars, onReset }) {
-  const correctChars = typedChars.filter((c) => c.correct).length;
-  // const wpm = Math.round((correctChars / 5) / (timerVal / 60));
+  const correctChars = typedChars.filter((char) => char.correct).length;
 
-  const DurationInSeconds =
-    (typedChars.at(-1)?.timestamp - typedChars[0]?.timestamp) / 1000 ||
-    timerVal;
-  const wpm = Math.round(correctChars / 5 / (DurationInSeconds / 60));
+  let durationInSeconds = timerVal;
+  if (typedChars.length > 1) {
+    const firstTime = typedChars[0].timestamp;
+    const lastTime = typedChars[typedChars.length - 1].timestamp;
+    durationInSeconds = (lastTime - firstTime) / 1000;
+  }
+
+  const wpm = Math.round((correctChars / 5 / durationInSeconds) * 60);
+
+  const graphData = [];
+  if (typedChars.length > 0) {
+    const startTime = typedChars[0].timestamp;
+    const lastTime = typedChars[typedChars.length - 1].timestamp;
+    const totalSeconds = Math.ceil((lastTime - startTime) / 1000);
+
+    for (let i = 1; i <= totalSeconds; i++) {
+      const currentTime = startTime + i * 1000;
+      const charsTillNow = typedChars.filter(
+        (char) => char.timestamp <= currentTime
+      );
+      const correctTillNow = charsTillNow.filter((c) => c.correct).length;
+      const incorrectTillNow = charsTillNow.filter((c) => !c.correct).length;
+      const raw = charsTillNow.length;
+
+      const currentWpm = Math.round((correctTillNow / 5 / i) * 60);
+
+      graphData.push({
+        second: i,
+        wpm: currentWpm,
+        errors: incorrectTillNow,
+        raw: raw,
+      });
+    }
+  }
 
   return (
-    <div className="text-center mt-12">
-      <h2 className="text-3xl font-semibold">Typing Test Complete</h2>
-      <p className="mt-4 text-xl">
-        Words Per Minute: <strong>{wpm}</strong>
-      </p>
-      <button
-        onClick={onReset}
-        className="mt-6 px-4 py-2 bg-green-600 text-white rounded"
-      >
-        Try Again
-      </button>
+    <div className="w-full text-center mt-18">
+     <TypingTestInterface />
     </div>
   );
 }

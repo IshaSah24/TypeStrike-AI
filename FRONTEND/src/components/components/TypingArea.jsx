@@ -45,7 +45,7 @@ function TypingArea({
       {/* Invisible focus capture */}
       <div
         ref={focusHereRef}
-        className="typingarea absolute top-[3.5rem] left-0 w-full h-[8rem] opacity-0"
+        className="typingarea absolute top-[-0.5rem] left-0 w-full h-[8rem] opacity-0"
         tabIndex={0}
       >
         <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm pointer-events-none">
@@ -54,7 +54,7 @@ function TypingArea({
       </div>
 
       {/* Reset Button */}
-      <div className="flex justify-center h-10 mt-8">
+      <div className="flex justify-center h-10 mt-8 z-1 relative">
         <button
           onClick={handleReset}
           className=" reset-icon text-[#c3c3c3] px-2 py-2 rounded-full text-sm transition-all duration-300 flex items-center hover:text-gray-500 cursor-pointer"

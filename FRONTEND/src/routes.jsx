@@ -10,13 +10,14 @@ import RegisterPage from "./pages/RegisterPage";
 import Home from "./pages/Home";
 import LandingPage from "./components/components/LandingPage";
 import { Outlet } from "@tanstack/react-router";
+import Layout from "./context/Layout";
 
 // Root Layout
 const RootRoute = createRootRoute({
   component: () => (
-    <div>
+    <Layout>
       <Outlet />
-    </div>
+    </Layout>
   ),
   notFoundComponent: () => (
     <div className="text-center mt-40 text-2xl text-gray-500">
@@ -54,5 +55,10 @@ const TypingAreaRoute = createRoute({
 
 // Setup router
 export const router = createRouter({
-  routeTree: RootRoute.addChildren([LoginRoute, RegisterRoute,HomeRoute,TypingAreaRoute]),
+  routeTree: RootRoute.addChildren([
+    LoginRoute,
+    RegisterRoute,
+    HomeRoute,
+    TypingAreaRoute,
+  ]),
 });

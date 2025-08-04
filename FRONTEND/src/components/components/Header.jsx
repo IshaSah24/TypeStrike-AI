@@ -46,27 +46,6 @@ const Header = ({
       "
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mt-4 h-16">
-          {/* Logo Section (if any) */}
-
-          {/* Navigation Modes (desktop) */}
-
-          {/* Right Section */}
-          <div className="flex items-center 
-          
-          pace-x-2">
-            <button className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
-              <Bell className="w-5 h-5" />
-            </button>
-            <button className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
-              <Settings className="w-5 h-5" />
-            </button>
-            <button className="flex items-center space-x-2 text-gray-500 hover:text-gray-300 transition-colors">
-              <User className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm">guest</span>
-            </button>
-          </div>
-        </div>
 
         {/* Mobile Navigation */}
         <div className="md:hidden pb-3">

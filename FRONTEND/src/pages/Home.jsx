@@ -290,7 +290,7 @@ function Home() {
   const handleLetter = (typed, expected, letterEl, wordEl) => {
     if (letterEl) {
       console.log(`Typed: ${typed}, Expected: ${expected}`);
-      
+
       addClass(letterEl, typed === expected ? "correct" : "incorrect");
       removeClass(letterEl, "current");
       if (letterEl.nextSibling) {
@@ -617,41 +617,38 @@ function Home() {
     <div
       id="app"
       data-theme={theme}
-      className="h-screen w-screen items-center justify-start flex flex-col bg-background"
+      className=" w-screen items-center justify-start flex flex-col "
     >
-      <div className="flex">
-        <TypeLogo
-          showHeader={showHeader}
-          onClick={(e) => {
-            e.stopPropagation();
-            hasInteractedRef.current = true; // prevent blur after click
-            withFadeTransition(() => initializeGame());
-          }}
-        />
-
-        {!isTypingOver && (
-          <div
-            className={`transition-all duration-500 ease-in-out w-full ${
-              showHeader ? "opacity-100 " : "opacity-0  pointer-events-none"
-            }`}
-          >
-            <Header
-              theme={theme}
-              onToggleTheme={toggleTheme}
-              selectedMode={mode}
-              onSelectMode={handleModeSelect}
-              onSelectOpt={handleOptionSelect}
-              SelectedOpt={option}
-              showHeader={showHeader}
-              onSelectTime={(val) => setTimeDuration(val)}
-              selectedTime={timeDuration}
-              onSelectCount={(val) => setWordCount(val)}
-              selectedCount={wordCount}
-            />
-          </div>
-        )}
-      </div>
-
+      {" "}
+      <TypeLogo
+        showHeader={showHeader}
+        onClick={(e) => {
+          e.stopPropagation();
+          hasInteractedRef.current = true; // prevent blur after click
+          withFadeTransition(() => initializeGame());
+        }}
+      />
+      {!isTypingOver && (
+        <div
+          className={`transition-all duration-500 ease-in-out w-full ${
+            showHeader ? "opacity-100 " : "opacity-0  pointer-events-none"
+          }`}
+        >
+          <Header
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            selectedMode={mode}
+            onSelectMode={handleModeSelect}
+            onSelectOpt={handleOptionSelect}
+            SelectedOpt={option}
+            showHeader={showHeader}
+            onSelectTime={(val) => setTimeDuration(val)}
+            selectedTime={timeDuration}
+            onSelectCount={(val) => setWordCount(val)}
+            selectedCount={wordCount}
+          />
+        </div>
+      )}
       {isTypingOver ? (
         <ShowWpm
           timerVal={totalGameTimeRef.current / 1000}
