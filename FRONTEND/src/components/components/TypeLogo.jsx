@@ -14,7 +14,7 @@ const TypeLogo = ({ showHeader, onClick }) => {
         </div>
         <h1
           className={`text-xl font-semibold text-grey-500${
-            showHeader ? "opacity-100" : "opacity-20"
+            showHeader ? "opacity-100" : "opacity-20" 
           }`}
         >
           Speedstrike
