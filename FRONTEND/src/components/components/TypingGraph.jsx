@@ -30,45 +30,54 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 function TypingGraph({ data, currentWpm, currentAccuracy }) {
   const errorPoints = data.filter((point) => point.errors > 0);
-
+  const styles = getComputedStyle(document.documentElement);
+  const tickColor = styles.getPropertyValue("--xaxis-tick")?.trim();
+  const lineColor = styles.getPropertyValue("--xaxis-line")?.trim();
+  const axisColor = styles.getPropertyValue("--xaxis-axis")?.trim();
   return (
-    <div className="w-full h-80 relative">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#374151" 
+    <div className="w-full h-80 relative ">
+      <ResponsiveContainer width="100%" height="100%" className={"chart-container"}>
+        <LineChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#9c9a9a"
             strokeOpacity={0.3}
           />
-          <XAxis 
-            dataKey="second" 
-            tick={{ fontSize: 12, fill: '#9CA3AF' }}
-            tickLine={{ stroke: '#374151' }}
-            axisLine={{ stroke: '#374151' }}
+          <XAxis
+            dataKey="second"
+            tick={{
+              fontSize: 12,
+              fill: tickColor,
+            }}
+            tickLine={{ stroke: lineColor }}
+            axisLine={{ stroke: axisColor }}
           />
-          <YAxis 
-            domain={[0, 'auto']}
-            tick={{ fontSize: 12, fill: '#9CA3AF' }}
-            tickLine={{ stroke: '#374151' }}
-            axisLine={{ stroke: '#374151' }}
+          <YAxis
+            domain={[0, "auto"]}
+            tick={{ fontSize: 12, fill: "#9CA3AF" }}
+            tickLine={{ stroke: "#374151" }}
+            axisLine={{ stroke: "#374151" }}
           />
           <Tooltip content={<CustomTooltip />} />
-          
+
           {/* Raw WPM Line (Teal) */}
-          <Line 
-            type="monotone" 
-            dataKey="raw" 
-            stroke="#06B6D4" 
+          <Line
+            type="monotone"
+            dataKey="raw"
+            stroke="#06B6D4"
             strokeWidth={2}
             dot={false}
             strokeOpacity={0.7}
           />
 
           {/* Final WPM Line (Yellow) */}
-          <Line 
-            type="monotone" 
-            dataKey="wpm" 
-            stroke="#EAB308" 
+          <Line
+            type="monotone"
+            dataKey="wpm"
+            stroke="#EAB308"
             strokeWidth={3}
             dot={false}
             activeDot={{ r: 4, fill: "#EAB308" }}
@@ -91,14 +100,13 @@ function TypingGraph({ data, currentWpm, currentAccuracy }) {
       {/* Current stats overlay */}
       <div className="absolute top-4 left-[-16px] text-left">
         <div className="text-6xl font-bold text-yellow-400 leading-none">
+          <h1 className="text-2xl">WPM</h1>
           {currentWpm}
         </div>
-        <div className="text-xl font-semibold text-yellow-400 mt-1">
+
+        <div className="text-5xl font-semibold text-yellow-400 mt-6">
+        <h1 className="text-2xl">acc</h1>
           {currentAccuracy}%
-        </div>
-        <div className="text-sm text-gray-400 mt-2">
-          <div>WPM</div>
-          <div>acc</div>
         </div>
       </div>
     </div>

@@ -2,38 +2,30 @@ import React, { useState } from "react";
 import TypingGraph from "./TypingGraph";
 import TypingStats from "./TypingStats";
 import { Play, RotateCcw, Settings, BarChart3 } from "lucide-react";
+import TypedWords from "./TypedWords";
 
-function TypingTestInterface() {
+function TypingTestInterface({ graphData, stats, wpm, accuracy, correctWords, incorrectWords }) {
   const [isActive, setIsActive] = useState(false);
-  const [currentStats, setCurrentStats] = useState({
-    wpm: 38,
-    accuracy: 92,
-    raw: 38,
-    characters: { correct: 52, incorrect: 0, extra: 0, missed: 0 },
-    consistency: 59,
-    time: 17,
-  });
-
-  // Dummy graph data
-  const sampleData = [
-    { second: 1, wpm: 8, raw: 12, accuracy: 90, errors: 0 },
-    { second: 2, wpm: 15, raw: 20, accuracy: 88, errors: 1 },
-    { second: 3, wpm: 22, raw: 28, accuracy: 85, errors: 0 },
-    { second: 4, wpm: 28, raw: 35, accuracy: 87, errors: 1 },
-    { second: 5, wpm: 32, raw: 38, accuracy: 89, errors: 0 },
-    { second: 6, wpm: 35, raw: 42, accuracy: 90, errors: 0 },
-    { second: 7, wpm: 38, raw: 45, accuracy: 91, errors: 2 },
-    { second: 8, wpm: 36, raw: 43, accuracy: 88, errors: 0 },
-    { second: 9, wpm: 34, raw: 41, accuracy: 87, errors: 0 },
-    { second: 10, wpm: 36, raw: 44, accuracy: 89, errors: 0 },
-    { second: 11, wpm: 38, raw: 46, accuracy: 90, errors: 0 },
-    { second: 12, wpm: 37, raw: 45, accuracy: 91, errors: 0 },
-    { second: 13, wpm: 39, raw: 47, accuracy: 92, errors: 0 },
-    { second: 14, wpm: 38, raw: 46, accuracy: 92, errors: 1 },
-    { second: 15, wpm: 40, raw: 48, accuracy: 93, errors: 0 },
-    { second: 16, wpm: 38, raw: 46, accuracy: 92, errors: 0 },
-    { second: 17, wpm: 38, raw: 46, accuracy: 92, errors: 0 },
-  ];
+  // Dummy data for testing purpose
+  // const sampleData = [
+  //   { second: 1, wpm: 8, raw: 12, accuracy: 90, errors: 0 },
+  //   { second: 2, wpm: 15, raw: 20, accuracy: 88, errors: 1 },
+  //   { second: 3, wpm: 22, raw: 28, accuracy: 85, errors: 0 },
+  //   { second: 4, wpm: 28, raw: 35, accuracy: 87, errors: 1 },
+  //   { second: 5, wpm: 32, raw: 38, accuracy: 89, errors: 0 },
+  //   { second: 6, wpm: 35, raw: 42, accuracy: 90, errors: 0 },
+  //   { second: 7, wpm: 38, raw: 45, accuracy: 91, errors: 2 },
+  //   { second: 8, wpm: 36, raw: 43, accuracy: 88, errors: 0 },
+  //   { second: 9, wpm: 34, raw: 41, accuracy: 87, errors: 0 },
+  //   { second: 10, wpm: 36, raw: 44, accuracy: 89, errors: 0 },
+  //   { second: 11, wpm: 38, raw: 46, accuracy: 90, errors: 0 },
+  //   { second: 12, wpm: 37, raw: 45, accuracy: 91, errors: 0 },
+  //   { second: 13, wpm: 39, raw: 47, accuracy: 92, errors: 0 },
+  //   { second: 14, wpm: 38, raw: 46, accuracy: 92, errors: 1 },
+  //   { second: 15, wpm: 40, raw: 48, accuracy: 93, errors: 0 },
+  //   { second: 16, wpm: 38, raw: 46, accuracy: 92, errors: 0 },
+  //   { second: 17, wpm: 38, raw: 46, accuracy: 92, errors: 0 },
+  // ];
 
   const handleStart = () => {
     setIsActive(true);
@@ -41,15 +33,12 @@ function TypingTestInterface() {
 
   const handleRestart = () => {
     setIsActive(false);
-    // Reset logic can be added
   };
 
   return (
-    <div className="text-white p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          {/* <h1 className="text-3xl font-bold text-yellow-400">SpeedStrike</h1> */}
+    <div className="text-white p-4 px-20">
+      <div className="max-w-8xl mx-auto p-8">
+        {/* <div className="flex justify-between items-center mb-8">
           <div className="flex space-x-4 absolute right-0 top-8">
             <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors">
               <Settings className="w-5 h-5 text-gray-400" />
@@ -58,25 +47,26 @@ function TypingTestInterface() {
               <BarChart3 className="w-5 h-5 text-gray-400" />
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Main Graph */}
         <div className=" rounded-xl p-6 mb-6 ">
           <TypingGraph
-            data={sampleData}
-            currentWpm={currentStats.wpm}
-            currentAccuracy={currentStats.accuracy}
+            data={graphData}
+            currentWpm={wpm}
+            currentAccuracy={accuracy}
           />
           <TypingStats
             testType="words"
             language="english"
             wordCount={10}
-            rawWpm={currentStats.raw}
-            characters={currentStats.characters}
-            consistency={currentStats.consistency}
-            time={currentStats.time}
+            rawWpm={stats.raw}
+            characters={stats.characters}
+            consistency={stats.consistency}
+            time={stats.time}
           />
         </div>
+       <TypedWords correctWords={correctWords} incorrectWords={incorrectWords}/>
 
         {/* Controls */}
         <div className="flex justify-center space-x-4 mb-8">

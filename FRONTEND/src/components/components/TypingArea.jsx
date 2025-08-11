@@ -8,8 +8,6 @@ function TypingArea({
   cursorRef,
   wordsRef,
   timerRef,
-  lastChar,
-  lastCorrect,
   timeDuration,
   mode
 }) {
@@ -23,10 +21,10 @@ function TypingArea({
       )}
 
       {/* Typing content wrapper */}
-      <div className="relative max-h-[80vh] overflow-y-auto leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
+      <div className="  relative max-h-[80vh] overflow-y-auto leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
         <div
           ref={wordsRef}
-          className="transition-opacity duration-500 opacity-100"
+          className="words transition-opacity duration-500 opacity-100"
         ></div>
         <div
           id="cursor"

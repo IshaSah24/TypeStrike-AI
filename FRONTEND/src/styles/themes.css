@@ -1,26 +1,40 @@
-/* themes.css */
 :root[data-theme="light"] {
-    --color-bg: #ffffff;
-    --color-text: #1f2937;
-    --color-primary: #2563eb;
-  }
-  
-  :root[data-theme="dark"] {
-    --color-bg: #1f2937;
-    --color-text: #f3f4f6;
-    --color-primary: #3b82f6;
-  }
-  
-  :root[data-theme="blue"] {
-    --color-bg: #e0f2fe;
-    --color-text: #0c4a6e;
-    --color-primary: #0284c7;
-  }
-  
-  
-  :root[data-theme="yellow"] {
-    --color-bg: #e0f2fe;
-    --color-text: #d29d00;
-    --color-primary: #676704;
-  }
-  
+  --color-bg: #ffffff;
+  --color-text: #1f2937;
+  --color-primary: #2563eb;
+
+  /* NEW chart colors */
+  --xaxis-tick: #4b5563;
+  --xaxis-line: #9ca3af;
+  --xaxis-axis: #6b7280;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #1f2937;
+  --color-text: #f3f4f6;
+  --color-primary: #3b82f6;
+
+  --xaxis-tick: #cf3a11;
+  --xaxis-line: #0a409d;
+  --xaxis-axis: #d53030;
+}
+
+:root[data-theme="blue"] {
+  --color-bg: #e0f2fe;
+  --color-text: #0c4a6e;
+  --color-primary: #0284c7;
+
+  --xaxis-tick: #0369a1;
+  --xaxis-line: #38bdf8;
+  --xaxis-axis: #0ea5e9;
+}
+
+:root[data-theme="yellow"] {
+  --color-bg: #fffbe6;
+  --color-text: #d29d00;
+  --color-primary: #676704;
+
+  --xaxis-tick: #a16207;
+  --xaxis-line: #eab308;
+  --xaxis-axis: #ca8a04;
+}

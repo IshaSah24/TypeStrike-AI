@@ -12,6 +12,7 @@ import { useRouterState } from "@tanstack/react-router";
 import TypeLogo from "../components/components/TypeLogo";
 import { useTheme } from "../context/ThemeContext";
 import ThemeSwitcher from "../components/components/ThemeSwitcher";
+import { useFinalDom } from "../context/FinalDomContext";
 
 // ========== CONSTANTS & UTILITIES ========== //
 const PUNCTUATION_MARKS = [".", ",", ";", "!", "?", ":"];
@@ -69,6 +70,9 @@ const formatWord = (word) =>
 // MAIN COMPONENT --------------------
 
 function Home() {
+  // final  dom
+  const { setFinalDOM } = useFinalDom(); 
+
   //  rendering  dynamic theme
   const { theme, setTheme } = useTheme();
 
@@ -209,6 +213,11 @@ function Home() {
     setIsTypingOver(true);
     clearInterval(timerIntervalRef.current);
     isTimerRunningRef.current = false;
+
+    if (wordsRef.current) {
+      const clonedDOM = wordsRef.current.cloneNode(true);
+      setFinalDOM(clonedDOM); // Save to context
+    }
   };
 
   // ========== TYPING LOGIC ============== /
@@ -654,6 +663,7 @@ function Home() {
           timerVal={totalGameTimeRef.current / 1000}
           typedChars={typedChars}
           onReset={resetGame}
+          isTypingOver = {isTypingOver ? true : false}
         />
       ) : (
         <TypingArea
