@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import TypingTestInterface from "./TypingTestInterface";
 import { useFinalDom } from "../../context/FinalDomContext";
@@ -52,7 +49,7 @@ function ShowWpm({ timerVal, typedChars}) {
     const totalSeconds = Math.ceil((lastTime - startTime) / 1000);
 
     for (let i = 1; i <= totalSeconds; i++) {
-      const currentTime = startTime + i * 1000; // this  helps to find  in  which second how many characters are typed
+      const currentTime = startTime + i * 1000; // this  helps to find  in  which  second how many characters are typed
       const charsTillNow = typedChars.filter(
         (char) => char.timestamp <= currentTime
       );

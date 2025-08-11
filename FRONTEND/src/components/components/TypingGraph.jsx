@@ -63,7 +63,6 @@ function TypingGraph({ data, currentWpm, currentAccuracy }) {
           />
           <Tooltip content={<CustomTooltip />} />
 
-          {/* Raw WPM Line (Teal) */}
           <Line
             type="monotone"
             dataKey="raw"
@@ -73,7 +72,7 @@ function TypingGraph({ data, currentWpm, currentAccuracy }) {
             strokeOpacity={0.7}
           />
 
-          {/* Final WPM Line (Yellow) */}
+
           <Line
             type="monotone"
             dataKey="wpm"
@@ -83,7 +82,6 @@ function TypingGraph({ data, currentWpm, currentAccuracy }) {
             activeDot={{ r: 4, fill: "#EAB308" }}
           />
 
-          {/* Error Points */}
           {errorPoints.map((point, index) => (
             <ReferenceDot
               key={index}

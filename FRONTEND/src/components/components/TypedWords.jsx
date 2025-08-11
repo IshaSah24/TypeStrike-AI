@@ -1,26 +1,51 @@
-import React, { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 export default function TypedWords({ incorrectWords }) {
-  const [showHistory, setShowHistory] = useState(false);
+  const [uniqueIncorrect, setUniqueIncorrect] = useState([]);
+  const [showHistory, setShowHistory] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  
+  useEffect(() => {
+    if (!incorrectWords || incorrectWords.length === 0) return;
+
+    // IMPLEMENTING  LOCAL STORAGE  HERE  TO  SOTRE THE INCORRECT WORDS  AND TRACK THE FREQUENTLY TYPED INCOORECT WORDS + NEW
+    const pastMistakes = JSON.parse(
+      localStorage.getItem("typingMistakes") || "{}"
+    );
+    incorrectWords.forEach((word) => {
+      pastMistakes[word] = (pastMistakes[word] || 0) + 1;
+    });
+    localStorage.setItem("typingMistakes", JSON.stringify(pastMistakes));
+
+    setUniqueIncorrect([...new Set(incorrectWords)]);
+
+    // Force re-render  -  as the localstorage is not  the  state of react  so  it  doesn't have any  idea when  when  its gets updated..
+    setRefreshKey((prev) => prev + 1);
+  }, [incorrectWords]);
 
   console.log(incorrectWords);
-
   return (
     <div className="w-full text-center mt-4">
+      {/* Button */}
+
       <button
         onClick={() => setShowHistory(!showHistory)}
-        className="px-4 py-2 bg-yellow-500 text-black rounded-md hover:bg-yellow-400 transition-all"
+        className="p-4 py-2 text-[var(--color-text)] rounded-md transition-all cursor-pointer flex items-center gap-2 "
       >
         {showHistory ? "Hide Incorrect Words" : "View Incorrect Words"}
+        {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </button>
 
+      {/* Incorrect Words */}
       {showHistory && (
-        <div className="mt-4 p-4 bg-gray-800 rounded-lg shadow-lg max-w-3xl mx-auto transition-all duration-300">
-          <div className="flex flex-wrap gap-1 justify-center">
-            {incorrectWords.map((word, i) => (
+        <div className="m-4 mb-6 p-4 rounded-lg max-w-6xl mx-auto transition-all duration-300">
+          <div className="flex flex-wrap gap-5 justify-center text-2xl">
+            {uniqueIncorrect.map((word, i) => (
               <span
                 key={`i-${i}`}
-                className="px-1 rounded bg-red-500/20 text-red-400 font-mono"
+                className="px-4 rounded bg-red-500/20 text-red-400 font-mono"
               >
                 {word}
               </span>

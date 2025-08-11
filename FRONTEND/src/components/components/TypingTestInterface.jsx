@@ -69,7 +69,7 @@ function TypingTestInterface({ graphData, stats, wpm, accuracy, correctWords, in
        <TypedWords correctWords={correctWords} incorrectWords={incorrectWords}/>
 
         {/* Controls */}
-        <div className="flex justify-center space-x-4 mb-8">
+        <div className="flex justify-center space-x-4 mb-8 mt-8">
           <button
             onClick={handleStart}
             disabled={isActive}
