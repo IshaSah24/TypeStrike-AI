@@ -9,11 +9,27 @@ const themes = [
     label: "serika dark",
     colors: ["#1f2937", "#374151", "#9ca3af"],
   },
-  { name: "blue", label: "blue", colors: ["#e0f2fe", "#0284c7", "#0c4a6e"] },
+
+  // New custom themes
   {
-    name: "yellow",
-    label: "yellow",
-    colors: ["#fef3c7", "#f59e0b", "#92400e"],
+    name: "sunset-pop",
+    label: "Sunset Pop",
+    colors: ["#FF6B6B", "#1E1E1E", "#B2B2B2"], // Logo, Typing, Typed
+  },
+  {
+    name: "leaf-fresh",
+    label: "Leaf Fresh",
+    colors: ["#4CAF50", "#212121", "#A5D6A7"],
+  },
+  {
+    name: "blue-rush",
+    label: "Blue Rush",
+    colors: ["#2196F3", "#0D0D0D", "#90CAF9"],
+  },
+  {
+    name: "tangerine-glow",
+    label: "Tangerine Glow",
+    colors: ["#FF9800", "#1B1B1B", "#FFCC80"],
   },
 ];
 

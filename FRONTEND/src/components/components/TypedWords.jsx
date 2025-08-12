@@ -32,7 +32,7 @@ export default function TypedWords({ incorrectWords }) {
 
       <button
         onClick={() => setShowHistory(!showHistory)}
-        className="p-4 py-2 text-[var(--color-text)] rounded-md transition-all cursor-pointer flex items-center gap-2 "
+        className="p-4 py-2 text-[var(--other-text-color)] rounded-md transition-all cursor-pointer flex items-center gap-2 "
       >
         {showHistory ? "Hide Incorrect Words" : "View Incorrect Words"}
         {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
