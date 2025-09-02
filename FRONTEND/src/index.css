@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+
+@font-face {
+    font-family: 'Randelles';
+    src: url('./assets/fonts/Randelles.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+body,
+#app {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+
+.custom-text {
+    font-family: 'Randelles', sans-serif;
+  }
+  

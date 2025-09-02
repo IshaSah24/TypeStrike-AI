@@ -477,7 +477,7 @@ function Home() {
   };
 
   // ========== UI HANDLERS  ============ //
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+  // const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   const withFadeTransition = (callback) => {
     if (!wordsRef.current) return;
@@ -493,7 +493,7 @@ function Home() {
   };
 
   const handleModeSelect = (newMode) => {
-    withFadeTransition(() => {
+    withFadeTransition(() => {``
       setMode((prev) => (prev === newMode ? "custom" : newMode));
       setTypedChars([]);
       setHasStarted(true);
@@ -616,7 +616,7 @@ function Home() {
     return (
       <LandingPage
         theme={theme}
-        onToggleTheme={toggleTheme}
+        // onToggleTheme={toggleTheme}
         onStartGame={startGame}
       />
     );
@@ -645,7 +645,7 @@ function Home() {
         >
           <Header
             theme={theme}
-            onToggleTheme={toggleTheme}
+            // onToggleTheme={toggleTheme}
             selectedMode={mode}
             onSelectMode={handleModeSelect}
             onSelectOpt={handleOptionSelect}

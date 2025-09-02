@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 
-const themes = ["light", "dark", "blue", "yellow"];
+// const themes = ["light", "dark", "blue", "yellow"];
 
 const Header = ({
   selectedMode,
@@ -22,8 +22,8 @@ const Header = ({
   SelectedOpt,
   onSelectTime,
   selectedTime,
-  onSelectCount, // ← new
-  selectedCount, // ← new
+  onSelectCount,
+  selectedCount,
 }) => {
   const { theme, setTheme } = useTheme();
 

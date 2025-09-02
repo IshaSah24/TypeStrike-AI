@@ -11,8 +11,9 @@ import {
   ChevronRight,
   Play,
 } from "lucide-react";
+import logo from "./../../logo/logo.png";
 import { useNavigate } from "@tanstack/react-router";
-
+import zig from "./../../assets/TLP.png";
 
 function App() {
   const navigate = useNavigate();
@@ -22,14 +23,30 @@ function App() {
   return (
     <div className="min-h-screen  bg-gradient-to-br from-slate-900 via-[#0d050f] to-slate-900">
       {/* Top Navigation */}
-      <nav className="z-10 relative px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <nav className="z-10 relative px-6 py-4 h-[60px] relative overflow-visible">
+        <div className="max-w-7xl h-[7rem] mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Keyboard className="h-8 w-8 text-purple-400" />
-            <span className="text-2xl font-bold text-white">TypeSpeed</span>
+            <div
+              style={{ width: "100px", height: "100px", overflow: "hidden" }}
+            >
+              <img
+                src={logo}
+                alt="Logo"
+                style={{
+                  height: "120px" /* Fixed height */,
+                  width: "auto" /* Keep aspect ratio */,
+                  objectFit: "contain" /* Prevent cropping */,
+                  display: "block",
+                  position: "absolute",
+                  top: "94%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              />
+            </div>
           </div>
 
-          <div className="hidden md:flex items-center   space-x-8">
+          <div className="hidden md:flex items-center pb-16  space-x-8">
             <a
               href="#features"
               className="text-gray-300 hover:text-white transition-colors"
@@ -48,7 +65,10 @@ function App() {
             >
               Reviews
             </a>
-            <button   onClick={() => navigate({ to: "/typing" })} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
+            <button
+              onClick={() => navigate({ to: "/typing" })}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+            >
               Start Typing
             </button>
           </div>
@@ -87,7 +107,7 @@ function App() {
                   `,
                     animationDelay: `${animDelay}s, ${glowDelay}s`,
                     color: `hsl(${hue}, 50%, 45%)`,
-                    opacity: 0.4,
+                    opacity: 0.15,
                   }}
                 >
                   {letter}
@@ -109,7 +129,7 @@ function App() {
                 `,
                 animationDelay: `${Math.random() * 10}s, ${Math.random() * 3}s`,
                 background: `hsl(${280 + Math.random() * 40}, 60%, 60%)`,
-                opacity: 0.3,
+                opacity: 0.15,
               }}
             />
           ))}
@@ -117,18 +137,18 @@ function App() {
 
         <div className="absolute  inset-0 bg-gradient-to-r from-purple-800/10  to-pink-800/10"></div>
 
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <div className="mb-8">
-            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-purple-200 mb-6">
-              <Zap className="h-4 w-4 mr-2" />
-              Master Your Typing Speed
-            </div>
-
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6  leading-tight">
+        <div className=" h-[54rem] relative z-10 max-w-7xl mx-auto text-center flex flex-col justify-center items-center pb-12 px-4 sm:px-6 lg:px-8">
+          <div className="inline-flex mb-6 items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-purple-200 mb-6">
+            <Zap className="h-4 w-4 mr-2" />
+            Master Your Typing Speed
+          </div>
+          <div className="mb-8 ">
+            <h1 style={{ fontFamily: 'Randelles', fontSize: '7rem'}} className="tracking-wide text-5xl md:text-7xl font-bold text-white mb-6  leading-tight">
               Type Like a{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+              <span style={{fontWeight : 'bold'}} className=" relative p-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                 Pro
               </span>
+            <img className="w-132 absolute top-10 right-26" src={zig} alt="" />
             </h1>
 
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
@@ -138,11 +158,14 @@ function App() {
           </div>
 
           <div className="flex flex-col sm:flex-row  gap-4 justify-center items-center mb-12">
-            <button   onClick={() => navigate({ to: "/typing" })} className="group bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 flex items-center">
+            <button
+              onClick={() => navigate({ to: "/typing" })}
+              className="group bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 flex items-center"
+            >
               <Play className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
               Start Typing Now
             </button>
-            <button className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/20 transition-all duration-300 flex items-center">
+            <button className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/20 transition-all duration-500 flex items-center">
               View Demo <ChevronRight className="h-5 w-5 ml-2" />
             </button>
           </div>
@@ -207,7 +230,7 @@ function App() {
             ].map((feature, i) => (
               <div
                 key={i}
-                className="group bg-white/5 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:transform hover:scale-105"
+                className="group bg-white/5 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/10 transition-all duration-500 hover:transform hover:scale-105"
               >
                 <div
                   className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${feature.gradient} mb-6`}
@@ -295,7 +318,7 @@ function App() {
             ].map((t, i) => (
               <div
                 key={i}
-                className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/10 transition-all duration-300"
+                className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/10 transition-all duration-500"
               >
                 <div className="flex mb-4">
                   {[...Array(t.rating)].map((_, starIndex) => (
@@ -328,7 +351,10 @@ function App() {
             <p className="text-xl text-gray-300 mb-8">
               Start today and see immediate improvements
             </p>
-            <button   onClick={() => navigate({ to: "/typing" })} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl font-semibold text-xl hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105">
+            <button
+              onClick={() => navigate({ to: "/typing" })}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl font-semibold text-xl hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-500 hover:scale-105"
+            >
               Begin Your Training
             </button>
             <p className="text-sm text-gray-400 mt-4">
@@ -343,7 +369,8 @@ function App() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Keyboard className="h-8 w-8 text-purple-400" />
+              {/* <Keyboard className="h-8 w-8 text-purple-400" /> */}
+              <img className="w-8" src={logo} alt="" />
               <span className="text-2xl font-bold text-white">TypeSpeed</span>
             </div>
             <div className="flex space-x-8 text-gray-300">
@@ -368,7 +395,7 @@ function App() {
       <style jsx>{`
         .letter-subtle {
           text-shadow: 0 0 30px currentColor;
-          transition: all 0.4s ease;
+          transition: all 0.5s ease;
           filter: blur(0.5px);
         }
 
@@ -474,14 +501,12 @@ function App() {
         @keyframes letterGlow-0 {
           0%,
           100% {
-            opacity: 0.4;
-            text-shadow: 0 0 6px currentColor, 0 0 12px currentColor,
-              0 0 20px currentColor;
+            opacity: 0.15; // Reduced from 0.4
+            text-shadow: 0 0 2px currentColor; // Reduced glow
           }
           50% {
-            opacity: 0.8;
-            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
-              0 0 30px currentColor;
+            opacity: 0.3; // Reduced from 0.8
+            text-shadow: 0 0 4px currentColor; // Reduced glow
           }
         }
 

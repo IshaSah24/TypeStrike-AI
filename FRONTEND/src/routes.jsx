@@ -11,6 +11,8 @@ import Home from "./pages/Home";
 import LandingPage from "./components/components/LandingPage";
 import { Outlet } from "@tanstack/react-router";
 import Layout from "./context/Layout";
+// import TypingTestInterface from "./components/components/TypingTestInterface";
+import ShowWpm from "./components/components/ShowWpm";
 
 // Root Layout
 const RootRoute = createRootRoute({
@@ -46,6 +48,11 @@ const HomeRoute = createRoute({
   path: "/",
   component: LandingPage,
 });
+const ShowWpmRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/wpm",
+  component: ShowWpm,
+});
 
 const TypingAreaRoute = createRoute({
   getParentRoute: () => RootRoute,
@@ -59,6 +66,7 @@ export const router = createRouter({
     LoginRoute,
     RegisterRoute,
     HomeRoute,
+    ShowWpmRoute,
     TypingAreaRoute,
   ]),
 });
