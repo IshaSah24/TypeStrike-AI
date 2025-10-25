@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, registerUser } from "../controller/auth.controller.js";
+import { loginUser, logoutUser, registerUser } from "../controller/auth.controller.js";
 import jwt from "jsonwebtoken";
 import { findById } from "../DAO/user.dao.js";
 
@@ -9,7 +9,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 router.get("/me", async (req, res) => {
-  const token = req.cookies.accessToken;
+  const token = req.cookies.accessToken;   // if  assinged  cookie found in user's browser
   console.log("from /me", token);
 
   if (!token) {
@@ -17,9 +17,10 @@ router.get("/me", async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // 👈 use process.env
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await findById(decoded.id);
-
+    console.log("decoded user : ",user);
+    
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -28,13 +29,14 @@ router.get("/me", async (req, res) => {
     return res.status(200).json({
       id: user._id,
       email: user.email,
-      name: user.name,
-      // any other safe fields
+      name: user.username,
     });
   } catch (err) {
     console.error("JWT Verify Error:", err.message);
     return res.status(401).json({ message: "Invalid token" });
   }
 });
+
+router.post ('/logout', logoutUser);
 
 export default router;

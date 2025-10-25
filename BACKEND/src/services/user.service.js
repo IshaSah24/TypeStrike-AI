@@ -23,11 +23,13 @@ export const loginUserService = async (email, password) => {
     throw new AppError("Invalid credentials!", 401);
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new AppError("Invalid credentials!", 401);
-  }
+  // const isMatch = await bcrypt.compare(password, user.password);
+  // if (!isMatch) {
+  //   throw new AppError("Invalid credentials!", 401);
+  // }
 
+  const isMatch =  password === user.password ;
+  if(!isMatch) throw new AppError ("Invalid Credentials", 401);
   const token = signToken({ id: user._id });
 
   return {token, user};

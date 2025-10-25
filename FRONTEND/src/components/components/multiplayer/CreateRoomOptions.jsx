@@ -1,0 +1,97 @@
+// components/multiplayer/CreateRoomOptions.js
+import React, { useState, useEffect } from "react";
+import { Zap, Crown } from "lucide-react";
+
+const CreateRoomOptions = ({ localSelectMode, localSelectOpt }) => {
+  const MODES = ["words", "quote", "time"];
+
+  const WORD_OPTIONS = [10, 20, 30];
+  const QUOTE_OPTIONS = [1, 2, 3];
+  const TIME_OPTIONS = [15, 30, 60];
+
+  const [selectedMode, setSelectedMode] = useState("words");
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  // Helper to safely call parent callbacks
+  const emitModeChange = (mode, option = null) => {
+    if (typeof localSelectMode === "function") localSelectMode(mode, option);
+    if (typeof localSelectOpt === "function") localSelectOpt(option);
+  };
+
+  // When mode changes, reset option and notify parent that mode changed (option null)
+  const handleModeClick = (mode) => {
+    setSelectedMode(mode);
+    setSelectedOption(null);
+    emitModeChange(mode, null);
+  };
+
+  // When option clicked, set option and notify parent with both mode & option
+  const handleOptionClick = (opt) => {
+    setSelectedOption(opt);
+    emitModeChange(selectedMode, opt);
+  };
+
+  // Choose which options array to render based on selectedMode
+  const getOptionsForMode = (mode) => {
+    switch (mode) {
+      case "words":
+        return WORD_OPTIONS;
+      case "time":
+        return TIME_OPTIONS;
+      case "quote":
+        return QUOTE_OPTIONS;
+      default:
+        return [];
+    }
+  };
+
+  const renderedOptions = getOptionsForMode(selectedMode);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <h3 className="text-sm text-neutral-400 uppercase tracking-wide font-light">
+          Typing Mode
+        </h3>
+      </div>
+
+      <div className="flex gap-4 flex-wrap">
+        {MODES.map((mode) => (
+          <button
+            key={mode}
+            onClick={() => handleModeClick(mode)}
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-light tracking-wide transition-all duration-300 ${
+              selectedMode === mode
+                ? "bg-neutral-700/50 border-neutral-600 text-white"
+                : "bg-neutral-800/30 border-neutral-700/50 text-neutral-400 hover:border-neutral-600/70 hover:bg-neutral-800/50"
+            }`}
+            aria-pressed={selectedMode === mode}
+          >
+            <Zap className="w-4 h-4" />
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {/* Secondary options (only show when there's a selected mode) */}
+      <div className="mt-3 flex gap-3 flex-wrap">
+        {renderedOptions.map((opt) => (
+          <button
+            key={opt}
+            onClick={() => handleOptionClick(opt)}
+            className={`px-3 py-2 rounded-xl border text-sm font-light tracking-wide transition-all duration-300 ${
+              selectedOption === opt
+                ? "bg-neutral-700/50 border-neutral-600 text-white"
+                : "bg-neutral-800/30 border-neutral-700/50 text-neutral-400 hover:border-neutral-600/70 hover:bg-neutral-800/50"
+            }`}
+          >
+            {/* Display label based on mode */}
+            {selectedMode === "time" ? `${opt}s` : selectedMode === "words" ? `${opt} Words` : `${opt} Quote${opt > 1 ? "s" : ""}`}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default CreateRoomOptions;

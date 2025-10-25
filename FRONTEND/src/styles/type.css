@@ -107,7 +107,7 @@ body {
 
 #app[data-theme="dark"] {
     --primary-color: #506477;
-    --bg-color: #000916;
+    --bg-color: #111111;
     --text-color: #91a3bd;
 
 
@@ -332,3 +332,22 @@ body {
 .chart-container .recharts-surface:focus {
     outline: none !important;
 }
+
+/* Ensure these rules have high specificity */
+#app[data-theme] .letter.correct {
+    color: var(--correct-color) !important;
+}
+
+#app[data-theme] .letter.incorrect {
+    color: var(--incorrect-color) !important;
+}
+
+#app[data-theme] .letter.current {
+    color: var(--primary-color) !important;
+}
+
+#app[data-theme] .formatted {
+    color: var(--formatted-color) !important;
+}
+
+

@@ -14,11 +14,11 @@ export  const findById =  async (id) => {
 
 
 export  const  createUser = async (email, password, name) => {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
     const  createdUser = new User({
         username : name, 
         email, 
-        password: hashedPassword,
+        password,
     })
     
     await createdUser.save();

@@ -1,5 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import React from "react";
+import "../../styles/type.css";
 
 function TypingArea({
   showkey,
@@ -9,7 +10,8 @@ function TypingArea({
   wordsRef,
   timerRef,
   timeDuration,
-  mode
+  mode,
+  isMultiplayer = false // Add this prop
 }) {
   return (
     <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">
@@ -51,15 +53,17 @@ function TypingArea({
         </div>
       </div>
 
-      {/* Reset Button */}
-      <div className="flex justify-center h-10 mt-8 z-1 relative">
-        <button
-          onClick={handleReset}
-          className=" reset-icon text-[#c3c3c3] px-2 py-2 rounded-full text-sm transition-all duration-300 flex items-center hover:text-gray-500 cursor-pointer"
-        >
-          <RotateCcw className="w-4 h-4 block" />
-        </button>
-      </div>
+      {/* Reset Button - Only show in single player mode */}
+      {!isMultiplayer && (
+        <div className="flex justify-center h-10 mt-8 z-1 relative">
+          <button
+            onClick={handleReset}
+            className="reset-icon text-[#c3c3c3] px-2 py-2 rounded-full text-sm transition-all duration-300 flex items-center hover:text-gray-500 cursor-pointer"
+          >
+            <RotateCcw className="w-4 h-4 block" />
+          </button>
+        </div>
+      )}
 
       {/* Keyboard Placeholder */}
       {showkey && (

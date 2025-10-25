@@ -1,19 +1,29 @@
 // src/main.jsx
 import React from "react";
-import ReactDOM from "react-dom/client";
-import { RouterProvider } from "@tanstack/react-router";
-import { router } from "./routes.jsx";
 import "./index.css";
+import ReactDOM from "react-dom/client";
+
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { FinalDomProvider } from "./context/FinalDomContext.jsx";
-// import { AuthProvider } from "./context/authContext";
+import { TypingGameProvider } from "./context/TypingGameContext.jsx"; // Add this
+
+import store from "./redux/store.js";
+import { router } from "./routes.jsx";
+import { RouterProvider } from "@tanstack/react-router";
+import { Provider } from "react-redux";
+import App from "./App.jsx";
+import { MultiplayerProvider } from "./context/MultiplayerContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <Provider store={store}>
     <ThemeProvider>
       <FinalDomProvider>
-        <RouterProvider router={router} />
+        <MultiplayerProvider>
+          <TypingGameProvider> {/* Add this provider */}
+            <App />
+          </TypingGameProvider>
+        </MultiplayerProvider>
       </FinalDomProvider>
     </ThemeProvider>
-  </React.StrictMode>
+  </Provider>
 );

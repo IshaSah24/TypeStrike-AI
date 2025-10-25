@@ -23,10 +23,9 @@ export const registerUser = catchAsync(async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name,
-        password: password,
-        hashed: user.password,
+        name: user.name
       },
+      token
     });
   }
 });
@@ -39,10 +38,10 @@ export const loginUser = catchAsync(async (req, res) => {
   }
 
   const { token, user } = await loginUserService(email, password);
-  console.log(user);
+  console.log("user details : ", user);
   req.user = user;
   res.cookie("accessToken", token, cookieConfigurations());
-  console.log(req.cookies);
+  console.log("cookies : ",token);
   
   res.status(200).json({
     success: true,
@@ -54,3 +53,21 @@ export const loginUser = catchAsync(async (req, res) => {
     },
   });
 });
+
+
+export const logoutUser = (req, res) => {
+  try {
+    console.log("Logging out user");
+    
+    // Clear the cookie (name same hona chaiye jo login ke time set kiya tha)
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // prod me true
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Logout failed" });
+  }
+};

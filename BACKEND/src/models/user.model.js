@@ -16,34 +16,34 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,   
   },
-// ------------------------------ OTHER FEATURES
-  wrongWords: {
-    type: [String],
-    default: [],
-  },
+// ------------------------------> OTHER FEATURES
+  // wrongWords: {
+  //   type: [String],
+  //   default: [],
+  // },
 
-  points: {
-    type: Number,
-    default: 0,
-  },
+  // points: {
+  //   type: Number,
+  //   default: 0,
+  // },
 
-  level: {
-    type: Number,
-    default: 1,
-  },
+  // level: {
+  //   type: Number,
+  //   default: 1,
+  // },
 
-  typingHistory: [
-    {
-      wpm: Number,
-      accuracy: Number,
-      date: { type: Date, default: Date.now },
-    },
-  ],
+  // typingHistory: [
+  //   {
+  //     wpm: Number,
+  //     accuracy: Number,
+  //     date: { type: Date, default: Date.now },
+  //   },
+  // ],
 
-  badges: {
-    type: [String],
-    default: [],
-  },
+  // badges: {
+  //   type: [String],
+  //   default: [],
+  // },
 });
 
 const User = mongoose.model("User", userSchema);

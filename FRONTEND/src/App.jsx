@@ -1,12 +1,24 @@
-import React from 'react'
-import AuthForm from './components/auth/AuthForm'
+// src/App.jsx
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./routes";
+import { fetchCurrentUser } from "./features/auth/authSlice";
 
+function App() {
+  const { isAuthenticated, user } = useSelector((state) => state.auth || {});
+  const dispatch = useDispatch();
 
-const App = () => {
-  return (
-   <AuthForm />
-   
-  )
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
+
+  if (!isAuthenticated) {
+    console.log("User is not authenticated");
+    console.log(user);
+  }
+  
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

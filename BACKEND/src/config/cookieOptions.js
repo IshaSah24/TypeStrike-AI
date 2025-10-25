@@ -1,5 +1,5 @@
 export const TokenOptions = () =>{
     return {
-        expiresIn : '1h'
+        expiresIn : '7d'
     }
 }

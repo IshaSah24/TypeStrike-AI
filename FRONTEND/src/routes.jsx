@@ -6,13 +6,17 @@ import {
 } from "@tanstack/react-router";
 
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import Home from "./pages/Home";
+
 import LandingPage from "./components/components/LandingPage";
 import { Outlet } from "@tanstack/react-router";
 import Layout from "./context/Layout";
-// import TypingTestInterface from "./components/components/TypingTestInterface";
+import ComingSoon from "./pages/ComingSoon";
 import ShowWpm from "./components/components/ShowWpm";
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";
+import CreateJoinRoomPage from "./pages/CreateJoinRoomPage.jsx";
+import SinglePlayerHome from "./components/components/multiplayer/SinglePlayerHome.jsx";
+import MultiplayerHome from "./components/components/multiplayer/MultiplayerHome.jsx";
+import MultiplayerTypingArea from "./pages/MultiplayerTypingArea.jsx";
 
 // Root Layout
 const RootRoute = createRootRoute({
@@ -28,45 +32,65 @@ const RootRoute = createRootRoute({
   ),
 });
 
-// /login route
+// Routes
 const LoginRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/login",
   component: LoginPage,
 });
 
-// /register route
-const RegisterRoute = createRoute({
-  getParentRoute: () => RootRoute,
-  path: "/register",
-  component: RegisterPage,
-});
-
-// Add route for "/"
 const HomeRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/",
   component: LandingPage,
 });
+
 const ShowWpmRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/wpm",
   component: ShowWpm,
 });
 
-const TypingAreaRoute = createRoute({
+const SinglePlayerRoute = createRoute({
   getParentRoute: () => RootRoute,
-  path: "/typing",
-  component: Home,
+  path: "/play/single",
+  component: SinglePlayerHome,
+});
+const MultiplayerTypingAreaRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/multiplayer/area",
+  component: MultiplayerTypingArea,
+});
+
+const MultiplayerLobbyRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/play/multiplayer",
+  component: () => (
+    <ProtectedRoute>
+      <CreateJoinRoomPage />
+    </ProtectedRoute>
+  ),
+});
+
+const MultiplayerGameRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/play/multiplayer/game",
+  component: () => (
+    <ProtectedRoute>
+      <MultiplayerHome />
+    </ProtectedRoute>
+  ),
 });
 
 // Setup router
 export const router = createRouter({
   routeTree: RootRoute.addChildren([
     LoginRoute,
-    RegisterRoute,
     HomeRoute,
     ShowWpmRoute,
-    TypingAreaRoute,
+    SinglePlayerRoute,
+    MultiplayerLobbyRoute,
+    MultiplayerGameRoute,
+    MultiplayerTypingAreaRoute
   ]),
 });

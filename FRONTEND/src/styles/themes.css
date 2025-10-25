@@ -10,7 +10,7 @@
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #1f2937;
+  --color-bg: #111111;
   --color-text: #f3f4f6;
   --color-primary: #3b82f6;
 
