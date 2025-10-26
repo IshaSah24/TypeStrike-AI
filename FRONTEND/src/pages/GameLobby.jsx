@@ -25,7 +25,7 @@ export default function GameLobby() {
     setTimeDuration,
     timeDuration,
     setWordCount,
-    wordCount,
+    wordCount,mode
   } = typingGame;
 
   const [inRoom, setInRoom] = useState(false);
@@ -135,7 +135,9 @@ export default function GameLobby() {
     const opt = Number(localOpt);
 
     // update context/selectors only now
-    if (typeof handleModeSelect === "function") handleModeSelect(localMode);
+    if (typeof handleModeSelect === "function") handleModeSelect (localMode);
+    console.log("mode is -->  ", mode , localMode) ;
+    
     if (typeof handleOptionSelect === "function") handleOptionSelect(opt);
 
     // set specialized setters based on mode
@@ -145,15 +147,12 @@ export default function GameLobby() {
     } else if (localMode === "words") {
       if (typeof setWordCount === "function") setWordCount(opt);
     } else if (localMode === "quote") {
-      // if you have a dedicated setter for quotes, call it here (example)
       // if (typeof setQuoteCount === "function") setQuoteCount(opt);
     }
 
-    setInRoom(true);
+    setInRoom(true); // not usinf  for conditional  rendering  as of  now
 
-    // navigating to multiplayer typing area
-    
-    navigate({ to: "/multiplayer/area" })
+    navigate({ to: "/multiplayer/area" });
     // further actions: navigate, API call, open modal, etc.
   };
 
@@ -290,6 +289,7 @@ export default function GameLobby() {
                 </div>
               </div>
             ) : (
+              //   creation  of the room
               <div className="max-w-2xl mx-auto space-y-6">
                 <div className="space-y-4">
                   {/* pass the correct props to CreateRoomOptions */}
@@ -392,7 +392,7 @@ export default function GameLobby() {
                           </span>
                         </div>
                         <p className="text-xs text-neutral-500 font-extralight">
-                          Invite only
+                          Invite only   
                         </p>
                       </button>
                     </div>

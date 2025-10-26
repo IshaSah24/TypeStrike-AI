@@ -4,105 +4,99 @@ import { useTypingGame } from "../context/TypingGameContext";
 import { useTheme } from "../context/ThemeContext";
 import ShowWpm from "../components/components/ShowWpm";
 import TypingArea from "../components/components/TypingArea";
+import { useFinalDom } from "../context/FinalDomContext";
+import { useRouterState } from "@tanstack/react-router";
 
 function MultiplayerTypingArea() {
-  const { theme } = useTheme();
   const typingGame = useTypingGame();
+
+  const { theme } = useTheme();
+    const { setFinalDOM } = useFinalDom();
+    const { location } = useRouterState();
+    
   const {
+    // State
     showkey,
+    hasStarted,
+    isTypingOver,
+    showHeader,
+    mode,
+    option,
+    timeDuration,
+    wordCount,
+    typedChars,
+    lastEntry,
+    
+    // Refs
+    wordsRef,
     focusHereRef,
     cursorRef,
-    wordsRef,
     timerRef,
-    timeDuration,
-    mode,
-    initializeGame,
-    hasStarted,
+    
+    // Functions
+    startGame,
+    resetGame,
+    handleModeSelect,
+    handleOptionSelect,
+    handleLogoClick,
+    setTimeDuration,
+    setWordCount,
     setHasStarted,
-    handleKeyPress,
-    isTypingOver,
-    typedChars,
-    totalGameTime,
     setIsTypingOver,
     setTypedChars,
-    resetGameState,
+    initializeGame,
+    
+    // Derived values
+    totalGameTime,
   } = typingGame;
 
-  const handleLocalReset = () => {
-    resetGameState();
-    if (wordsRef.current) {
-      wordsRef.current.style.transition = "opacity 200ms ease-in-out";
-      wordsRef.current.style.opacity = "0";
-    }
-    setTimeout(() => {
-      setHasStarted(true);
-      initializeGame();
-      if (wordsRef.current) {
-        void wordsRef.current.offsetHeight;
-        wordsRef.current.style.opacity = "1";
-      }
-    }, 200);
-  };
 
-  // Theme effect
   useEffect(() => {
-    const app = document.getElementById("app");
-    if (app) {
-      app.setAttribute("data-theme", theme);
-      void app.offsetHeight;
-    }
-  }, [theme]);
+    // Initialize on mount
+    setHasStarted(true);
+    initializeGame();
 
-  // Initialization effect
-  useEffect(() => {
-    setHasStarted(false);
-    setIsTypingOver(false);
-    setTypedChars([]);
-    
-    const initTimer = setTimeout(() => {
-      setHasStarted(true);
-      initializeGame();
-      if (wordsRef.current) {
-        void wordsRef.current.offsetHeight;
-      }
-    }, 100);
-
+    // Cleanup on unmount
     return () => {
-      clearTimeout(initTimer);
       setHasStarted(false);
       setIsTypingOver(false);
       setTypedChars([]);
       if (wordsRef.current) {
-        wordsRef.current.innerHTML = "";
+        wordsRef.current.innerHTML = '';
       }
     };
   }, []);
 
-  // Keyboard listener
+  // Router effect
   useEffect(() => {
-    document.addEventListener("keyup", handleKeyPress);
-    return () => document.removeEventListener("keyup", handleKeyPress);
-  }, [handleKeyPress]);
+    if (location.pathname === "/play/single") {
+      setHasStarted(true);
+    }
+  }, [location.pathname, setHasStarted]);
 
-  if (isTypingOver) {
-    return (
-      <div id="app" data-theme={theme} className="min-h-screen">
-        <div className="mt-8"> {/* Add consistent wrapper */}
-          <ShowWpm
-            timerVal={totalGameTime / 1000}
-            typedChars={typedChars}
-            onReset={handleLocalReset}
-            isTypingOver={isTypingOver}
-          />
-        </div>
-      </div>
-    );
-  }
+  // Theme effect
+  useEffect(() => {
+    const app = document.getElementById("app");
+    if (app) app.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  // Final DOM effect
+  useEffect(() => {
+    if (isTypingOver && wordsRef.current) {
+      const clonedDOM = wordsRef.current.cloneNode(true);
+      setFinalDOM(clonedDOM);
+    }
+  }, [isTypingOver, setFinalDOM]);
+
+
 
   return (
     <div id="app" data-theme={theme} className="min-h-screen">
-      <div className="mt-8"> {/* Change pt-16 to mt-8 to match TypingArea */}
-        <TypingArea
+      <div className="mt-8">
+        {" "}
+
+
+        {/* <TypingArea
           showkey={showkey}
           handleReset={handleLocalReset}
           focusHereRef={focusHereRef}
@@ -113,6 +107,20 @@ function MultiplayerTypingArea() {
           mode={mode}
           onKeyPress={handleKeyPress}
           isMultiplayer={true} // Add this prop
+        /> */}
+        <TypingArea
+          showkey={showkey}
+          handleReset={resetGame}
+          focusHereRef={focusHereRef}
+          cursorRef={cursorRef}
+          wordsRef={wordsRef}
+          timerRef={timerRef}
+          lastChar={lastEntry?.char}
+          lastCorrect={lastEntry?.correct}
+          timeDuration={timeDuration}
+          mode={mode}
+          onKeyPress={typingGame.handleKeyPress}
+          isMultiplayer={true}
         />
       </div>
     </div>

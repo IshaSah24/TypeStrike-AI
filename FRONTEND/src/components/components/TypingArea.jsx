@@ -12,10 +12,16 @@ function TypingArea({
   timeDuration,
   mode,
   isMultiplayer = false // Add this prop
+  
 }) {
+// console.log(timeDuration);
+console.log(mode);
+
+
   return (
     <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">
       {/* Timer */}
+      
       {mode === "time" && (
         <div className="text-right mb-2 text-start">
           <span ref={timerRef}>{timeDuration}</span>s

@@ -2,36 +2,21 @@
 import React, { useState, useEffect } from "react";
 import { Zap, Crown } from "lucide-react";
 
+/*Notes : 
+    1)  localSelectMode, localSelectOpt   is the function  paased  by  the  parent -> gamelobby so  that modes  and options  can be known  to parent
+
+*/
 const CreateRoomOptions = ({ localSelectMode, localSelectOpt }) => {
+
+  const [selectedMode, setSelectedMode] = useState("words");
+  const [selectedOption, setSelectedOption] = useState(10);
+
   const MODES = ["words", "quote", "time"];
 
   const WORD_OPTIONS = [10, 20, 30];
   const QUOTE_OPTIONS = [1, 2, 3];
   const TIME_OPTIONS = [15, 30, 60];
 
-  const [selectedMode, setSelectedMode] = useState("words");
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  // Helper to safely call parent callbacks
-  const emitModeChange = (mode, option = null) => {
-    if (typeof localSelectMode === "function") localSelectMode(mode, option);
-    if (typeof localSelectOpt === "function") localSelectOpt(option);
-  };
-
-  // When mode changes, reset option and notify parent that mode changed (option null)
-  const handleModeClick = (mode) => {
-    setSelectedMode(mode);
-    setSelectedOption(null);
-    emitModeChange(mode, null);
-  };
-
-  // When option clicked, set option and notify parent with both mode & option
-  const handleOptionClick = (opt) => {
-    setSelectedOption(opt);
-    emitModeChange(selectedMode, opt);
-  };
-
-  // Choose which options array to render based on selectedMode
   const getOptionsForMode = (mode) => {
     switch (mode) {
       case "words":
@@ -42,7 +27,37 @@ const CreateRoomOptions = ({ localSelectMode, localSelectOpt }) => {
         return QUOTE_OPTIONS;
       default:
         return [];
-    }
+    }    
+  };  
+  
+useEffect(() => {
+  if (selectedMode === "words") {
+    setSelectedOption(10); 
+  } else if (selectedMode === "time") {
+    setSelectedOption(15); 
+  } else if (selectedMode === "quote") {
+    setSelectedOption(1); 
+  }
+}, [selectedMode]);
+
+
+
+
+  // calling parent callbacks based  on user's  choice  
+  const emitModeChange = (mode, option = null) => {
+    if (typeof localSelectMode === "function") localSelectMode(mode, option);
+    if (typeof localSelectOpt === "function") localSelectOpt(option);
+  };
+
+  const handleModeClick = (mode) => {
+    setSelectedMode(mode);
+    // setSelectedOption(null);   the default's word's opt  should  be visible 
+    emitModeChange(mode, null);
+  };
+
+  const handleOptionClick = (opt) => {
+    setSelectedOption(opt);
+    emitModeChange(selectedMode, opt);
   };
 
   const renderedOptions = getOptionsForMode(selectedMode);
