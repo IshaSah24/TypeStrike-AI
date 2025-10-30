@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TypingTestInterface from "./TypingTestInterface";
 import { useFinalDom } from "../../context/FinalDomContext";
 
-function ShowWpm({ timerVal, typedChars}) {
+function ShowWpm({ timerVal, typedChars, onReset, isTypingOver}) {
 
   let correctWords = [];
   let incorrectWords = [];
@@ -27,6 +27,7 @@ function ShowWpm({ timerVal, typedChars}) {
       console.log('Correct:', correctWords, 'Incorrect:', incorrectWords);
     }
   }, [finalDOM]);
+
 
 // FINDING THE  EXACT TIME WHEN USER FINISHES TYPING
 // ---------------------------------------------------

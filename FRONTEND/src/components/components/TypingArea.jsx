@@ -1,5 +1,5 @@
 import { RotateCcw } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import "../../styles/type.css";
 
 function TypingArea({
@@ -16,7 +16,6 @@ function TypingArea({
 }) {
 // console.log(timeDuration);
 console.log(mode);
-
 
   return (
     <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">

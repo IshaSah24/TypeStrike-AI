@@ -17,6 +17,7 @@ import CreateJoinRoomPage from "./pages/CreateJoinRoomPage.jsx";
 import SinglePlayerHome from "./components/components/multiplayer/SinglePlayerHome.jsx";
 import MultiplayerHome from "./components/components/multiplayer/MultiplayerHome.jsx";
 import MultiplayerTypingArea from "./pages/MultiplayerTypingArea.jsx";
+import InRoom from "./components/components/multiplayer/Lobby/InRoom.jsx";
 
 // Root Layout
 const RootRoute = createRootRoute({
@@ -61,6 +62,11 @@ const MultiplayerTypingAreaRoute = createRoute({
   path: "/multiplayer/area",
   component: MultiplayerTypingArea,
 });
+const InRoomRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/multiplayer/area/inroom",
+  component: InRoom,
+});
 
 const MultiplayerLobbyRoute = createRoute({
   getParentRoute: () => RootRoute,
@@ -91,6 +97,7 @@ export const router = createRouter({
     SinglePlayerRoute,
     MultiplayerLobbyRoute,
     MultiplayerGameRoute,
-    MultiplayerTypingAreaRoute
+    MultiplayerTypingAreaRoute,
+    InRoomRoute
   ]),
 });

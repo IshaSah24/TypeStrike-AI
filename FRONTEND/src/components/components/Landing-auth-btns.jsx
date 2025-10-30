@@ -70,7 +70,7 @@ const LandingAuthBtns = () => {
       {/* Avatar */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-black font-semibold uppercase hover:bg-gray-800 hover:text-white transition"
+        className="w-10 h-10 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-full border-2 border-neutral-600/30 flex items-center justify-center text-white font-light text-sm hover:scale-105 transition-transform duration-300 cursor-pointer"
         aria-label="User menu"
       >
         {avatarLetter}

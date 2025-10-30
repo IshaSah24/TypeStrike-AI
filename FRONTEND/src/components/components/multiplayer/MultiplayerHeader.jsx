@@ -13,7 +13,7 @@ const MultiplayerHeader = () => {
         </div>
         <div>
           <h1 className="text-xl font-light text-white tracking-tight group-hover:tracking-wide transition-all duration-300">
-            TypeRace
+            TypeStrike
             <span className="text-neutral-400 font-extralight ml-1">Pro</span>
           </h1>
           <p className="text-xs text-neutral-500 font-extralight tracking-wider">

@@ -341,10 +341,10 @@ body {
 #app[data-theme] .letter.incorrect {
     color: var(--incorrect-color) !important;
 }
-
+/* 
 #app[data-theme] .letter.current {
     color: var(--primary-color) !important;
-}
+} */
 
 #app[data-theme] .formatted {
     color: var(--formatted-color) !important;

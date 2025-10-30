@@ -152,7 +152,11 @@ export default function GameLobby() {
 
     setInRoom(true); // not usinf  for conditional  rendering  as of  now
 
-    navigate({ to: "/multiplayer/area" });
+    if (roomName){
+      navigate({ to: "/multiplayer/area/inroom" });
+    }else {
+      alert("Please generate a room code before creating a room.");
+    }
     // further actions: navigate, API call, open modal, etc.
   };
 
@@ -304,6 +308,7 @@ export default function GameLobby() {
                       Room Name
                     </label>
                     <input
+                       required = {true}
                       type="text"
                       placeholder="Enter a memorable room name..."
                       value={roomName}

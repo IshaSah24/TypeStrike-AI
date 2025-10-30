@@ -24,7 +24,7 @@ export default function LoginInput() {
 
       console.log("Login success:", result);
       
-      navigate({ to: "/typing" });
+      navigate({ to: "/" });
     } catch (err) {
       console.error(err);
       alert(err || "Login failed");

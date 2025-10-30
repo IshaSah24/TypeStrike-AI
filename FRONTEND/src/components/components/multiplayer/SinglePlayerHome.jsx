@@ -66,6 +66,8 @@ function SinglePlayerHome() {
     return () => {
       setHasStarted(false);
       setIsTypingOver(false);
+      resetGame();
+      
       setTypedChars([]);
       if (wordsRef.current) {
         wordsRef.current.innerHTML = '';
