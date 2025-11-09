@@ -1,20 +1,73 @@
-import { useState } from 'react';
-import { Users, MessageSquare, Crown, Copy, Check, Play, Settings, LogOut, UserX, Shield } from 'lucide-react';
+import { useState } from "react";
+import {
+  Users,
+  MessageSquare,
+  Crown,
+  Copy,
+  Check,
+  Play,
+  Settings,
+  LogOut,
+  UserX,
+  Shield,
+} from "lucide-react";
 
 export default function InRoom() {
-  const [roomCode] = useState('GAME-XY42');
+  const [roomCode] = useState("GAME-XY42");
   const [copied, setCopied] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [users, setUsers] = useState([
-    { id: '1', name: 'You (Host)', avatar: '👑', status: 'ready', isHost: true },
-    { id: '2', name: 'Player_123', avatar: '🎮', status: 'ready', isHost: false },
-    { id: '3', name: 'TypeMaster', avatar: '⌨️', status: 'not-ready', isHost: false },
-    { id: '4', name: 'SpeedTyper99', avatar: '⚡', status: 'idle', isHost: false },
+    {
+      id: "1",
+      name: "You (Host)",
+      avatar: "👑",
+      status: "ready",
+      isHost: true,
+    },
+    {
+      id: "2",
+      name: "Player_123",
+      avatar: "🎮",
+      status: "ready",
+      isHost: false,
+    },
+    {
+      id: "3",
+      name: "TypeMaster",
+      avatar: "⌨️",
+      status: "not-ready",
+      isHost: false,
+    },
+    {
+      id: "4",
+      name: "SpeedTyper99",
+      avatar: "⚡",
+      status: "idle",
+      isHost: false,
+    },
   ]);
   const [messages, setMessages] = useState([
-    { id: '1', userId: '1', userName: 'You', message: 'Welcome to the game!', timestamp: '10:30' },
-    { id: '2', userId: '2', userName: 'Player_123', message: 'Hey everyone!', timestamp: '10:31' },
-    { id: '3', userId: '3', userName: 'TypeMaster', message: 'Ready to compete!', timestamp: '10:32' },
+    {
+      id: "1",
+      userId: "1",
+      userName: "You",
+      message: "Welcome to the game!",
+      timestamp: "10:30",
+    },
+    {
+      id: "2",
+      userId: "2",
+      userName: "Player_123",
+      message: "Hey everyone!",
+      timestamp: "10:31",
+    },
+    {
+      id: "3",
+      userId: "3",
+      userName: "TypeMaster",
+      message: "Ready to compete!",
+      timestamp: "10:32",
+    },
   ]);
 
   const copyRoomCode = () => {
@@ -30,13 +83,16 @@ export default function InRoom() {
         ...messages,
         {
           id: Date.now().toString(),
-          userId: '1',
-          userName: 'You',
+          userId: "1",
+          userName: "You",
           message: message.trim(),
-          timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          timestamp: new Date().toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
       ]);
-      setMessage('');
+      setMessage("");
     }
   };
 
@@ -48,7 +104,7 @@ export default function InRoom() {
     setUsers(
       users.map((u) =>
         u.id === userId
-          ? { ...u, status: u.status === 'ready' ? 'not-ready' : 'ready' }
+          ? { ...u, status: u.status === "ready" ? "not-ready" : "ready" }
           : u
       )
     );
@@ -56,23 +112,23 @@ export default function InRoom() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'ready':
-        return 'bg-emerald-500';
-      case 'not-ready':
-        return 'bg-amber-500';
+      case "ready":
+        return "bg-emerald-500";
+      case "not-ready":
+        return "bg-amber-500";
       default:
-        return 'bg-gray-500';
+        return "bg-gray-500";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'ready':
-        return 'Ready';
-      case 'not-ready':
-        return 'Not Ready';
+      case "ready":
+        return "Ready";
+      case "not-ready":
+        return "Not Ready";
       default:
-        return 'Idle';
+        return "Idle";
     }
   };
 
@@ -83,12 +139,18 @@ export default function InRoom() {
           <div className="bg-black border-b border-neutral-800 p-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-light text-white mb-2 tracking-tight">Game Lobby</h1>
-                <p className="text-neutral-400 text-sm">Waiting for players to join</p>
+                <h1 className="text-4xl font-light text-white mb-2 tracking-tight">
+                  Game Lobby
+                </h1>
+                <p className="text-neutral-400 text-sm">
+                  Waiting for players to join
+                </p>
               </div>
               <div className="flex items-center gap-6">
                 <div className="bg-neutral-800/50 rounded-lg px-6 py-4 border border-neutral-700">
-                  <div className="text-xs text-neutral-500 mb-2 uppercase tracking-wider">Room Code</div>
+                  <div className="text-xs text-neutral-500 mb-2 uppercase tracking-wider">
+                    Room Code
+                  </div>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl font-mono font-medium text-white tracking-widest">
                       {roomCode}
@@ -118,8 +180,12 @@ export default function InRoom() {
                     <div className="flex items-center gap-3">
                       <Users className="w-6 h-6 text-neutral-400" />
                       <div>
-                        <h2 className="text-2xl font-light text-white">Players</h2>
-                        <p className="text-sm text-neutral-500">{users.length} in room</p>
+                        <h2 className="text-2xl font-light text-white">
+                          Players
+                        </h2>
+                        <p className="text-sm text-neutral-500">
+                          {users.length} in room
+                        </p>
                       </div>
                     </div>
                     <button className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded text-white text-sm transition-colors flex items-center gap-2">
@@ -141,7 +207,9 @@ export default function InRoom() {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-white font-normal text-lg">{user.name}</span>
+                                <span className="text-white font-normal text-lg">
+                                  {user.name}
+                                </span>
                                 {user.isHost && (
                                   <span className="px-2.5 py-1 bg-amber-500/10 border border-amber-500/20 rounded text-amber-400 text-xs flex items-center gap-1 uppercase tracking-wide">
                                     <Crown className="w-3 h-3" />
@@ -150,8 +218,14 @@ export default function InRoom() {
                                 )}
                               </div>
                               <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${getStatusColor(user.status)}`} />
-                                <span className="text-sm text-neutral-400">{getStatusText(user.status)}</span>
+                                <div
+                                  className={`w-2 h-2 rounded-full ${getStatusColor(
+                                    user.status
+                                  )}`}
+                                />
+                                <span className="text-sm text-neutral-400">
+                                  {getStatusText(user.status)}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -201,7 +275,9 @@ export default function InRoom() {
                     <MessageSquare className="w-6 h-6 text-neutral-400" />
                     <div>
                       <h3 className="text-xl font-light text-white">Chat</h3>
-                      <p className="text-xs text-neutral-500">Talk with other players</p>
+                      <p className="text-xs text-neutral-500">
+                        Talk with other players
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -211,21 +287,34 @@ export default function InRoom() {
                     <div
                       key={msg.id}
                       className={`${
-                        msg.userId === '1' ? 'ml-auto bg-neutral-800' : 'bg-neutral-900'
+                        msg.userId === "1"
+                          ? "ml-auto bg-neutral-800"
+                          : "bg-neutral-900"
                       } max-w-[85%] rounded-lg p-4 border ${
-                        msg.userId === '1' ? 'border-neutral-700' : 'border-neutral-800'
+                        msg.userId === "1"
+                          ? "border-neutral-700"
+                          : "border-neutral-800"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-neutral-400">{msg.userName}</span>
-                        <span className="text-xs text-neutral-600">{msg.timestamp}</span>
+                        <span className="text-xs font-medium text-neutral-400">
+                          {msg.userName}
+                        </span>
+                        <span className="text-xs text-neutral-600">
+                          {msg.timestamp}
+                        </span>
                       </div>
-                      <p className="text-sm text-neutral-200 break-words leading-relaxed">{msg.message}</p>
+                      <p className="text-sm text-neutral-200 break-words leading-relaxed">
+                        {msg.message}
+                      </p>
                     </div>
                   ))}
                 </div>
 
-                <form onSubmit={sendMessage} className="p-6 border-t border-neutral-800">
+                <form
+                  onSubmit={sendMessage}
+                  className="p-6 border-t border-neutral-800"
+                >
                   <div className="flex gap-3">
                     <input
                       type="text"

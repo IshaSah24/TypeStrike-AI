@@ -136,9 +136,11 @@ export default function GameLobby() {
 
     // update context/selectors only now
     if (typeof handleModeSelect === "function") handleModeSelect (localMode);
-    console.log("mode is -->  ", mode , localMode) ;
+    console.log("mode is -->  ",  localMode) ;
     
     if (typeof handleOptionSelect === "function") handleOptionSelect(opt);
+    console.log("option is -->  ", opt) ;
+    
 
     // set specialized setters based on mode
     if (localMode === "time") {
@@ -153,7 +155,7 @@ export default function GameLobby() {
     setInRoom(true); // not usinf  for conditional  rendering  as of  now
 
     if (roomName){
-      navigate({ to: "/multiplayer/area/inroom" });
+      navigate({ to: "/multiplayer/area" });
     }else {
       alert("Please generate a room code before creating a room.");
     }

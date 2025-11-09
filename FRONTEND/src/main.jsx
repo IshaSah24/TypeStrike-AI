@@ -19,7 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ThemeProvider>
       <FinalDomProvider>
         <MultiplayerProvider>
-          <TypingGameProvider> {/* Add this provider */}
+          <TypingGameProvider>
             <App />
           </TypingGameProvider>
         </MultiplayerProvider>
