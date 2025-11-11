@@ -100,18 +100,19 @@ export default function GameLobby() {
       isPrivate: false,
     },
   ];
+  
+  // Debugging
+  // const generateRoomCode = () => {
+  //   const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  //   setGeneratedCode(code);
+  // };
 
-  const generateRoomCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setGeneratedCode(code);
-  };
-
-  const copyToClipboard = () => {
-    if (!generatedCode) return;
-    navigator.clipboard.writeText(generatedCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  // const copyToClipboard = () => {
+  //   if (!generatedCode) return;
+  //   navigator.clipboard.writeText(generatedCode);
+  //   setCopied(true);
+  //   setTimeout(() => setCopied(false), 2000);
+  // };
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {

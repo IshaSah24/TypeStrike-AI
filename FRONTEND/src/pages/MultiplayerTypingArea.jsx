@@ -1,14 +1,25 @@
 import React, { useEffect } from "react";
 import "../styles/type.css";
-import { useTypingGame } from "../context/TypingGameContext";
+// import { useTypingGame } from "../context/TypingGameContext";
 import { useTheme } from "../context/ThemeContext";
 import ShowWpm from "../components/components/ShowWpm";
 import TypingArea from "../components/components/TypingArea";
 import { useFinalDom } from "../context/FinalDomContext";
 import { useRouterState } from "@tanstack/react-router";
+import { useMultiplayerProvider } from "../context/MultiplayerContext";
 
 function MultiplayerTypingArea() {
-  const typingGame = useTypingGame();
+
+
+
+
+  
+
+
+
+
+
+  const multiplayerTyping = useMultiplayerProvider();
 
   const { theme } = useTheme();
     const { setFinalDOM } = useFinalDom();
@@ -48,7 +59,7 @@ function MultiplayerTypingArea() {
     
     // Derived values
     totalGameTime,
-  } = typingGame;
+  } = multiplayerTyping;
 
 
   useEffect(() => {
@@ -94,20 +105,6 @@ function MultiplayerTypingArea() {
     <div id="app" data-theme={theme} className="min-h-screen">
       <div className="mt-8">
         {" "}
-
-
-        {/* <TypingArea
-          showkey={showkey}
-          handleReset={handleLocalReset}
-          focusHereRef={focusHereRef}
-          cursorRef={cursorRef}
-          wordsRef={wordsRef}
-          timerRef={timerRef}
-          timeDuration={timeDuration}
-          mode={mode}
-          onKeyPress={handleKeyPress}
-          isMultiplayer={true} // Add this prop
-        /> */}
         <TypingArea
           showkey={showkey}
           handleReset={resetGame}
@@ -119,7 +116,7 @@ function MultiplayerTypingArea() {
           lastCorrect={lastEntry?.correct}
           timeDuration={timeDuration}
           mode={mode}
-          onKeyPress={typingGame.handleKeyPress}
+          onKeyPress={multiplayerTyping.handleKeyPress}
           isMultiplayer={true}
         />
       </div>

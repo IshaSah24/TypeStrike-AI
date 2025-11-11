@@ -18,6 +18,8 @@ function TypingArea({
 console.log(mode);
 if (mode === 'time') console.log(timeDuration);
 
+console.log(wordsRef.current);
+
 
   return (
     <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">

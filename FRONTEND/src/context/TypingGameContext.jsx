@@ -120,8 +120,16 @@ export const TypingGameProvider = ({ children }) => {
       }
 
       words.push(word);
-    }
+      console.log(`Added word: ${word}`);
 
+      //need to  pass  to  the  backend  for  broadcasting in  multiplayer
+      // when  it comes  back  we  can  render  it  accordingly
+      
+    }
+    console.log(`Final word list: ${words.join(", ")}`);
+    
+
+    // here  we have  to  render that  words only came  from  the backend  broadcast event for  multiplayer 
     words.forEach((word) => {
       wordsRef.current.innerHTML += formatWord(word);
     });
