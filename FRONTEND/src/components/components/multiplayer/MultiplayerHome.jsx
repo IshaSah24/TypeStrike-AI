@@ -10,19 +10,16 @@ import ShowWpm from "../ShowWpm";
 import TypeLogo from "../TypeLogo";
 import ThemeSwitcher from "../ThemeSwitcher";
 import MultiplayerHeader from "././MultiplayerHeader";
-// import PlayerList from "./multiplayer/PlayerList";
 
 function MultiplayerHome() {
   const location = useLocation();
   const roomSettings = location.state;
   
-  // Use the SAME centralized context
   const typingGame = useTypingGame();
   const { setFinalDOM } = useFinalDom();
   const { theme } = useTheme();
 
   const {
-    // State
     hasStarted,
     isTypingOver,
     showHeader,
@@ -38,7 +35,7 @@ function MultiplayerHome() {
     cursorRef,
     timerRef,
     
-    // Functions
+
     resetGame,
     handleLogoClick,
     setMode,
@@ -64,8 +61,6 @@ function MultiplayerHome() {
       }
     }
   }, [roomSettings, setMode, setOption, setWordCount, setTimeDuration]);
-
-  // Set final DOM when game ends
   useEffect(() => {
     if (isTypingOver && wordsRef.current) {
       const clonedDOM = wordsRef.current.cloneNode(true);
@@ -79,7 +74,7 @@ function MultiplayerHome() {
     if (app) app.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // Mock multiplayer data
+
   const [players] = React.useState([
     { id: 1, name: 'You', progress: 75, wpm: 65, accuracy: 98, isCurrent: true },
     { id: 2, name: 'ProTyper99', progress: 82, wpm: 72, accuracy: 96 },

@@ -38,14 +38,14 @@ export default function GameLobby() {
   const [generatedCode, setGeneratedCode] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // local state for selections (local only until create clicked)
-  const [localMode, setLocalMode] = useState("words"); // default
-  const [localOpt, setLocalOpt] = useState(10); // default for words
 
-  // callbacks passed to CreateRoomOptions component
+  const [localMode, setLocalMode] = useState("words"); 
+  const [localOpt, setLocalOpt] = useState(10); 
+
+
   const localSelectMode = (m, opt = null) => {
     setLocalMode(m);
-    // if option passed along with mode, set it; otherwise keep previous localOpt (or null)
+   
     if (opt !== null && opt !== undefined) setLocalOpt(opt);
   };
   const localSelectOpt = (opt) => {
@@ -53,7 +53,6 @@ export default function GameLobby() {
   };
 
   const activeRooms = [
-    /* ... your existing array (unchanged) ... */
     {
       id: 1,
       name: "Speed Demons",
@@ -129,13 +128,12 @@ export default function GameLobby() {
     }
   };
 
-  // This is called only when user clicks "Create Room"
-  // called when user clicks "Create Room"
+
   const handleCreateRoom = () => {
-    // ensure numeric option
+
     const opt = Number(localOpt);
 
-    // update context/selectors only now
+  
     if (typeof handleModeSelect === "function") handleModeSelect (localMode);
     console.log("mode is -->  ",  localMode) ;
     
@@ -143,32 +141,31 @@ export default function GameLobby() {
     console.log("option is -->  ", opt) ;
     
 
-    // set specialized setters based on mode
+    
     if (localMode === "time") {
-      // update time duration in context with the option we got
+
       if (typeof setTimeDuration === "function") setTimeDuration(opt);
     } else if (localMode === "words") {
       if (typeof setWordCount === "function") setWordCount(opt);
     } else if (localMode === "quote") {
-      // if (typeof setQuoteCount === "function") setQuoteCount(opt);
+    
     }
 
-    setInRoom(true); // not usinf  for conditional  rendering  as of  now
+    setInRoom(true); 
 
     if (roomName){
       navigate({ to: "/multiplayer/area" });
     }else {
       alert("Please generate a room code before creating a room.");
     }
-    // further actions: navigate, API call, open modal, etc.
+  
   };
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
-      {/* ... keep the rest of your layout identical ... */}
+    
 
       <div className="relative overflow-hidden">
-        {/* background elements omitted for brevity (keep yours) */}
 
         <div className="relative z-10 mb-12 text-center">
           <h2 className="text-5xl pt-8 font-extralight text-white pt-8 mb-4 tracking-tight">
@@ -181,7 +178,7 @@ export default function GameLobby() {
 
         <div className="relative z-10 bg-neutral-900/60 backdrop-blur-xl rounded-2xl border border-neutral-800/50 shadow-2xl overflow-hidden">
           <div className="flex border-b border-neutral-800/50">
-            {/* join/create tabs (unchanged) */}
+          
             <button
               onClick={() => setActiveTab("join")}
               className={`flex-1 px-8 py-5 text-sm font-light tracking-wider uppercase transition-all duration-300 relative group ${
@@ -219,9 +216,9 @@ export default function GameLobby() {
 
           <div className="p-8">
             {activeTab === "join" ? (
-              // ... join tab (unchanged) ...
+             
               <div className="space-y-8">
-                {/* search input and active rooms rendered as before */}
+                
                 <div className="max-w-2xl mx-auto">
                   <div className="relative group mb-8">
                     <input
@@ -296,16 +293,16 @@ export default function GameLobby() {
                 </div>
               </div>
             ) : (
-              //   creation  of the room
+         
               <div className="max-w-2xl mx-auto space-y-6">
                 <div className="space-y-4">
-                  {/* pass the correct props to CreateRoomOptions */}
+                 
                   <CreateRoomOptions
                     localSelectMode={localSelectMode}
                     localSelectOpt={localSelectOpt}
                   />
 
-                  {/* Room name input */}
+                  
                   <div>
                     <label className="block text-sm text-neutral-400 mb-2 font-light tracking-wide">
                       Room Name
@@ -320,7 +317,7 @@ export default function GameLobby() {
                     />
                   </div>
 
-                  {/* ... remaining UI unchanged ... */}
+                  
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>

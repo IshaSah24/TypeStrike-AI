@@ -1,10 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice.js";
 
-// Safe function to get user from localStorage
 const getStoredUser = () => {
   const stored = localStorage.getItem("user");
-  if (!stored) return null; // agar null ya undefined ho to
+  if (!stored) return null; 
   try {
     return JSON.parse(stored); // valid JSON parse
   } catch {

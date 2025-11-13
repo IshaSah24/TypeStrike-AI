@@ -10,7 +10,6 @@ import {
   ReferenceDot,
 } from "recharts";
 
-// Custom Tooltip UI
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;

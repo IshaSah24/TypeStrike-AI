@@ -1,4 +1,4 @@
-// context/TypingGameContext.js
+
 import React, { useState, useRef, useCallback, useEffect, useLayoutEffect, createContext, useContext } from "react";
 
 // ========== CONSTANTS & UTILITIES ========== //
@@ -28,8 +28,6 @@ const CUSTOM_WORDS =
   "There are many variations passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.".split(
     " "
   );
-
-// Helper functions
 const getRandomItem = (array) =>
   array[Math.floor(Math.random() * array.length)];
 const addClass = (el, name) => el && el.classList.add(name);
@@ -43,10 +41,7 @@ const formatWord = (word) =>
     .map((l) => `<span class="letter">${l}</span>`)
     .join("")}</div>`;
 
-// Create Context
 const TypingGameContext = createContext();
-
-// Provider Component
 export const TypingGameProvider = ({ children }) => {
   // ========== STATE ==========
   const [showKey, setShowKey] = useState(false);
@@ -129,7 +124,7 @@ export const TypingGameProvider = ({ children }) => {
     console.log(`Final word list: ${words.join(", ")}`);
     
 
-    // here  we have  to  render that  words only came  from  the backend  broadcast event for  multiplayer 
+    // here  we have  to  render that  words only came  from  the backend  broadcast event for   multiplayer 
     words.forEach((word) => {
       wordsRef.current.innerHTML += formatWord(word);
     });
@@ -235,7 +230,6 @@ export const TypingGameProvider = ({ children }) => {
     const currentLetter = document.querySelector(".letter.current");
     const expectedKey = currentLetter?.textContent || " ";
 
-    // Handle different key types
     if (key.length === 1 && key !== " ") {
       handleLetter(key, expectedKey, currentLetter, currentWord);
     }
@@ -272,10 +266,9 @@ export const TypingGameProvider = ({ children }) => {
   const handleSpace = (wordEl, letterEl, expected) => {
     if (!wordEl) return;
 
-    // Preventing space on first letter of the Word
     if (letterEl === wordEl.firstChild) return;
 
-    // Mark remaining letters as incorrect
+  
     let nextLetter = letterEl;
     while (nextLetter) {
       if (!nextLetter.classList.contains("correct")) {
@@ -286,7 +279,7 @@ export const TypingGameProvider = ({ children }) => {
 
     removeClass(wordEl, "current");
 
-    // Add error line if any incorrect letters
+  
     if (
       [...wordEl.children].some((child) =>
         child.classList.contains("incorrect")
@@ -332,7 +325,7 @@ export const TypingGameProvider = ({ children }) => {
       removeErrorLine(wordEl, "errorLine");
     }
 
-    // Handling backspace at start of word
+  
     if (letterEl === wordEl.firstChild) {
       removeClass(wordEl, "current");
       if (wordEl.previousSibling) {
@@ -355,11 +348,10 @@ export const TypingGameProvider = ({ children }) => {
       removeClass(letterEl.previousSibling, "correct");
     }
 
-    // handling extra letters
+    
     else if (wordEl.lastChild?.classList.contains("extra")) {
       wordEl.removeChild(wordEl.lastChild);
     }
-    // Handling backspace on empty word
     else if (wordEl.lastChild) {
       addClass(wordEl.lastChild, "current");
       removeClass(wordEl.lastChild, "incorrect");
@@ -385,17 +377,15 @@ export const TypingGameProvider = ({ children }) => {
     }
   };
 
-  // ========== GAME CONTROLS ===============
+
   const resetGame = () => {
     hasInteractedRef.current = true;
-
-    // Start fade out
     if (wordsRef.current) {
       wordsRef.current.style.transition = "opacity 200ms ease-in-out";
       wordsRef.current.style.opacity = "0";
     }
 
-    // Clear game state
+
     clearInterval(timerIntervalRef.current);
     setInputDisabled(false);
     setIsTypingOver(false);
@@ -404,7 +394,6 @@ export const TypingGameProvider = ({ children }) => {
     isTimerRunningRef.current = false;
     startedTypingTimeRef.current = null;
 
-    // Wait for fade-out to complete
     setTimeout(() => {
       if (wordsRef.current) {
         wordsRef.current.innerHTML = "";
@@ -513,7 +502,6 @@ export const TypingGameProvider = ({ children }) => {
     };
   }, [isTypingOver]);
 
-  // Event listeners for focus and keypress
   useEffect(() => {
     if (!hasStarted) return;
     initializeGame();
@@ -563,7 +551,7 @@ export const TypingGameProvider = ({ children }) => {
 
   // ========== CONTEXT VALUE ==========
   const value = {
-    // State
+
     showKey,
     mode,
     option,
@@ -577,14 +565,13 @@ export const TypingGameProvider = ({ children }) => {
     hasStartedTyping,
     lastEntry,
 
-    // Refs
     wordsRef,
     focusHereRef,
     cursorRef,
     timerRef,
     logoRef,
 
-    // Setters
+
     setShowKey,
     setMode,
     setOption,
@@ -597,7 +584,7 @@ export const TypingGameProvider = ({ children }) => {
     setShowHeader,
     setHasStartedTyping,
 
-    // Game Functions
+
     initializeGame,
     handleKeyPress,
     resetGame,
@@ -608,7 +595,6 @@ export const TypingGameProvider = ({ children }) => {
     endGame,
     resetGameState,
     
-    // Derived values
     totalGameTime: totalGameTimeRef.current,
   };
 

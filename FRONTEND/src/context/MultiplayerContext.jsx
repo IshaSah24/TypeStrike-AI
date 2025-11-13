@@ -1,9 +1,17 @@
-// context/TypingGameContext.js
-import React, { useState, useRef, useCallback, useEffect, useLayoutEffect, createContext, useContext } from "react";
+
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  createContext,
+  useContext,
+} from "react";
 
 import { io } from "socket.io-client";
 
-// ========== CONSTANTS & UTILITIES ========== //
+// ========== CONSTANTS & UTILITIES ============ //
 const PUNCTUATION_MARKS = [".", ",", ";", "!", "?", ":"];
 const QUOTES = [
   {
@@ -31,7 +39,6 @@ const CUSTOM_WORDS =
     " "
   );
 
-// Helper functions
 const getRandomItem = (array) =>
   array[Math.floor(Math.random() * array.length)];
 const addClass = (el, name) => el && el.classList.add(name);
@@ -45,10 +52,8 @@ const formatWord = (word) =>
     .map((l) => `<span class="letter">${l}</span>`)
     .join("")}</div>`;
 
-// Create Context
 const MultiplayerContext = createContext();
 
-// Provider Component
 export const MultiplayerProvider = ({ children }) => {
   // ========== STATE ==========
   const [showKey, setShowKey] = useState(false);
@@ -63,6 +68,8 @@ export const MultiplayerProvider = ({ children }) => {
   const [showHeader, setShowHeader] = useState(true);
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
 
+
+  const [players, setPlayers] = useState({}); 
   const lastEntry = typedChars[typedChars.length - 1] || null;
 
   // ========== REFS ==========
@@ -80,105 +87,234 @@ export const MultiplayerProvider = ({ children }) => {
 
   const socketRef = useRef(null);
 
+  const playersRef = useRef(null);
+  const lastProgressEmitRef = useRef(0);
+  const playerNameRef = useRef(`P-${Math.random().toString(36).slice(2, 7)}`);
 
+  const pendingWordsRef = useRef(null);
+  const sendToServer = (words) => {
+    const sock = socketRef.current;
+    if (sock && sock.connected) {
+      sock.emit("sendWords", { words, meta: { from: "client" } });
+      console.log("Sent words to server:", words);
+      pendingWordsRef.current = null;
+      return;
+    }
 
-// WEBSOCKET 
+    console.warn("Socket not connected yet. Queuing words to send later.");
+    pendingWordsRef.current = words;
+  };
 
-// Put this near the top with other refs
-const pendingWordsRef = useRef(null);
-
-// replace sendToServer with:
-const sendToServer = (words) => {
-  const sock = socketRef.current;
-  if (sock && sock.connected) {
-    sock.emit("sendWords", { words, meta: { from: "client" } });
-    console.log("Sent words to server:", words);
-    pendingWordsRef.current = null;
-    return;
-  }
-
-  // Not connected yet — queue and attempt when socket connects
-  console.warn("Socket not connected yet. Queuing words to send later.");
-  pendingWordsRef.current = words;
-};
-
-
-
-useEffect(() => {
-  // create socket and store to ref
-  socketRef.current = io("http://localhost:5000", {
-    withCredentials: true, // if you use cookies/auth
-    transports: ["websocket", "polling"],
-  });
-
-  const socket = socketRef.current;
-
-  const handleWordsBroadcast = (payload) => {
-    // NOTE: make sure your server emits { words: [...] }.
-    // If server emits { word } change to payload.word etc.
-    const words = payload?.words || payload?.word; // accept both shapes
-    if (!words || !Array.isArray(words) || !words.length) return;
-
-    if (wordsRef.current) wordsRef.current.innerHTML = "";
-    words.forEach((w) => {
-      wordsRef.current.innerHTML += formatWord(w);
+  useEffect(() => {
+    socketRef.current = io("http://localhost:5000", {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
     });
 
-    // Now that DOM is rendered from server, set cursor / mark first
-    markFirstElement();
-    console.log("Rendered broadcasted words (from server):", words.join(", "));
-  };
+    const socket = socketRef.current;
 
-  socket.on("connect", () => {
-    console.log("Socket connected:", socket.id);
-    // if there were words queued before connect, send them now
-    if (pendingWordsRef.current) {
-      socket.emit("sendWords", { words: pendingWordsRef.current, meta: { from: "client-queued" } });
-      console.log("Flushed queued words on connect:", pendingWordsRef.current);
-      pendingWordsRef.current = null;
+    const handleWordsBroadcast = (payload) => {
+      const words = payload?.words || payload?.word; 
+      if (!words || !Array.isArray(words) || !words.length) return;
+
+      if (wordsRef.current) wordsRef.current.innerHTML = "";
+      words.forEach((w) => {
+        wordsRef.current.innerHTML += formatWord(w);
+      });
+
+      
+      markFirstElement();
+      console.log(
+        "Rendered broadcasted words (from server):",
+        words.join(", ")
+      );
+    };
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      
+      if (pendingWordsRef.current) {
+        socket.emit("sendWords", {
+          words: pendingWordsRef.current,
+          meta: { from: "client-queued" },
+        });
+        console.log(
+          "Flushed queued words on connect:",
+          pendingWordsRef.current
+        );
+        pendingWordsRef.current = null;
+      }
+
+
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connect_error:", err);
+    });
+
+    socket.on("wordsBroadcast", handleWordsBroadcast);
+
+    const handlePlayersUpdate = (playersObj) => {
+ 
+      setPlayers(playersObj || {});
+    };
+
+    socket.on("playersUpdate", handlePlayersUpdate);
+
+    return () => {
+      if (socket) {
+        socket.off("wordsBroadcast", handleWordsBroadcast);
+        socket.off("playersUpdate", handlePlayersUpdate);
+        socket.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []); 
+
+  useEffect(
+    () => {
+      const socket = socketRef.current;
+      if (!socket) return;
+
+      const renderPlayers = (playersObj) => {
+      
+        if (!playersRef.current) return;
+
+        playersRef.current.innerHTML = ""; 
+
+        const totalWords =
+          wordsRef.current?.querySelectorAll?.(".formatted")?.length ||
+          currentWords.length ||
+          1;
+
+        Object.entries(playersObj).forEach(([id, p]) => {
+          const row = document.createElement("div");
+          row.className = "player-row flex items-center gap-2 mb-2";
+
+          const nameEl = document.createElement("div");
+          nameEl.textContent = p.name || id.slice(0, 4);
+          nameEl.className = "player-name w-24 text-sm";
+
+          const wpmEl = document.createElement("div");
+          wpmEl.textContent = `${p.wpm || 0} WPM`;
+          wpmEl.className = "player-wpm text-xs w-16";
+
+          const progressWrapper = document.createElement("div");
+          progressWrapper.className =
+            "progress-wrapper flex-1 bg-gray-200 rounded overflow-hidden h-3";
+
+          const progressBar = document.createElement("div");
+          const pct = Math.max(
+            0,
+            Math.min(
+              100,
+              Math.round(
+                (((p.wordIndex || 0) + (p.charIndex || 0) / 10) /
+                  Math.max(1, totalWords)) *
+                  100
+              )
+            )
+          );
+          progressBar.style.width = `${pct}%`;
+          progressBar.style.height = "100%";
+          progressBar.className = "progress-bar bg-gray-700";
+
+          progressWrapper.appendChild(progressBar);
+          row.appendChild(nameEl);
+          row.appendChild(wpmEl);
+          row.appendChild(progressWrapper);
+
+          playersRef.current.appendChild(row);
+        });
+      };
+
+      socket.on("playersUpdate", renderPlayers);
+
+      return () => {
+        socket.off("playersUpdate", renderPlayers);
+      };
+    },
+    [
+     
+    ]
+  );
+
+  const getCurrentPosition = () => {
+    const wordsEls = wordsRef.current?.querySelectorAll?.(".formatted") || [];
+    if (!wordsEls.length) return { wordIndex: 0, charIndex: 0 };
+
+    let wordIndex = 0;
+    for (let i = 0; i < wordsEls.length; i += 1) {
+      if (wordsEls[i].classList.contains("current")) {
+        wordIndex = i;
+        break;
+      }
     }
 
-    // Optionally request current words from server if server doesn't auto-send on connect
-    // socket.emit("requestCurrentWords");
-  });
-
-  socket.on("connect_error", (err) => {
-    console.error("Socket connect_error:", err);
-  });
-
-  socket.on("wordsBroadcast", handleWordsBroadcast);
-
-  // cleanup on unmount
-  return () => {
-    if (socket) {
-      socket.off("wordsBroadcast", handleWordsBroadcast);
-      socket.disconnect();
-      socketRef.current = null;
+    const currentWord = wordsEls[wordIndex];
+    const letters = [...currentWord.children];
+    let charIndex = 0;
+    for (let i = 0; i < letters.length; i += 1) {
+      if (letters[i].classList.contains("current")) {
+        charIndex = i;
+        break;
+      }
     }
+
+    return { wordIndex, charIndex };
   };
-}, []); // run once
+
+  const sendProgress = (force = false) => {
+    const now = Date.now();
+   
+    if (!force && now - lastProgressEmitRef.current < 150) return;
+    lastProgressEmitRef.current = now;
+
+    const sock = socketRef.current;
+    if (!sock || !sock.connected) return;
+
+    const { wordIndex, charIndex } = getCurrentPosition();
+console.log("index : ",wordIndex, " charindex : " ,charIndex);
 
 
+    let wpm = 0;
+    const typed = typedChars.filter((t) => t && t.timestamp);
+    console.log(typed);
+    
+    if (typed.length >= 5) {
+      const firstTs = typed[0].timestamp;
+      const lastTs = typed[typed.length - 1].timestamp;
+      const minutes = Math.max(1 / 60, (lastTs - firstTs) / 1000 / 60);
+      const charsTyped = typed.length;
+      wpm = Math.round(charsTyped / 5 / minutes);
+    }
+
+    sock.emit("updateProgress", {
+      name: playerNameRef.current,
+      wordIndex,
+      charIndex,
+      wpm,
+    });
+  };
 
   // ========== GAME INITIALIZATION ==========
   const initializeGame = useCallback(() => {
     if (!wordsRef.current) return;
-  
+
     wordsRef.current.innerHTML = "";
     setShowKey(option === "keyboard");
-  
+
     if (mode === "quote") {
       console.log(`${mode} selected`);
       handleQuoteMode();
       return;
     }
-  
+
     const count = mode === "words" ? wordCount : 15;
-    // renderWords will send request to server; don't mark first element here.
+ 
     renderWords(count, option);
-    // DO NOT call markFirstElement(); server broadcast will render + mark.
   }, [mode, option, wordCount]);
-  
+
   const handleQuoteMode = () => {
     const quote = QUOTES[quoteIndexRef.current].text;
     quoteIndexRef.current = (quoteIndexRef.current + 1) % QUOTES.length;
@@ -190,31 +326,26 @@ useEffect(() => {
     markFirstElement();
   };
   const renderWords = (count, option) => {
-    // Build words on client but do NOT render them locally.
-    // Send them to server and wait for authoritative broadcast to render.
-    let words = [];
   
+    let words = [];
+
     while (words.length < count) {
       let word = getRandomItem(CUSTOM_WORDS);
-  
+
       if (option === "numbers" && Math.random() < 0.3) {
         word = `${Math.floor(Math.random() * 1000)}`;
       }
-  
+
       if (option === "punctuation" && Math.random() < 0.3) {
         word = getRandomItem(PUNCTUATION_MARKS);
       }
-  
+
       words.push(word);
     }
-  
-    console.log(`Client requested words: ${words.join(", ")}`);
-  
-    // send request to server for authoritative list
-    sendToServer(words);
 
+    console.log(`Client requested words: ${words.join(", ")}`);
+    sendToServer(words);
   };
-  
 
   const markFirstElement = () => {
     const firstWord = wordsRef.current.querySelector(".formatted");
@@ -316,7 +447,6 @@ useEffect(() => {
     const currentLetter = document.querySelector(".letter.current");
     const expectedKey = currentLetter?.textContent || " ";
 
-    // Handle different key types
     if (key.length === 1 && key !== " ") {
       handleLetter(key, expectedKey, currentLetter, currentWord);
     }
@@ -353,10 +483,9 @@ useEffect(() => {
   const handleSpace = (wordEl, letterEl, expected) => {
     if (!wordEl) return;
 
-    // Preventing space on first letter of the Word
     if (letterEl === wordEl.firstChild) return;
 
-    // Mark remaining letters as incorrect
+
     let nextLetter = letterEl;
     while (nextLetter) {
       if (!nextLetter.classList.contains("correct")) {
@@ -367,7 +496,6 @@ useEffect(() => {
 
     removeClass(wordEl, "current");
 
-    // Add error line if any incorrect letters
     if (
       [...wordEl.children].some((child) =>
         child.classList.contains("incorrect")
@@ -413,7 +541,6 @@ useEffect(() => {
       removeErrorLine(wordEl, "errorLine");
     }
 
-    // Handling backspace at start of word
     if (letterEl === wordEl.firstChild) {
       removeClass(wordEl, "current");
       if (wordEl.previousSibling) {
@@ -436,11 +563,9 @@ useEffect(() => {
       removeClass(letterEl.previousSibling, "correct");
     }
 
-    // handling extra letters
     else if (wordEl.lastChild?.classList.contains("extra")) {
       wordEl.removeChild(wordEl.lastChild);
     }
-    // Handling backspace on empty word
     else if (wordEl.lastChild) {
       addClass(wordEl.lastChild, "current");
       removeClass(wordEl.lastChild, "incorrect");
@@ -453,7 +578,10 @@ useEffect(() => {
   };
 
   const trackTypingMetrics = (typed, expected) => {
-    if (typed.length !== 1 || typed === " ") return;
+    if (typed.length !== 1 || typed === " ") {
+      if (typed === " ") sendProgress();
+      return;
+    }
 
     setTypedChars((prev) => [
       ...prev,
@@ -464,19 +592,19 @@ useEffect(() => {
       isTimerRunningRef.current = true;
       startTimer();
     }
+
+    sendProgress();
   };
 
   // ========== GAME CONTROLS ===============
   const resetGame = () => {
     hasInteractedRef.current = true;
 
-    // Start fade out
     if (wordsRef.current) {
       wordsRef.current.style.transition = "opacity 200ms ease-in-out";
       wordsRef.current.style.opacity = "0";
     }
 
-    // Clear game state
     clearInterval(timerIntervalRef.current);
     setInputDisabled(false);
     setIsTypingOver(false);
@@ -484,8 +612,6 @@ useEffect(() => {
     setHasStartedTyping(false);
     isTimerRunningRef.current = false;
     startedTypingTimeRef.current = null;
-
-    // Wait for fade-out to complete
     setTimeout(() => {
       if (wordsRef.current) {
         wordsRef.current.innerHTML = "";
@@ -504,9 +630,9 @@ useEffect(() => {
     clearInterval(timerIntervalRef.current);
     isTimerRunningRef.current = false;
     startedTypingTimeRef.current = null;
-    
+
     if (wordsRef.current) {
-      wordsRef.current.innerHTML = '';
+      wordsRef.current.innerHTML = "";
     }
   }, []);
 
@@ -594,7 +720,6 @@ useEffect(() => {
     };
   }, [isTypingOver]);
 
-  // Event listeners for focus and keypress
   useEffect(() => {
     if (!hasStarted) return;
     initializeGame();
@@ -644,7 +769,6 @@ useEffect(() => {
 
   // ========== CONTEXT VALUE ==========
   const value = {
-    // State
     showKey,
     mode,
     option,
@@ -658,14 +782,17 @@ useEffect(() => {
     hasStartedTyping,
     lastEntry,
 
-    // Refs
+
     wordsRef,
     focusHereRef,
     cursorRef,
     timerRef,
     logoRef,
+    playersRef,
+    players,
+    socketRef,
 
-    // Setters
+
     setShowKey,
     setMode,
     setOption,
@@ -678,7 +805,6 @@ useEffect(() => {
     setShowHeader,
     setHasStartedTyping,
 
-    // Game Functions
     initializeGame,
     handleKeyPress,
     resetGame,
@@ -688,8 +814,7 @@ useEffect(() => {
     handleLogoClick,
     endGame,
     resetGameState,
-    
-    // Derived values
+
     totalGameTime: totalGameTimeRef.current,
   };
 
@@ -700,11 +825,12 @@ useEffect(() => {
   );
 };
 
-// Custom Hook to use the context
 export const useMultiplayerProvider = () => {
   const context = useContext(MultiplayerContext);
   if (!context) {
-    throw new Error('useMultiplayerProvider must be used within a TypingGameProvider');
+    throw new Error(
+      "useMultiplayerProvider must be used within a TypingGameProvider"
+    );
   }
   return context;
 };

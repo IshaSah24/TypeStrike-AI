@@ -7,13 +7,14 @@ import TypingArea from "../components/components/TypingArea";
 import { useFinalDom } from "../context/FinalDomContext";
 import { useRouterState } from "@tanstack/react-router";
 import { useMultiplayerProvider } from "../context/MultiplayerContext";
+import MultiplayerArea from "./MultiplayerArea";
 
 function MultiplayerTypingArea() {
 
 
 
 
-  
+
 
 
 
@@ -105,7 +106,7 @@ function MultiplayerTypingArea() {
     <div id="app" data-theme={theme} className="min-h-screen">
       <div className="mt-8">
         {" "}
-        <TypingArea
+        <MultiplayerArea
           showkey={showkey}
           handleReset={resetGame}
           focusHereRef={focusHereRef}

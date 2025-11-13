@@ -13,17 +13,16 @@ import TypeLogo from "../TypeLogo";
 import ThemeSwitcher from "../ThemeSwitcher";
 
 function SinglePlayerHome() {
-  // Use the centralized context
+
   const typingGame = useTypingGame();
   
-  // Use other contexts
+
   const { setFinalDOM } = useFinalDom();
   const { theme } = useTheme();
   const { location } = useRouterState();
 
-  // Destructure everything from the context
   const {
-    // State
+
     hasStarted,
     isTypingOver,
     showHeader,
@@ -34,13 +33,12 @@ function SinglePlayerHome() {
     typedChars,
     lastEntry,
     
-    // Refs
+
     wordsRef,
     focusHereRef,
     cursorRef,
     timerRef,
-    
-    // Functions
+
     startGame,
     resetGame,
     handleModeSelect,
@@ -53,16 +51,16 @@ function SinglePlayerHome() {
     setTypedChars,
     initializeGame,
     
-    // Derived values
+
     totalGameTime,
   } = typingGame;
 
   useEffect(() => {
-    // Initialize on mount
+
     setHasStarted(true);
     initializeGame();
 
-    // Cleanup on unmount
+    
     return () => {
       setHasStarted(false);
       setIsTypingOver(false);
@@ -75,20 +73,18 @@ function SinglePlayerHome() {
     };
   }, []);
 
-  // Router effect
   useEffect(() => {
     if (location.pathname === "/play/single") {
       setHasStarted(true);
     }
   }, [location.pathname, setHasStarted]);
 
-  // Theme effect
+
   useEffect(() => {
     const app = document.getElementById("app");
     if (app) app.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // Final DOM effect
   useEffect(() => {
     if (isTypingOver && wordsRef.current) {
       const clonedDOM = wordsRef.current.cloneNode(true);

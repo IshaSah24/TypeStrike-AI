@@ -1,9 +1,9 @@
-// components/multiplayer/CreateRoomOptions.js
+
 import React, { useState, useEffect } from "react";
 import { Zap, Crown } from "lucide-react";
 
 /*Notes : 
-    1)  localSelectMode, localSelectOpt   is the function  paased  by  the  parent -> gamelobby so  that modes  and options  can be known  to parent
+    1)  localSelectMode, localSelectOpt   is the function  paased  by  the  parent -> gamelobby so  that modes  and options  can be known   to parent
 
 */
 const CreateRoomOptions = ({ localSelectMode, localSelectOpt }) => {
@@ -42,8 +42,6 @@ useEffect(() => {
 
 
 
-
-  // calling parent callbacks based  on user's  choice  
   const emitModeChange = (mode, option = null) => {
     if (typeof localSelectMode === "function") localSelectMode(mode, option);
     if (typeof localSelectOpt === "function") localSelectOpt(option);
@@ -51,7 +49,7 @@ useEffect(() => {
 
   const handleModeClick = (mode) => {
     setSelectedMode(mode);
-    // setSelectedOption(null);   the default's word's opt  should  be visible 
+   
     emitModeChange(mode, null);
   };
 
@@ -88,7 +86,7 @@ useEffect(() => {
         ))}
       </div>
 
-      {/* Secondary options (only show when there's a selected mode) */}
+
       <div className="mt-3 flex gap-3 flex-wrap">
         {renderedOptions.map((opt) => (
           <button
@@ -100,7 +98,6 @@ useEffect(() => {
                 : "bg-neutral-800/30 border-neutral-700/50 text-neutral-400 hover:border-neutral-600/70 hover:bg-neutral-800/50"
             }`}
           >
-            {/* Display label based on mode */}
             {selectedMode === "time" ? `${opt}s` : selectedMode === "words" ? `${opt} Words` : `${opt} Quote${opt > 1 ? "s" : ""}`}
           </button>
         ))}
