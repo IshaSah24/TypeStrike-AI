@@ -20,5 +20,5 @@ Thumbs.db
 .idea/
 
 # Personal or temporary folders
-**/PreCode
-**/preserves
+PreCode/
+preserves/
