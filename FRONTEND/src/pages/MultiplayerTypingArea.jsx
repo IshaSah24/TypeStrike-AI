@@ -11,15 +11,6 @@ import MultiplayerArea from "./MultiplayerArea";
 
 function MultiplayerTypingArea() {
 
-
-
-
-
-
-
-
-
-
   const multiplayerTyping = useMultiplayerProvider();
 
   const { theme } = useTheme();
@@ -27,7 +18,7 @@ function MultiplayerTypingArea() {
     const { location } = useRouterState();
     
   const {
-    // State
+
     showkey,
     hasStarted,
     isTypingOver,
@@ -39,13 +30,11 @@ function MultiplayerTypingArea() {
     typedChars,
     lastEntry,
     
-    // Refs
     wordsRef,
     focusHereRef,
     cursorRef,
     timerRef,
     
-    // Functions
     startGame,
     resetGame,
     handleModeSelect,
@@ -58,17 +47,14 @@ function MultiplayerTypingArea() {
     setTypedChars,
     initializeGame,
     
-    // Derived values
     totalGameTime,
   } = multiplayerTyping;
 
 
   useEffect(() => {
-    // Initialize on mount
     setHasStarted(true);
     initializeGame();
 
-    // Cleanup on unmount
     return () => {
       setHasStarted(false);
       setIsTypingOver(false);
@@ -79,20 +65,17 @@ function MultiplayerTypingArea() {
     };
   }, []);
 
-  // Router effect
   useEffect(() => {
     if (location.pathname === "/play/single") {
       setHasStarted(true);
     }
   }, [location.pathname, setHasStarted]);
 
-  // Theme effect
   useEffect(() => {
     const app = document.getElementById("app");
     if (app) app.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // Final DOM effect
   useEffect(() => {
     if (isTypingOver && wordsRef.current) {
       const clonedDOM = wordsRef.current.cloneNode(true);

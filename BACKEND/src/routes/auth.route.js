@@ -9,7 +9,7 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 router.get("/me", async (req, res) => {
-  const token = req.cookies.accessToken;   // if  assinged  cookie found in user's browser
+  const token = req.cookies.accessToken;   
   console.log("from /me", token);
 
   if (!token) {
@@ -25,7 +25,6 @@ router.get("/me", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Don't send password or sensitive data
     return res.status(200).json({
       id: user._id,
       email: user.email,

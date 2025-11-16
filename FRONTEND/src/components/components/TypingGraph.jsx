@@ -94,7 +94,6 @@ function TypingGraph({ data, currentWpm, currentAccuracy }) {
         </LineChart>
       </ResponsiveContainer>
 
-      {/* Current stats overlay */}
       <div className="absolute top-4 left-[-16px] text-left">
         <div className="text-6xl font-bold text-yellow-400 leading-none">
           <h1 className="text-2xl">WPM</h1>

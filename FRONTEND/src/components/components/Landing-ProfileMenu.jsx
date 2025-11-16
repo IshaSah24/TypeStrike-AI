@@ -25,7 +25,6 @@ const LandingProfileMenu = () => {
         {user?.name?.charAt(0) || user?.email?.charAt(0)}
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-900 shadow-lg rounded-lg overflow-hidden">
           <p className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b">

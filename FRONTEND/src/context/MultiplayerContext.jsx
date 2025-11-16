@@ -11,7 +11,6 @@ import React, {
 
 import { io } from "socket.io-client";
 
-// ========== CONSTANTS & UTILITIES ============ //
 const PUNCTUATION_MARKS = [".", ",", ";", "!", "?", ":"];
 const QUOTES = [
   {
@@ -55,7 +54,6 @@ const formatWord = (word) =>
 const MultiplayerContext = createContext();
 
 export const MultiplayerProvider = ({ children }) => {
-  // ========== STATE ==========
   const [showKey, setShowKey] = useState(false);
   const [mode, setMode] = useState("words");
   const [option, setOption] = useState(null);
@@ -72,7 +70,7 @@ export const MultiplayerProvider = ({ children }) => {
   const [players, setPlayers] = useState({}); 
   const lastEntry = typedChars[typedChars.length - 1] || null;
 
-  // ========== REFS ==========
+
   const wordsRef = useRef(null);
   const focusHereRef = useRef(null);
   const cursorRef = useRef(null);
@@ -170,6 +168,7 @@ export const MultiplayerProvider = ({ children }) => {
       }
     };
   }, []); 
+
 
   useEffect(
     () => {
@@ -682,7 +681,6 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     withFadeTransition(() => initializeGame());
   };
 
-  // ========== EFFECTS ===============
   useLayoutEffect(() => {
     updateCursorPosition();
   }, [typedChars]);
@@ -767,7 +765,6 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     };
   }, [hasStarted, inputDisabled, mode, option]);
 
-  // ========== CONTEXT VALUE ==========
   const value = {
     showKey,
     mode,

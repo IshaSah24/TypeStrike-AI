@@ -1,7 +1,7 @@
 import { Bell, LogIn, Settings, User } from "lucide-react";
 import React from "react";
-import { useNavigate } from "@tanstack/react-router"; // correct hook
-// import battle from '../../assets/battle.svg'
+import { useNavigate } from "@tanstack/react-router"; 
+
 
 const HeaderOptions = () => {
   const navigate = useNavigate();

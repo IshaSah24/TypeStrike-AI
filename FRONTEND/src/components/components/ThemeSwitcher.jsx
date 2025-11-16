@@ -10,11 +10,10 @@ const themes = [
     colors: ["#1f2937", "#374151", "#9ca3af"],
   },
 
-  // New custom themes
   {
     name: "sunset-pop",
     label: "Sunset Pop",
-    colors: ["#FF6B6B", "#1E1E1E", "#B2B2B2"], // Logo, Typing, Typed
+    colors: ["#FF6B6B", "#1E1E1E", "#B2B2B2"],
   },
   {
     name: "leaf-fresh",

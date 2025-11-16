@@ -11,10 +11,10 @@ function TypingArea({
   timerRef,
   timeDuration,
   mode,
-  isMultiplayer = false // Add this prop
+  isMultiplayer = false 
   
 }) {
-// console.log(timeDuration);
+  
 console.log(mode);
 if (mode === 'time') console.log(timeDuration);
 
@@ -23,7 +23,8 @@ console.log(wordsRef.current);
 
   return (
     <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">
-      {/* Timer */}
+
+
       
       {mode === "time" && (
         <div className="text-right mb-2 text-start">
@@ -31,7 +32,7 @@ console.log(wordsRef.current);
         </div>
       )}
 
-      {/* Typing content wrapper */}
+
       <div className="  relative max-h-[80vh] overflow-y-auto leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
         <div
           ref={wordsRef}
@@ -51,7 +52,7 @@ console.log(wordsRef.current);
         ></div>
       </div>
 
-      {/* Invisible focus capture */}
+
       <div
         ref={focusHereRef}
         className="typingarea absolute top-[-0.5rem] left-0 w-full h-[8rem] opacity-0"
@@ -62,7 +63,7 @@ console.log(wordsRef.current);
         </div>
       </div>
 
-      {/* Reset Button - Only show in single player mode */}
+
       {!isMultiplayer && (
         <div className="flex justify-center h-10 mt-8 z-1 relative">
           <button
@@ -74,7 +75,7 @@ console.log(wordsRef.current);
         </div>
       )}
 
-      {/* Keyboard Placeholder */}
+
       {showkey && (
         <div className="mt-6 text-center text-gray-500">
           [On-screen keyboard coming soon]

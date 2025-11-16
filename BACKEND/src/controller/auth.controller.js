@@ -14,7 +14,6 @@ export const registerUser = catchAsync(async (req, res) => {
   } else {
     const { token, user } = await registerUserService(email, password, name);
     console.log("typing token",token);
-    //  setting  cookie with  jwt token
     req.user = user;
     res.cookie("accessToken", token, cookieConfigurations());
     res.status(201).json({
@@ -59,10 +58,10 @@ export const logoutUser = (req, res) => {
   try {
     console.log("Logging out user");
     
-    // Clear the cookie (name same hona chaiye jo login ke time set kiya tha)
+
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // prod me true
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
 

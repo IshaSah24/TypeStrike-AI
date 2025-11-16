@@ -1,6 +1,4 @@
-// middlewares/error.middleware.js
 
-// It is used to sending responses to  the client.
 export const globalErrorHandler = (err, req, res, next) => {
     console.error("ERROR:", err);
   

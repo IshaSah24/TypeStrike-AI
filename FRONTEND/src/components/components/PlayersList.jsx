@@ -6,7 +6,6 @@ const PlayersList = () => {
 
   const socketId = socketRef?.current?.id || null;
 
-  // compute totalWords from DOM (fallback to 1 to avoid div/0)
   const totalWords = useMemo(() => {
     try {
       return Math.max(1, (wordsRef.current?.querySelectorAll?.(".formatted")?.length) || 1);
@@ -15,7 +14,6 @@ const PlayersList = () => {
     }
   }, [wordsRef.current]);
 
-  // convert players object to array and stable sort by progress (optional)
   const playersArray = useMemo(() => {
     return Object.entries(players || {}).map(([id, p]) => ({ id, ...p }));
   }, [players]);
@@ -30,7 +28,7 @@ const PlayersList = () => {
         const name = p.name || p.id?.slice(0, 6);
         const wordIndex = p.wordIndex || 0;
         const charIndex = p.charIndex || 0;
-        // adjust char fraction if you want more accurate progress
+        
         const pct = Math.max(0, Math.min(100, Math.round(((wordIndex + (charIndex / 10)) / totalWords) * 100)));
 
         const isSelf = socketId && p.id === socketId;
@@ -52,7 +50,7 @@ const PlayersList = () => {
                   style={{
                     width: `${pct}%`,
                     transition: "width 0.15s linear",
-                    background: isSelf ? "#2563eb" : "#999", // default colors (you can replace with Tailwind classes)
+                    background: isSelf ? "#2563eb" : "#999", 
                   }}
                 />
               </div>

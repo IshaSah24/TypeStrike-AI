@@ -1,4 +1,4 @@
-// src/App.jsx
+
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RouterProvider } from "@tanstack/react-router";

@@ -30,7 +30,7 @@ export default function RegisterInput() {
       console.log("Registration success:", result);
 
       console.log("Account created ", result);
-      navigate({ to: "/" }); // redirect to login page
+      navigate({ to: "/" });
     } catch (err) {
       console.error(err);
       alert(err || "Registration failed");
@@ -39,10 +39,6 @@ export default function RegisterInput() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Full Name */}
-
-
-      {/* Email */}
       <input
         type="email"
         value={email}
@@ -51,8 +47,6 @@ export default function RegisterInput() {
         placeholder="Email Address"
         className="w-full p-4 border rounded-xl bg-neutral-800/30 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
       />
-
-      {/* Password */}
       <div className="relative">
         <input
           type={showPassword ? "text" : "password"}
@@ -67,9 +61,6 @@ export default function RegisterInput() {
         </button>
       </div>
 
-      
-
-      {/* Confirm Password */}
       <div className="relative">
         <input
           type={showConfirmPassword ? "text" : "password"}
@@ -93,7 +84,6 @@ export default function RegisterInput() {
         className="w-full p-4 border rounded-xl bg-neutral-800/30 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
       />
 
-      {/* Submit */}
       <motion.button
         type="submit"
         whileHover={{ scale: 1.02 }}

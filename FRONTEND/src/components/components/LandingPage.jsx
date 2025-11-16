@@ -271,7 +271,7 @@ function App() {
 
               <button
                 onClick={() => {
-                  navigate({ to: "/multiplayer/area" });
+                  navigate({ to: "/play/multiplayer" });
                 }}
                 className="group bg-neutral-800/50 backdrop-blur-xl text-white px-10 py-4 rounded-xl font-medium text-lg hover:bg-neutral-700/50 transition-all duration-500 flex items-center border border-white/10 hover:border-white/20"
               >

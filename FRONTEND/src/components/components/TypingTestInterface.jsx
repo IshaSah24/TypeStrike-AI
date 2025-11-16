@@ -49,7 +49,7 @@ function TypingTestInterface({ graphData, stats, wpm, accuracy, correctWords, in
           </div>
         </div> */}
 
-        {/* Main Graph */}
+
         <div className=" rounded-xl p-6 mb-6 ">
           <TypingGraph
             data={graphData}
@@ -68,7 +68,7 @@ function TypingTestInterface({ graphData, stats, wpm, accuracy, correctWords, in
         </div>
        <TypedWords correctWords={correctWords} incorrectWords={incorrectWords}/>
 
-        {/* Controls */}
+
         <div className="flex justify-center space-x-4 mb-8 mt-8">
           <button
             onClick={handleStart}
@@ -88,7 +88,7 @@ function TypingTestInterface({ graphData, stats, wpm, accuracy, correctWords, in
           </button>
         </div>
 
-        {/* Stat Cards */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className=" rounded-xl p-6 ">
             <h3 className="text-lg font-semibold mb-4 text-yellow-400">

@@ -100,18 +100,17 @@ export default function GameLobby() {
     },
   ];
   
-  // Debugging
-  // const generateRoomCode = () => {
-  //   const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-  //   setGeneratedCode(code);
-  // };
+  const generateRoomCode = () => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    setGeneratedCode(code);
+  };
 
-  // const copyToClipboard = () => {
-  //   if (!generatedCode) return;
-  //   navigator.clipboard.writeText(generatedCode);
-  //   setCopied(true);
-  //   setTimeout(() => setCopied(false), 2000);
-  // };
+  const copyToClipboard = () => {
+    if (!generatedCode) return;
+    navigator.clipboard.writeText(generatedCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -154,7 +153,7 @@ export default function GameLobby() {
     setInRoom(true); 
 
     if (roomName){
-      navigate({ to: "/multiplayer/area" });
+      navigate({ to: "/multiplayer/area/inroom" });
     }else {
       alert("Please generate a room code before creating a room.");
     }

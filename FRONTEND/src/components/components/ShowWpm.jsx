@@ -73,7 +73,6 @@ function ShowWpm({ timerVal, typedChars, onReset, isTypingOver}) {
   const correct = typedChars.filter((c) => c.correct).length;
   const incorrect = totalChars - correct;
 
-  //consistancy
 
   let consistency = 100;
 

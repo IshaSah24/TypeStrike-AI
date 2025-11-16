@@ -11,13 +11,13 @@ const TypeLogo = ({ showHeader, onClick }) => {
     if (currentPath === "/play/single") {
       console.log(currentPath);
 
-      // Already on /typing → just run the blur-prevention logic
+      
       if (onClick) {
         onClick(e);
       }
     } else {
       console.log("clicked");
-      // Navigate to typing
+      
       navigate({ to: "/play/single" });
     }
   };

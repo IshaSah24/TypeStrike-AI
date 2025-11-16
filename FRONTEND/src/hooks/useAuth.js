@@ -1,4 +1,4 @@
-// src/hooks/useAuth.js
+
 import { useState, useEffect } from "react";
 import { getProfile, login } from "../apis/auth";
 
@@ -8,7 +8,7 @@ export function useAuth() {
 
   const signIn = async (email, password) => {
     const data = await login(email, password);
-    localStorage.setItem("token", data.token); // save JWT
+    localStorage.setItem("token", data.token); 
     setUser(data.user);
   };
 

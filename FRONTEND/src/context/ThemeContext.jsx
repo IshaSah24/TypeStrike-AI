@@ -8,7 +8,7 @@ const getInitialTheme = () => {
     const savedTheme = localStorage.getItem("app-theme");
     return savedTheme ? savedTheme : "light";
   } catch {
-    return "light"; // Fallback if localStorage fails
+    return "light"; 
   }
 };
 

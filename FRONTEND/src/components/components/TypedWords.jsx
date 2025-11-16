@@ -10,7 +10,6 @@ export default function TypedWords({ incorrectWords }) {
   useEffect(() => {
     if (!incorrectWords || incorrectWords.length === 0) return;
 
-    // IMPLEMENTING  LOCAL STORAGE  HERE  TO  SOTRE THE INCORRECT WORDS  AND TRACK THE FREQUENTLY TYPED INCOORECT WORDS + NEW
     const pastMistakes = JSON.parse(
       localStorage.getItem("typingMistakes") || "{}"
     );
@@ -28,7 +27,7 @@ export default function TypedWords({ incorrectWords }) {
   console.log(incorrectWords);
   return (
     <div className="w-full text-center mt-4">
-      {/* Button */}
+
 
       <button
         onClick={() => setShowHistory(!showHistory)}
@@ -38,7 +37,6 @@ export default function TypedWords({ incorrectWords }) {
         {showHistory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </button>
 
-      {/* Incorrect Words */}
       {showHistory && (
         <div className="m-4 mb-6 p-4 rounded-lg max-w-6xl mx-auto transition-all duration-300">
           <div className="flex flex-wrap gap-5 justify-center text-2xl">

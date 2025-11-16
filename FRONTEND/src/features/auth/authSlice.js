@@ -9,8 +9,10 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await client.post("/auth/login", { email, password });
-      return response.data; // sirf user return karenge
+      return response.data;
     } catch (err) {
+      console.log(err);
+      
       return rejectWithValue(err.response?.data?.message || "Login failed");
     }
   }
@@ -28,7 +30,7 @@ export const registerUser = createAsyncThunk(
         password,
         name,
       });
-      return response.data; // sirf user return hoga
+      return response.data; // sirf user  return hoga
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Registration failed"
@@ -61,8 +63,8 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await client.post("/auth/logout"); // backend cookie clear karega
-      return true; // fulfilled trigger hoga
+      await client.post("/auth/logout");
+      return true; 
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Logout failed");
     }
@@ -72,7 +74,7 @@ export const logoutUser = createAsyncThunk(
 // -------------------------
 // Slice
 // -------------------------
-// Note : extraReducers handles  the actions of the async thunk function's like pending/fulfilled/rejected
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -81,7 +83,7 @@ const authSlice = createSlice({
     error: null,
     loading: false,
   },
-  reducers: {}, // <-- ab local logout reducer ki zarurat nahi hai
+  reducers: {}, 
   extraReducers: (builder) => {
     builder
       // -------------------------

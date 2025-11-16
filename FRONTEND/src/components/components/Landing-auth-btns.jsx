@@ -20,7 +20,7 @@ const LandingAuthBtns = () => {
     navigate({ to: "/" });
   };
 
-  // auto-close when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -76,7 +76,6 @@ const LandingAuthBtns = () => {
         {avatarLetter}
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 shadow-lg rounded-lg p-2">
           <p className="px-3 py-2 text-sm text-gray-700 dark:text-gray-200 border-b">
