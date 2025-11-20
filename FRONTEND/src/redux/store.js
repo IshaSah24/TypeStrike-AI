@@ -7,7 +7,7 @@ const getStoredUser = () => {
   try {
     return JSON.parse(stored); 
   } catch {
-    return null; // agar corrupt JSON ho
+    return null;
   }
 };
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Zap, Crown } from "lucide-react";
 
-/*Notes : 
+/*personal Notes : 
     1)  localSelectMode, localSelectOpt   is the function  paased  by  the  parent -> gamelobby so  that modes  and options  can be known   to parent
 
 */

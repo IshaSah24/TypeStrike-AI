@@ -27,6 +27,4 @@ export function useAuth() {
 
   return { user, signIn, loadUser };
 
-
-  // this was  custom  hook  before  applying the redux toolkit  now  we  have  the redux  store  to  manage  the  auth  state and  other  states
 }

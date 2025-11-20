@@ -6,6 +6,7 @@ import ReactDOM from "react-dom/client";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { FinalDomProvider } from "./context/FinalDomContext.jsx";
 import { TypingGameProvider } from "./context/TypingGameContext.jsx"; 
+import { RoomSocketProvider } from "./hooks/useRoomSocket";
 
 import store from "./redux/store.js";
 import { router } from "./routes.jsx";
@@ -16,14 +17,16 @@ import { MultiplayerProvider } from "./context/MultiplayerContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <ThemeProvider>
-      <FinalDomProvider>
-        <MultiplayerProvider>
-          <TypingGameProvider>
-            <App />
-          </TypingGameProvider>
-        </MultiplayerProvider>
-      </FinalDomProvider>
-    </ThemeProvider>
+    <RoomSocketProvider>
+      <ThemeProvider>
+        <FinalDomProvider>
+          <MultiplayerProvider>
+            <TypingGameProvider>
+              <App />
+            </TypingGameProvider>
+          </MultiplayerProvider>
+        </FinalDomProvider>
+      </ThemeProvider>
+    </RoomSocketProvider>
   </Provider>
 );

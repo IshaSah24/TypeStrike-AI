@@ -1,4 +1,4 @@
-// import { findUserByEmail } from "../DAO/user.dao";
+
 import { cookieConfigurations } from "../config/cookieConfig.js";
 import {
   loginUserService,
@@ -22,7 +22,7 @@ export const registerUser = catchAsync(async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name
+        name: user.username
       },
       token
     });
@@ -48,7 +48,7 @@ export const loginUser = catchAsync(async (req, res) => {
     user: {
       id: user._id,
       email: user.email,
-      name: user.name,
+      name: user.username,
     },
   });
 });

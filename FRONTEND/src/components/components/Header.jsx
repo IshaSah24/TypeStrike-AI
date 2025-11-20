@@ -85,7 +85,6 @@ const Header = ({
               shadow pr-2
             "
           >
-            {/* Modifiers Navbar */}
             <nav
               className="inline-flex items-center space-x-1 py-2 px-2 
               bg-[var(--header-bg)] 
@@ -116,7 +115,6 @@ const Header = ({
 
             <div className="w-[2px] h-[50%] bg-gray-400 mx-3 rounded-lg" />
 
-            {/* Main Nav */}
             <nav className="inline-flex items-center space-x-1 py-2 px-2">
               {modes.map((mode) => {
                 const IconComponent = mode.icon;
@@ -141,7 +139,6 @@ const Header = ({
               })}
             </nav>
 
-            {/* Submenu */}
             <div
               className={`
                 flex items-center overflow-hidden transition-all duration-300 ease-in-out

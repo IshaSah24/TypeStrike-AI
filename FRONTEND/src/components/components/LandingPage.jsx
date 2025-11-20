@@ -65,9 +65,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-black relative overflow-hidden">
-      {/* nav */}
+
       <div className="relative">
-        {/* Main navbar */}
         <nav
           className={`fixed inset-x-0 top-4 z-50 mx-auto w-[95%] max-w-7xl lg:w-full rounded-full px-4 py-2 transition-all duration-300 ${
             scrolled
@@ -141,7 +140,6 @@ function App() {
             <LandingAuthBtns />
           </div>
         </nav>
-        {/* Spacer */}
         <div className="h-20"></div>
       </div>
       <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 overflow-hidden">
@@ -342,7 +340,6 @@ function App() {
       </div>
       <UpcomingFeature />
 
-      {/* Enhanced Features Section */}
       <section id="features" className="px-6 py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/30 to-transparent"></div>
 
@@ -399,7 +396,7 @@ function App() {
                 key={i}
                 className={`group bg-gradient-to-br ${feature.accent} backdrop-blur-xl rounded-3xl p-8 hover:scale-105 transition-all duration-700 border border-white/5 hover:border-white/10 relative overflow-hidden`}
               >
-                {/* Subtle inner glow */}
+
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
                 <div
@@ -416,7 +413,6 @@ function App() {
                   {feature.description}
                 </p>
 
-                {/* Elegant bottom accent */}
                 <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
               </div>
             ))}
@@ -424,13 +420,12 @@ function App() {
         </div>
       </section>
 
-      {/* Premium Stats Section */}
       <section id="stats" className="px-6 py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-neutral-800/10 via-neutral-700/5 to-neutral-800/10"></div>
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="bg-gradient-to-br from-white/[0.03] via-white/[0.01] to-white/[0.03] rounded-[2rem] p-16 backdrop-blur-2xl border border-white/10 relative overflow-hidden">
-            {/* Inner ambient lighting */}
+
             <div className="absolute w-[400px] h-[400px] bg-gradient-radial from-white/[0.05] via-white/[0.02] to-transparent rounded-full top-0 left-0 blur-3xl"></div>
             <div className="absolute w-[300px] h-[300px] bg-gradient-radial from-white/[0.03] via-white/[0.01] to-transparent rounded-full bottom-0 right-0 blur-2xl"></div>
 
@@ -478,7 +473,7 @@ function App() {
         </div>
       </section>
 
-      {/* Refined Testimonials */}
+
       <section id="testimonials" className="px-6 py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent"></div>
 
@@ -527,7 +522,6 @@ function App() {
                 key={i}
                 className="bg-gradient-to-br from-white/[0.03] via-white/[0.01] to-white/[0.03] backdrop-blur-xl rounded-3xl p-8 hover:scale-105 transition-all duration-700 border border-white/5 hover:border-white/10 relative overflow-hidden group"
               >
-                {/* Subtle hover glow */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
                 <div className="relative z-10">
@@ -564,11 +558,9 @@ function App() {
         </div>
       </section>
 
-      {/* Premium CTA Section */}
       <section className="px-6 py-32 relative">
         <div className="max-w-5xl mx-auto text-center">
           <div className="bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-white/[0.04] rounded-[2rem] p-16 backdrop-blur-2xl border border-white/10 relative overflow-hidden">
-            {/* Inner lighting effects */}
             <div className="absolute w-[500px] h-[500px] bg-gradient-radial from-white/[0.06] via-white/[0.02] to-transparent rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
 
             <div className="relative z-10">
@@ -599,7 +591,6 @@ function App() {
         </div>
       </section>
 
-      {/* Refined Footer */}
 
       <footer className="relative overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-950 to-black border-t border-white/10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800/20 via-transparent to-transparent"></div>

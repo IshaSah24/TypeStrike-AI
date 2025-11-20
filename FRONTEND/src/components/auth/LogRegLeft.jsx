@@ -7,24 +7,21 @@ import RegisterFeature from "./RegisterFeature";
 const LogRegLeft = ({isLogin}) => {
   return (
     <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-neutral-800/50 to-neutral-900/50 text-white p-12 relative overflow-hidden">
-      {/* Sophisticated ambient lighting system */}
+    
       <div className="absolute inset-0 bg-gradient-to-br from-neutral-700/20 via-neutral-800/10 to-neutral-900/30"></div>
 
-      {/* Primary light source - top left */}
       <div className="absolute w-[500px] h-[500px] bg-gradient-radial from-white/[0.08] via-white/[0.03] to-transparent rounded-full -top-64 -left-64 blur-3xl"></div>
 
-      {/* Secondary light - center */}
       <div className="absolute w-[300px] h-[300px] bg-gradient-radial from-neutral-300/[0.06] via-neutral-400/[0.02] to-transparent rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
 
-      {/* Accent light - bottom right */}
       <div className="absolute w-[400px] h-[400px] bg-gradient-radial from-neutral-200/[0.04] via-neutral-300/[0.015] to-transparent rounded-full -bottom-48 -right-48 blur-3xl"></div>
 
-      {/* Subtle edge lighting */}
+
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
       <div className="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-white/15 to-transparent"></div>
 
-      {/* Floating particles for depth */}
+
       <div className="absolute w-2 h-2 bg-white/10 rounded-full top-20 left-20 animate-pulse"></div>
       <div
         className="absolute w-1 h-1 bg-white/15 rounded-full top-40 right-32 animate-pulse"
@@ -45,7 +42,7 @@ const LogRegLeft = ({isLogin}) => {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="relative z-20 text-center"
       >
-        {/* Elegant logo/brand mark */}
+        
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -72,7 +69,7 @@ const LogRegLeft = ({isLogin}) => {
             : "Embark on a journey of limitless possibilities and refined experiences."}
         </p>
 
-        {/* Elegant feature highlights */}
+        
         <div className="space-y-6 text-neutral-400/60 text-sm font-extralight tracking-wider">
           {isLogin ? (
             <LoginFeature />
@@ -81,7 +78,6 @@ const LogRegLeft = ({isLogin}) => {
           )}
         </div>
 
-        {/* Subtle signature line */}
         <motion.div
           initial={{ opacity: 0, scaleX: 0 }}
           animate={{ opacity: 1, scaleX: 1 }}

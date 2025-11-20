@@ -13,10 +13,8 @@ export default function LoginRegister() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black">
       <div className="relative w-full max-w-5xl min-h-[500px] bg-neutral-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-neutral-800/50 overflow-hidden grid md:grid-cols-2">
         
-        {/* Left side - Elegant branding */}
-
+   
         <LogRegLeft isLogin ={isLogin} /> 
-        {/* Right side - Form */}
         <motion.div
           key={isLogin ? "login" : "register"}
           initial={{ opacity: 0, x: 30 }}
@@ -44,7 +42,6 @@ export default function LoginRegister() {
               {isLogin ? "Access your workspace" : "Start your creative journey"}
             </motion.p>
 
-            {/* Social login buttons */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -61,14 +58,12 @@ export default function LoginRegister() {
               </button>
             </motion.div>
 
-            {/* Divider */}
             <div className="flex items-center my-6">
               <hr className="flex-1 border-neutral-700/50" />
               <span className="mx-4 text-xs text-neutral-500 font-light tracking-wide uppercase">Or continue with email</span>
               <hr className="flex-1 border-neutral-700/50" />
             </div>
 
-            {/* Form inputs */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -126,7 +121,6 @@ export default function LoginRegister() {
               )}
             </motion.div>
 
-            {/* Remember me / Forgot password */}
             {isLogin && (
               <div className="flex items-center justify-between mt-6 mb-8">
                 <label className="flex items-center">
@@ -139,7 +133,6 @@ export default function LoginRegister() {
               </div>
             )}
 
-            {/* Submit button */}
             <motion.button 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -154,7 +147,6 @@ export default function LoginRegister() {
               </span>
             </motion.button>
 
-            {/* Terms for registration */}
             {!isLogin && (
               <p className="mt-6 text-xs text-neutral-500/60 text-center leading-relaxed font-extralight tracking-wide">
                 By creating an account, you agree to our{" "}
@@ -168,7 +160,7 @@ export default function LoginRegister() {
               </p>
             )}
 
-            {/* Switch between login/register */}
+            
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

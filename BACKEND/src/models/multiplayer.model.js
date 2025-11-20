@@ -45,4 +45,7 @@ const roomSchema = new  mongoose.Schema({
         expires: 3600, 
     },
 
-})
+});
+
+const MultiplayerRoom = mongoose.model("MultiplayerRoom", roomSchema);
+export default MultiplayerRoom;

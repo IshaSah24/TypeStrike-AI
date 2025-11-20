@@ -1,4 +1,4 @@
-// components/MultiplayerHome.jsx
+
 import React, { useEffect } from "react";
 import { useTypingGame } from "../../../context/TypingGameContext";
 import { useTheme } from "../../../context/ThemeContext";
@@ -29,7 +29,6 @@ function MultiplayerHome() {
     typedChars,
     lastEntry,
     
-    // Refs
     wordsRef,
     focusHereRef,
     cursorRef,
@@ -43,11 +42,9 @@ function MultiplayerHome() {
     setTimeDuration,
     setWordCount,
     
-    // Derived values
     totalGameTime,
   } = typingGame;
 
-  // Apply room settings when component mounts
   useEffect(() => {
     if (roomSettings?.gameSettings) {
       const { mode, option, wordCount, timeDuration } = roomSettings.gameSettings;
@@ -68,7 +65,6 @@ function MultiplayerHome() {
     }
   }, [isTypingOver, setFinalDOM]);
 
-  // Set theme
   useEffect(() => {
     const app = document.getElementById("app");
     if (app) app.setAttribute("data-theme", theme);

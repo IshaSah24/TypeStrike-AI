@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import TypingTestInterface from "./TypingTestInterface";
 import { useFinalDom } from "../../context/FinalDomContext";
+import { saveTypingResult, saveRaceResult } from "../../apis/typing";
+import { useSelector } from "react-redux";
 
-function ShowWpm({ timerVal, typedChars, onReset, isTypingOver}) {
+function ShowWpm({ timerVal, typedChars, onReset, isTypingOver, mode, wordCount, multiplayer, roomId, roomName }) {
 
   let correctWords = [];
   let incorrectWords = [];
@@ -101,6 +103,50 @@ function ShowWpm({ timerVal, typedChars, onReset, isTypingOver}) {
     correct + incorrect === 0
       ? 100
       : Math.round((correct / (correct + incorrect)) * 100);
+
+  const { isAuthenticated } = useSelector((state) => state.auth || {});
+  const [saved, setSaved] = useState(false);
+
+  // Save typing result when game is over
+  useEffect(() => {
+    if (isTypingOver && isAuthenticated && !saved) {
+      const saveResult = async () => {
+        try {
+          if (multiplayer && roomId) {
+            // Save race result for multiplayer
+            await saveRaceResult({
+              roomId,
+              roomName: roomName || "Untitled Room",
+              wpm,
+              accuracy,
+              errors: incorrect,
+              position: 1, // This should come from socket.io
+              totalPlayers: 1, // This should come from socket.io
+            });
+            console.log("Race result saved successfully");
+          } else {
+            // Save single player result
+            await saveTypingResult({
+              wpm,
+              accuracy,
+              errors: incorrect,
+              correctChars: correct,
+              incorrectChars: incorrect,
+              totalChars: totalChars,
+              time: Math.round(durationInSeconds),
+              mode: mode || 'words',
+              wordCount: wordCount || 0,
+            });
+            console.log("Typing result saved successfully");
+          }
+          setSaved(true);
+        } catch (error) {
+          console.error("Failed to save result:", error);
+        }
+      };
+      saveResult();
+    }
+  }, [isTypingOver, isAuthenticated, saved, multiplayer, roomId, roomName, wpm, accuracy, incorrect, correct, totalChars, durationInSeconds, mode, wordCount]);
 
   return (
     <div className="w-full text-center mt-18">

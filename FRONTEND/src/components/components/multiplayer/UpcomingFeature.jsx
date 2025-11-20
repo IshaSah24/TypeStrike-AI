@@ -29,17 +29,8 @@ const UpcomingFeature = () => {
           <div className="absolute inset-4 bg-gradient-to-br from-purple-950/40 via-blue-600/20 to-purple-950/40 rounded-3xl blur-xl" />
 
           <div className=" bg-black relative bg-gradient-to-br from-gray-900/10 via-gray-950 to-gray-900/10 backdrop-blur-xl border border-gray-700/80 rounded-3xl p-8 md:p-12">
-            {/* <div className="flex justify-center gap-4 mb-8">
-              <div className="p-3 bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-900/30 rounded-2xl">
-                <Users className="w-6 h-6 text-purple-300" />
-              </div>
-              <div className="p-3 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-2xl">
-                <MessageSquare className="w-6 h-6 text-blue-300" />
-              </div>
-            </div> */}
             <img className="w-16 mx-auto mt-0 mb-8" src={battle} alt="" />
 
-            {/* Main title */}
             <div className="text-center mb-12">
               <h3 className="text-3xl md:text-4xl font-light text-white mb-4">
                 Multiplayer Mode

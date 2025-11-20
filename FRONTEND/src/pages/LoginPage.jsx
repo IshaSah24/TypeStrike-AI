@@ -13,10 +13,8 @@ export default function LoginRegister() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black">
       <div className="relative w-full max-w-5xl min-h-[500px] bg-neutral-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-neutral-800/50 overflow-hidden grid md:grid-cols-2">
-        {/* Left side - Elegant branding */}
 
         <LogRegLeft isLogin={isLogin} />
-        {/* Right side - Form */}
         <motion.div
           key={isLogin ? "login" : "register"}
           initial={{ opacity: 0, x: 30 }}
@@ -26,7 +24,7 @@ export default function LoginRegister() {
           className="p-12 flex flex-col justify-center bg-neutral-900/90"
         >
           <div className="max-w-sm mx-auto w-full">
-            {/* Header */}
+    
             <motion.h2
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -47,7 +45,7 @@ export default function LoginRegister() {
                 : "Start your creative journey"}
             </motion.p>
 
-            {/* Social login buttons here ... */}
+          
                 
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
@@ -64,7 +62,7 @@ export default function LoginRegister() {
                 <span className="text-sm font-medium">GitHub</span>
               </button>
             </motion.div>
-            {/* Divider */}
+          
             <div className="flex items-center my-6">
               <hr className="flex-1 border-neutral-700/50" />
               <span className="mx-4 text-xs text-neutral-500 font-light tracking-wide uppercase">
@@ -73,7 +71,7 @@ export default function LoginRegister() {
               <hr className="flex-1 border-neutral-700/50" />
             </div>
 
-            {/* Inputs */}
+            
             <div className="space-y-4">
               {isLogin ? <LoginInput /> : <RegisterInput/>}
             </div>

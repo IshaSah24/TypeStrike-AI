@@ -30,7 +30,7 @@ export const registerUser = createAsyncThunk(
         password,
         name,
       });
-      return response.data; // sirf user  return hoga
+      return response.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Registration failed"
@@ -46,7 +46,7 @@ export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await client.get("/auth/me"); // cookie auto send
+      const response = await client.get("/auth/me"); 
       console.log(response.data);
       return response.data;
       

@@ -605,7 +605,6 @@ export const TypingGameProvider = ({ children }) => {
   );
 };
 
-// Custom Hook to use the context
 export const useTypingGame = () => {
   const context = useContext(TypingGameContext);
   if (!context) {

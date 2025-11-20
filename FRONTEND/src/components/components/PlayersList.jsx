@@ -1,67 +1,93 @@
-import React, { useMemo } from "react";
-import { useMultiplayerProvider } from "../../context/MultiplayerContext";
+import React from "react";
+import { useRoomSocket } from "../../hooks/useRoomSocket";
 
-const PlayersList = () => {
-  const { players, socketRef, wordsRef } = useMultiplayerProvider();
+const PlayersList = ({ playerProgress = {} }) => {
+  const { socket, users, playerProgress: contextProgress } = useRoomSocket();
+  const socketId = socket?.id;
+  const progressSource =
+    playerProgress && Object.keys(playerProgress).length > 0
+      ? playerProgress
+      : contextProgress || {};
 
-  const socketId = socketRef?.current?.id || null;
-
-  const totalWords = useMemo(() => {
-    try {
-      return Math.max(1, (wordsRef.current?.querySelectorAll?.(".formatted")?.length) || 1);
-    } catch (e) {
-      return 1;
-    }
-  }, [wordsRef.current]);
-
-  const playersArray = useMemo(() => {
-    return Object.entries(players || {}).map(([id, p]) => ({ id, ...p }));
-  }, [players]);
+  // Merge users with their progress
+  const playersWithProgress = users.map((user) => {
+    const progress = progressSource[user.id] || {};
+    return {
+      ...user,
+      ...progress,
+    };
+  });
 
   return (
-    <div className="players-list space-y-2">
-      {playersArray.length === 0 && (
-        <div className="text-sm text-gray-500">No players connected</div>
-      )}
-
-      {playersArray.map((p) => {
-        const name = p.name || p.id?.slice(0, 6);
-        const wordIndex = p.wordIndex || 0;
-        const charIndex = p.charIndex || 0;
-        
-        const pct = Math.max(0, Math.min(100, Math.round(((wordIndex + (charIndex / 10)) / totalWords) * 100)));
-
-        const isSelf = socketId && p.id === socketId;
-
-        return (
-          <div key={p.id} className={`player-row flex items-center gap-3 p-2 rounded ${isSelf ? "bg-blue-50 border-blue-200" : "bg-white border-gray-100"}`}>
-            <div className="w-24 text-sm font-medium truncate">
-              {isSelf ? `${name} (you)` : name}
+    <div className="max-w-4xl mx-auto mb-6">
+      <div className="bg-neutral-900/80 backdrop-blur-sm rounded-lg border border-neutral-800 p-4">
+        <h3 className="text-sm font-medium text-neutral-400 mb-3 uppercase tracking-wider">
+          Live Progress
+        </h3>
+        <div className="space-y-2">
+          {playersWithProgress.length === 0 && (
+            <div className="text-sm text-neutral-500 text-center py-4">
+              No players connected
             </div>
+          )}
 
-            <div className="w-16 text-xs text-gray-600">
-              {p.wpm ?? 0} WPM
-            </div>
+          {playersWithProgress.map((player) => {
+            const isSelf = socketId && player.id === socketId;
+            const progress = player.progress || 0;
+            const wpm = player.wpm || 0;
+            const accuracy = player.accuracy || 100;
+            const errors = player.errors || 0;
+            const finished = player.finished;
 
-            <div className="flex-1">
-              <div className="w-full bg-gray-200 rounded h-3 overflow-hidden">
-                <div
-                  className="h-full"
-                  style={{
-                    width: `${pct}%`,
-                    transition: "width 0.15s linear",
-                    background: isSelf ? "#2563eb" : "#999", 
-                  }}
-                />
+            return (
+              <div
+                key={player.id}
+                className={`player-row flex items-center gap-4 p-3 rounded-lg border transition-all ${
+                  isSelf
+                    ? "bg-blue-500/10 border-blue-500/30"
+                    : "bg-neutral-800/50 border-neutral-700/50"
+                } ${finished ? "opacity-75" : ""}`}
+              >
+                <div className="w-32 text-sm font-medium truncate text-white">
+                  {isSelf ? `${player.name} (You)` : player.name}
+                  {player.isOwner && (
+                    <span className="ml-2 text-xs text-amber-400">👑</span>
+                  )}
+                </div>
+
+                <div className="w-20 text-xs text-yellow-400 font-semibold">
+                  {wpm} WPM
+                </div>
+
+                <div className="w-20 text-xs text-green-400">
+                  {accuracy.toFixed(1)}% acc
+                </div>
+
+                <div className="w-16 text-xs text-red-400">
+                  {errors} err
+                </div>
+
+                <div className="flex-1">
+                  <div className="w-full bg-neutral-700 rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-150 ${
+                        finished ? "bg-emerald-500" : isSelf ? "bg-blue-500" : "bg-neutral-500"
+                      }`}
+                      style={{
+                        width: `${Math.min(100, Math.max(0, progress))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="w-12 text-right text-xs text-neutral-400">
+                  {finished ? "✓" : `${Math.round(progress)}%`}
+                </div>
               </div>
-            </div>
-
-            <div className="w-10 text-right text-xs text-gray-600">
-              {pct}%
-            </div>
-          </div>
-        );
-      })}
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

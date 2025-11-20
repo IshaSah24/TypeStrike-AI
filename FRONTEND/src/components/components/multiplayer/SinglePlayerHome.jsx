@@ -1,4 +1,3 @@
-// components/SinglePlayerHome.jsx
 import React, { useEffect } from "react";
 import { useTypingGame } from "../../../context/TypingGameContext";
 import { useTheme } from "../../../context/ThemeContext";
@@ -133,6 +132,8 @@ function SinglePlayerHome() {
           typedChars={typedChars}
           onReset={resetGame}
           isTypingOver={isTypingOver}
+          mode={mode}
+          wordCount={wordCount}
         />
       ) : (
         <TypingArea

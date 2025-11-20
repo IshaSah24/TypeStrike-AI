@@ -12,13 +12,18 @@ import {
 } from "lucide-react";
 import CreateRoomOptions from "../components/components/multiplayer/CreateRoomOptions";
 import { useTypingGame } from "../context/TypingGameContext";
+import { useMultiplayerProvider } from "../context/MultiplayerContext";
 import { Navigate, useNavigate } from "@tanstack/react-router";
 import MultiplayerTypingArea from "./MultiplayerTypingArea";
+import { useRoomSocket } from "../hooks/useRoomSocket";
+import { useSelector } from "react-redux";
 
 export default function GameLobby() {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth || {});
+  const { createRoom, joinByCode, roomCode: socketRoomCode, isConnected } = useRoomSocket();
 
-  const typingGame = useTypingGame();
+  const typingGame = useMultiplayerProvider();
   const {
     handleModeSelect,
     handleOptionSelect,
@@ -31,12 +36,14 @@ export default function GameLobby() {
   const [inRoom, setInRoom] = useState(false);
   const [activeTab, setActiveTab] = useState("join");
   const [roomCode, setRoomCode] = useState("");
+  const [joinError, setJoinError] = useState("");
 
   const [roomName, setRoomName] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [maxPlayers, setMaxPlayers] = useState(4);
   const [generatedCode, setGeneratedCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
 
   const [localMode, setLocalMode] = useState("words"); 
@@ -100,17 +107,6 @@ export default function GameLobby() {
     },
   ];
   
-  const generateRoomCode = () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setGeneratedCode(code);
-  };
-
-  const copyToClipboard = () => {
-    if (!generatedCode) return;
-    navigator.clipboard.writeText(generatedCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -128,36 +124,103 @@ export default function GameLobby() {
   };
 
 
-  const handleCreateRoom = () => {
-
-    const opt = Number(localOpt);
-
-  
-    if (typeof handleModeSelect === "function") handleModeSelect (localMode);
-    console.log("mode is -->  ",  localMode) ;
-    
-    if (typeof handleOptionSelect === "function") handleOptionSelect(opt);
-    console.log("option is -->  ", opt) ;
-    
-
-    
-    if (localMode === "time") {
-
-      if (typeof setTimeDuration === "function") setTimeDuration(opt);
-    } else if (localMode === "words") {
-      if (typeof setWordCount === "function") setWordCount(opt);
-    } else if (localMode === "quote") {
-    
+  const handleCreateRoom = async () => {
+    if (!roomName.trim()) {
+      alert("Please enter a room name");
+      return;
     }
 
-    setInRoom(true); 
-
-    if (roomName){
-      navigate({ to: "/multiplayer/area/inroom" });
-    }else {
-      alert("Please generate a room code before creating a room.");
+    if (!isConnected) {
+      alert("Connecting to server... Please wait.");
+      return;
     }
-  
+
+    setLoading(true);
+    try {
+      const opt = Number(localOpt);
+      const gameSettings = {
+        mode: localMode,
+        option: opt,
+        wordCount: localMode === "words" ? opt : wordCount,
+        timeDuration: localMode === "time" ? opt : timeDuration,
+      };
+
+      if (typeof handleModeSelect === "function") handleModeSelect(localMode);
+      if (typeof handleOptionSelect === "function") handleOptionSelect(opt);
+
+      if (localMode === "time") {
+        if (typeof setTimeDuration === "function") setTimeDuration(opt);
+      } else if (localMode === "words") {
+        if (typeof setWordCount === "function") setWordCount(opt);
+      }
+
+      const roomData = await createRoom(roomName, user?.name, gameSettings);   
+      setGeneratedCode(roomData.code);
+      setInRoom(true);
+      
+      navigate({ 
+        to: "/multiplayer/area/inroom",
+        state: {
+          roomId: roomData.id,
+          roomCode: roomData.code,
+          roomName: roomData.name,
+          gameSettings: roomData.gameSettings || gameSettings,
+        }
+      });
+    } catch (error) {
+      console.error("Error creating room:", error);
+      alert(error.error || "Failed to create room");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleJoinRoom = async () => {
+    const sanitizedCode = roomCode.trim().toUpperCase();
+    if (!sanitizedCode) {
+      setJoinError("Please enter a room code");
+      return;
+    }
+    if (sanitizedCode.length !== 6) {
+      setJoinError("Room code must be 6 characters");
+      return;
+    }
+    if (sanitizedCode !== roomCode) {
+      setRoomCode(sanitizedCode);
+    }
+
+    if (!isConnected) {
+      alert("Connecting to server... Please wait.");
+      return;
+    }
+
+    setLoading(true);
+    setJoinError("");
+    try {
+      const roomData = await joinByCode(sanitizedCode, user?.name);
+      console.log("room  data is : ", roomData);
+      
+      navigate({ 
+        to: "/multiplayer/area/inroom",
+        state: {
+          roomId: roomData.id,
+          roomCode: roomData.code,
+          roomName: roomData.name,
+          gameSettings:
+            roomData.gameSettings || {
+              mode: roomData.mode || "words",
+              option: roomData.option || 10,
+              wordCount: roomData.wordCount || 10,
+              timeDuration: roomData.timeDuration || 15,
+            },
+        }
+      });
+    } catch (error) {
+      console.error("Error joining room:", error);
+      setJoinError(error.error || "Failed to join room. Invalid room code.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -222,15 +285,35 @@ export default function GameLobby() {
                   <div className="relative group mb-8">
                     <input
                       type="text"
-                      placeholder="Enter room code or search by name..."
+                      placeholder="Enter room code (e.g., ABC123)..."
                       value={roomCode}
-                      onChange={(e) =>
-                        setRoomCode(e.target.value.toUpperCase())
-                      }
+                      onChange={(e) => {
+                        setRoomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6));
+                        setJoinError("");
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          handleJoinRoom();
+                        }
+                      }}
                       className="w-full p-5 pl-14 pr-6 border border-neutral-700/50 rounded-xl bg-neutral-800/30 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600 focus:border-transparent transition-all duration-300 group-hover:border-neutral-600/70 font-light tracking-wider"
                     />
                     <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-500" />
                   </div>
+                  
+                  {joinError && (
+                    <div className="text-red-400 text-sm mt-2 text-center">
+                      {joinError}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleJoinRoom}
+                    disabled={loading || !roomCode.trim()}
+                    className="w-full py-4 bg-gradient-to-r from-white via-neutral-50 to-white text-black rounded-xl hover:from-neutral-50 hover:via-white hover:to-neutral-50 transition-all duration-500 font-light tracking-wider shadow-2xl hover:shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? "Joining..." : "Join Room"}
+                  </button>
 
                   <div className="flex items-center gap-4 mb-6">
                     <div className="flex-1 h-px bg-neutral-700/50"></div>
@@ -402,14 +485,19 @@ export default function GameLobby() {
                     </div>
                   </div>
 
-                  {generatedCode && (
+                  {(generatedCode || socketRoomCode) && (
                     <div className="p-6 bg-neutral-800/40 border border-neutral-700/50 rounded-xl">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-sm text-neutral-400 font-light tracking-wide">
                           Room Code
                         </span>
                         <button
-                          onClick={copyToClipboard}
+                          onClick={() => {
+                            const code = socketRoomCode || generatedCode;
+                            navigator.clipboard.writeText(code);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }}
                           className="flex items-center gap-2 px-3 py-1.5 text-xs text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-700/50 transition-all duration-300"
                         >
                           {copied ? (
@@ -426,7 +514,7 @@ export default function GameLobby() {
                         </button>
                       </div>
                       <div className="text-3xl font-light text-white tracking-[0.3em] text-center py-2">
-                        {generatedCode}
+                        {socketRoomCode || generatedCode}
                       </div>
                     </div>
                   )}
@@ -434,19 +522,13 @@ export default function GameLobby() {
 
                 <div className="flex gap-4 pt-4">
                   <button
-                    onClick={generateRoomCode}
-                    className="flex-1 py-4 border border-neutral-700 rounded-xl bg-neutral-800/50 text-neutral-300 hover:bg-neutral-700/50 hover:border-neutral-600 transition-all duration-300 font-light tracking-wide hover:scale-[1.02]"
-                  >
-                    Generate Code
-                  </button>
-
-                  <button
                     onClick={handleCreateRoom}
-                    className="flex-1 bg-gradient-to-r from-white via-neutral-50 to-white text-black py-4 rounded-xl hover:from-neutral-50 hover:via-white hover:to-neutral-50 transition-all duration-500 font-light tracking-wider shadow-2xl hover:shadow-white/10 relative overflow-hidden group hover:scale-[1.02]"
+                    disabled={loading || !roomName.trim()}
+                    className="flex-1 bg-gradient-to-r from-white via-neutral-50 to-white text-black py-4 rounded-xl hover:from-neutral-50 hover:via-white hover:to-neutral-50 transition-all duration-500 font-light tracking-wider shadow-2xl hover:shadow-white/10 relative overflow-hidden group hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                     <span className="relative z-10 uppercase text-sm font-medium tracking-[0.15em]">
-                      Create Room
+                      {loading ? "Creating..." : "Create Room"}
                     </span>
                   </button>
                 </div>

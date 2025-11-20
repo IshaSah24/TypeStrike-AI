@@ -17,7 +17,6 @@ const LandingProfileMenu = () => {
 
   return (
     <div className="relative">
-      {/* Avatar */}
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="w-12 h-12 flex items-center justify-center rounded-full bg-black text-white font-semibold uppercase hover:bg-gray-800"

@@ -9,7 +9,7 @@ import React, {
   useContext,
 } from "react";
 
-import { io } from "socket.io-client";
+import { useRoomSocket } from "../hooks/useRoomSocket";
 
 const PUNCTUATION_MARKS = [".", ",", ";", "!", "?", ":"];
 const QUOTES = [
@@ -83,6 +83,7 @@ export const MultiplayerProvider = ({ children }) => {
   const logoRef = useRef(null);
   const hasInteractedRef = useRef(false);
 
+  const { socket } = useRoomSocket();
   const socketRef = useRef(null);
 
   const playersRef = useRef(null);
@@ -104,15 +105,12 @@ export const MultiplayerProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000", {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-    });
+    if (!socket) return;
 
-    const socket = socketRef.current;
+    socketRef.current = socket;
 
     const handleWordsBroadcast = (payload) => {
-      const words = payload?.words || payload?.word; 
+      const words = payload?.words || payload?.word;
       if (!words || !Array.isArray(words) || !words.length) return;
 
       if (wordsRef.current) wordsRef.current.innerHTML = "";
@@ -120,31 +118,23 @@ export const MultiplayerProvider = ({ children }) => {
         wordsRef.current.innerHTML += formatWord(w);
       });
 
-      
       markFirstElement();
-      console.log(
-        "Rendered broadcasted words (from server):",
-        words.join(", ")
-      );
+      console.log("Rendered broadcasted words (from server):", words.join(", "));
     };
 
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-      
-      if (pendingWordsRef.current) {
+    const flushQueuedWords = () => {
+      if (pendingWordsRef.current && socket.connected) {
         socket.emit("sendWords", {
           words: pendingWordsRef.current,
           meta: { from: "client-queued" },
         });
-        console.log(
-          "Flushed queued words on connect:",
-          pendingWordsRef.current
-        );
+        console.log("Flushed queued words on connect:", pendingWordsRef.current);
         pendingWordsRef.current = null;
       }
+    };
 
-
-    });
+    flushQueuedWords();
+    socket.on("connect", flushQueuedWords);
 
     socket.on("connect_error", (err) => {
       console.error("Socket connect_error:", err);
@@ -153,21 +143,17 @@ export const MultiplayerProvider = ({ children }) => {
     socket.on("wordsBroadcast", handleWordsBroadcast);
 
     const handlePlayersUpdate = (playersObj) => {
- 
       setPlayers(playersObj || {});
     };
 
     socket.on("playersUpdate", handlePlayersUpdate);
 
     return () => {
-      if (socket) {
-        socket.off("wordsBroadcast", handleWordsBroadcast);
-        socket.off("playersUpdate", handlePlayersUpdate);
-        socket.disconnect();
-        socketRef.current = null;
-      }
+      socket.off("wordsBroadcast", handleWordsBroadcast);
+      socket.off("playersUpdate", handlePlayersUpdate);
+      socket.off("connect", flushQueuedWords);
     };
-  }, []); 
+  }, [socket]); 
 
 
   useEffect(
