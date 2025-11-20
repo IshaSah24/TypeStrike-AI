@@ -125,7 +125,7 @@ This document summarizes all the improvements, fixes, and new features added to 
 
 ## Testing Checklist
 
-Before deploying, test the following:
+Before we deploying :
 
 1. **User Authentication**
 
