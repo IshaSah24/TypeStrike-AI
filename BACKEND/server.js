@@ -88,8 +88,8 @@ io.on("connection", (socket) => {
   // The  connection  should  start after creating  the  room
   // creating  the room ✅
   //    - initializing  the  words✅
-  // Joining the players  insode the room
-  // broadcasting  the words after starting  the game
+  // Joining the players  insode the room✅
+  // broadcasting  the words after starting  the game✅
   //    - In  room  there  should be  atleast  2  people  (minimum)
   // user can  choose  the state  like ready/idle✅
   // host  can  remove the user from  the room ✅

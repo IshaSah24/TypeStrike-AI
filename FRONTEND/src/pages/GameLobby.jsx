@@ -153,7 +153,8 @@ export default function GameLobby() {
       } else if (localMode === "words") {
         if (typeof setWordCount === "function") setWordCount(opt);
       }
-
+      console.log("user's name before creating  room", user);
+      
       const roomData = await createRoom(roomName, user?.name, gameSettings);   
       setGeneratedCode(roomData.code);
       setInRoom(true);
@@ -225,8 +226,6 @@ export default function GameLobby() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
-    
-
       <div className="relative overflow-hidden">
 
         <div className="relative z-10 mb-12 text-center">
@@ -278,9 +277,7 @@ export default function GameLobby() {
 
           <div className="p-8">
             {activeTab === "join" ? (
-             
               <div className="space-y-8">
-                
                 <div className="max-w-2xl mx-auto">
                   <div className="relative group mb-8">
                     <input
