@@ -1,4 +1,4 @@
-// src/routes.jsx
+
 import {
   createRootRoute,
   createRoute,
@@ -19,7 +19,6 @@ import MultiplayerHome from "./components/components/multiplayer/MultiplayerHome
 import MultiplayerTypingArea from "./pages/MultiplayerTypingArea.jsx";
 import InRoom from "./components/components/multiplayer/Lobby/InRoom.jsx";
 
-// Root Layout
 const RootRoute = createRootRoute({
   component: () => (
     <Layout>
@@ -77,18 +76,17 @@ const MultiplayerLobbyRoute = createRoute({
     </ProtectedRoute>
   ),
 });
+// testing...
+// const MultiplayerGameRoute = createRoute({
+//   getParentRoute: () => RootRoute,
+//   path: "/play/multiplayer/game",
+//   component: () => (
+//     <ProtectedRoute>
+//       <MultiplayerHome />
+//     </ProtectedRoute>
+//   ),
+// });
 
-const MultiplayerGameRoute = createRoute({
-  getParentRoute: () => RootRoute,
-  path: "/play/multiplayer/game",
-  component: () => (
-    <ProtectedRoute>
-      <MultiplayerHome />
-    </ProtectedRoute>
-  ),
-});
-
-// Setup router
 export const router = createRouter({
   routeTree: RootRoute.addChildren([
     LoginRoute,
@@ -96,7 +94,8 @@ export const router = createRouter({
     ShowWpmRoute,
     SinglePlayerRoute,
     MultiplayerLobbyRoute,
-    MultiplayerGameRoute,
+    /*testing...
+     MultiplayerGameRoute, */
     MultiplayerTypingAreaRoute,
     InRoomRoute
   ]),

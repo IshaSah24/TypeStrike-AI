@@ -20,6 +20,7 @@ export const RoomSocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [latestResults, setLatestResults] = useState(null);
   const [playerProgress, setPlayerProgress] = useState({});
+  const [messages, setMessages] = useState([]);
   const [shouldConnect, setShouldConnect] = useState(false);
   const { user } = useSelector((state) => state.auth || {});
 
@@ -123,6 +124,13 @@ export const RoomSocketProvider = ({ children }) => {
       }));
     };
 
+    const handleWordsBroadcast = (data) => {
+      setRoom((prev) => ({
+        ...prev,
+        words: data.words,
+      }));
+    };
+
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
     socket.on("roomUsers", handleRoomUsers);
@@ -133,6 +141,13 @@ export const RoomSocketProvider = ({ children }) => {
     socket.on("playerFinished", handlePlayerFinished);
     socket.on("raceComplete", handleRaceComplete);
     socket.on("wordsPrepared", handleWordsPrepared);
+    socket.on("wordsBroadcast", handleWordsBroadcast);
+
+    const handleChatMessage = (chatEntry) => {
+      setMessages((prev) => [...prev, chatEntry]);
+    };
+
+    socket.on("chatMessage", handleChatMessage);
 
     return () => {
       socket.off("connect", handleConnect);
@@ -145,6 +160,8 @@ export const RoomSocketProvider = ({ children }) => {
       socket.off("playerFinished", handlePlayerFinished);
       socket.off("raceComplete", handleRaceComplete);
       socket.off("wordsPrepared", handleWordsPrepared);
+      socket.off("wordsBroadcast", handleWordsBroadcast);
+      socket.off("chatMessage", handleChatMessage);
       socket.disconnect();
       socketRef.current = null;
       setIsConnected(false);
@@ -152,6 +169,7 @@ export const RoomSocketProvider = ({ children }) => {
       setUsers([]);
       setRoomCode("");
       setPlayerProgress({});
+      setMessages([]);
       setLatestResults(null);
     };
   }, [shouldConnect]);
@@ -164,6 +182,7 @@ export const RoomSocketProvider = ({ children }) => {
       setRoomCode("");
       setPlayerProgress({});
       setLatestResults(null);
+      setMessages([]);
     }
   }, [shouldConnect]);
 
@@ -208,6 +227,7 @@ export const RoomSocketProvider = ({ children }) => {
               setRoom(roomData);
               setRoomCode(roomData.code);
               setUsers(roomData.users || []);
+              setMessages(roomData.chat || []);
               resolve(roomData);
             }
           }
@@ -240,6 +260,7 @@ export const RoomSocketProvider = ({ children }) => {
               setRoom(roomData);
               setRoomCode(roomData.code);
               setUsers(roomData.users || []);
+              setMessages(roomData.chat || []);
               resolve(roomData);
             }
           }
@@ -272,6 +293,7 @@ export const RoomSocketProvider = ({ children }) => {
               setRoom(roomData);
               setRoomCode(roomData.code);
               setUsers(roomData.users || []);
+              setMessages(roomData.chat || []);
               resolve(roomData);
             }
           }
@@ -372,6 +394,32 @@ export const RoomSocketProvider = ({ children }) => {
     [ensureConnected]
   );
 
+  const sendChatMessage = useCallback(
+    (roomId, text) =>
+      new Promise((resolve, reject) => {
+        let socket;
+        try {
+          socket = ensureConnected();
+        } catch (err) {
+          reject(err);
+          return;
+        }
+
+        socket.emit(
+          "chatMessage",
+          { roomId, message: text },
+          (error, response) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(response);
+            }
+          }
+        );
+      }),
+    [ensureConnected]
+  );
+
   const value = useMemo(
     () => ({
       socket: socketRef.current,
@@ -381,6 +429,7 @@ export const RoomSocketProvider = ({ children }) => {
       isConnected,
       latestResults,
       playerProgress,
+      messages,
       createRoom,
       joinRoom,
       joinByCode,
@@ -388,6 +437,7 @@ export const RoomSocketProvider = ({ children }) => {
       startRace,
       sendWords,
       finishRace,
+      sendChatMessage,
       connectSocket,
       disconnectSocket,
       connectionRequested: shouldConnect,
@@ -399,6 +449,7 @@ export const RoomSocketProvider = ({ children }) => {
       isConnected,
       latestResults,
       playerProgress,
+      messages,
       createRoom,
       joinRoom,
       joinByCode,
@@ -406,6 +457,7 @@ export const RoomSocketProvider = ({ children }) => {
       startRace,
       sendWords,
       finishRace,
+      sendChatMessage,
       connectSocket,
       disconnectSocket,
       shouldConnect,

@@ -2,7 +2,8 @@ import { RotateCcw } from "lucide-react";
 import React, { useEffect } from "react";
 import "../styles/type.css";
 import { useMultiplayerProvider } from "../context/MultiplayerContext";
-import PlayersList from "../components/components/Playerslist";
+import PlayersList from "../components/components/PlayersList";
+
 
 function MultiplayerArea({
   showkey,
@@ -13,14 +14,46 @@ function MultiplayerArea({
   timerRef,
   timeDuration,
   mode,
-  isMultiplayer = false, 
+  isMultiplayer = false,
+  words = [],
 }) {
+  console.log(wordsRef);
+  
   const { playersRef } = useMultiplayerProvider();
   // console.log(timeDuration);
   console.log(mode);
   if (mode === "time") console.log(timeDuration);
 
   console.log(wordsRef.current);
+
+  useEffect(() => {
+    if (!wordsRef?.current) return;
+
+    const container = wordsRef.current;
+    container.innerHTML = "";
+
+    if (!Array.isArray(words) || words.length === 0) return;
+
+    words.forEach((word) => {
+      const wordDiv = document.createElement("div");
+      wordDiv.className = "formatted";
+
+      word.split("").forEach((letter) => {
+        const span = document.createElement("span");
+        span.className = "letter";
+        span.textContent = letter;
+        wordDiv.appendChild(span);
+      });
+
+      container.appendChild(wordDiv);
+    });
+
+    const firstWord = container.querySelector(".formatted");
+    const firstLetter = container.querySelector(".letter");
+
+    if (firstWord) firstWord.classList.add("current");
+    if (firstLetter) firstLetter.classList.add("current");
+  }, [words, wordsRef]);
 
   return (
     <div>
@@ -83,14 +116,14 @@ function MultiplayerArea({
         )}
       </div>
 
-      <div className="game-container">
+      {/* <div className="game-container">
         <div ref={timerRef} className="timer" />
         <div ref={wordsRef} className="words-box" />
       
         <div className="mt-4">
           <PlayersList />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -115,6 +115,8 @@ export const MultiplayerProvider = ({ children }) => {
 
       if (wordsRef.current) wordsRef.current.innerHTML = "";
       words.forEach((w) => {
+        console.log("Broadcasted word received:", w);
+        
         wordsRef.current.innerHTML += formatWord(w);
       });
 
@@ -168,9 +170,7 @@ export const MultiplayerProvider = ({ children }) => {
         playersRef.current.innerHTML = ""; 
 
         const totalWords =
-          wordsRef.current?.querySelectorAll?.(".formatted")?.length ||
-          currentWords.length ||
-          1;
+          wordsRef.current?.querySelectorAll?.(".formatted")?.length || 1;
 
         Object.entries(playersObj).forEach(([id, p]) => {
           const row = document.createElement("div");

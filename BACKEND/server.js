@@ -127,6 +127,7 @@ io.on("connection", (socket) => {
         wordsLocked: false,
         startTimestamp: null,
         results: [],
+        chat: [],
       });
 
       const creatorUser = {
@@ -153,6 +154,7 @@ io.on("connection", (socket) => {
         users: Array.from(rooms.get(roomId).users.values()),
         words: rooms.get(roomId).words,
         gameSettings,
+        chat: [],
       });
 
       io.to(roomId).emit("roomUsers", {
@@ -173,6 +175,8 @@ io.on("connection", (socket) => {
   socket.on("sendWords", (payload, ack) => {
     try {
       const { roomId, words } = payload || {};
+      console.log("BACKEND RECEIVED  WORDS : ", words );
+      
       if (!roomId) {
         return ack?.({ error: "Room ID required" });
       }
@@ -203,11 +207,60 @@ io.on("connection", (socket) => {
         roomId,
         words: cleanedWords,
       });
+      io.to(roomId).emit("wordsBroadcast", {
+        roomId,
+        words: cleanedWords,
+      });
       console.log(
         `Words updated for room ${roomId} by ${socket.id} (${cleanedWords.length} words)`
       );
     } catch (err) {
       console.error("sendWords error:", err);
+      ack?.({ error: "Server error" });
+    }
+  });
+
+  socket.on("chatMessage", (payload, ack) => {
+    try {
+      const { roomId, message } = payload || {};
+      if (!roomId || !rooms.has(roomId)) {
+        return ack?.({ error: "Room not found" });
+      }
+
+      const room = rooms.get(roomId);
+      const user = room.users.get(socket.id);
+      if (!user) {
+        return ack?.({ error: "You are not in this room" });
+      }
+
+      const trimmedMessage = String(message || "").trim();
+      if (!trimmedMessage) {
+        return ack?.({ error: "Message cannot be empty" });
+      }
+
+      const chatEntry = {
+        id: `${Date.now()}_${socket.id}`,
+        roomId,
+        userId: socket.id,
+        name: user.name,
+        avatar: user.avatar,
+        message: trimmedMessage.slice(0, 500),
+        timestamp: Date.now(),
+      };
+
+      if (!Array.isArray(room.chat)) {
+        room.chat = [];
+      }
+
+      room.chat.push(chatEntry);
+      if (room.chat.length > 200) {
+        room.chat = room.chat.slice(-200);
+      }
+
+      io.to(roomId).emit("chatMessage", chatEntry);
+      ack?.(null, chatEntry);
+    } catch (err) {
+      console.error("chatMessage error:", err);
       ack?.({ error: "Server error" });
     }
   });
@@ -324,6 +377,8 @@ io.on("connection", (socket) => {
         words: room.words,
         state: room.state,
         gameSettings: room.gameSettings,
+        chat: room.chat || [],
+        chat: room.chat || [],
       });
 
       socket
@@ -626,7 +681,13 @@ io.on("connection", (socket) => {
         return ack?.({ error: "Invalid room code" });
       }
 
+    
+
       const room = rooms.get(roomId);
+    
+      if (room.state === "running" || room.state === "countdown") {
+        return ack?.({ error: "Oops! You're  late race has  allready  started" });
+      }
       const JoiningUserData = {
         id: socket.id,
         name: payload?.displayName || "Anonymous",
@@ -651,6 +712,7 @@ io.on("connection", (socket) => {
         words: room.words,
         state: room.state,
         gameSettings: room.gameSettings,
+        chat: room.chat || [],
       });
 
       socket

@@ -8,6 +8,8 @@ import { useRouterState } from "@tanstack/react-router";
 import { useRoomSocket } from "../hooks/useRoomSocket";
 import { useSelector } from "react-redux";
 import PlayersList from "../components/components/PlayersList";
+import MultiplayerArea from "./MultiplayerArea";
+import { useMultiplayerProvider } from "../context/MultiplayerContext";
 
 function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: initialProgress }) {
   const { theme } = useTheme();
@@ -15,24 +17,40 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
   const { location } = useRouterState();
   const { user } = useSelector((state) => state.auth || {});
   const { socket, finishRace } = useRoomSocket();
+  const {
+    wordsRef,
+    focusHereRef,
+    cursorRef,
+    timerRef,
+    typedChars,
+    setTypedChars,
+    isTypingOver,
+    setIsTypingOver,
+    hasStarted,
+    setHasStarted,
+    lastEntry,
+    resetGameState,
+  } = useMultiplayerProvider();
+
+  console.log("testing  in :",wordsRef.current);
+  console.log("testing  cursor  ref",  cursorRef.current);
+  
 
   const [words, setWords] = useState(initialWords || []);
-  const [typedChars, setTypedChars] = useState([]);
-  const [isTypingOver, setIsTypingOver] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
   const [playerProgress, setPlayerProgress] = useState(initialProgress || {});
   const [raceStarted, setRaceStarted] = useState(false);
   const [startTimestamp, setStartTimestamp] = useState(null);
 
-  const wordsRef = useRef(null);
-  const focusHereRef = useRef(null);
-  const cursorRef = useRef(null);
-  const timerRef = useRef(null);
-  const lastEntry = typedChars[typedChars.length - 1] || null;
   const lastProgressEmitRef = useRef(0);
   const startedTypingTimeRef = useRef(null);
 
   const currentRoomId = roomId || location.state?.roomId;
+
+  useEffect(() => {
+    if (Array.isArray(initialWords)) {
+      setWords(initialWords);
+    }
+  }, [initialWords]);
 
   useEffect(() => {
     if (!socket) return;
@@ -42,27 +60,9 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
       setWords(data.words || []);
       setStartTimestamp(data.startTimestamp);
       setHasStarted(true);
+       setTypedChars([]);
+       setIsTypingOver(false);
       setRaceStarted(false);
-      
-      if (wordsRef.current && data.words) {
-        wordsRef.current.innerHTML = "";
-        data.words.forEach((word) => {
-          const wordDiv = document.createElement("div");
-          wordDiv.className = "formatted";
-          word.split("").forEach((letter) => {
-            const span = document.createElement("span");
-            span.className = "letter";
-            span.textContent = letter;
-            wordDiv.appendChild(span);
-          });
-          wordsRef.current.appendChild(wordDiv);
-        });
-        
-        const firstWord = wordsRef.current.querySelector(".formatted");
-        const firstLetter = wordsRef.current.querySelector(".letter");
-        if (firstWord) firstWord.classList.add("current");
-        if (firstLetter) firstLetter.classList.add("current");
-      }
     };
 
     const handleRaceRunning = (data) => {
@@ -102,7 +102,7 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
       socket.off("playerProgress", handlePlayerProgress);
       socket.off("playerFinished", handlePlayerFinished);
     };
-  }, [socket]);
+  }, [socket, setHasStarted, setTypedChars, setIsTypingOver]);
 
   useEffect(() => {
     const app = document.getElementById("app");
@@ -113,8 +113,16 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
     if (isTypingOver && wordsRef.current) {
       const clonedDOM = wordsRef.current.cloneNode(true);
       setFinalDOM(clonedDOM);
+      console.log("TEST : Final DOM set for results display.", clonedDOM);
+      
     }
   }, [isTypingOver, setFinalDOM]);
+
+  useEffect(() => {
+    return () => {
+      resetGameState();
+    };
+  }, [resetGameState]);
 
   const getCurrentPosition = () => {
     const wordsEls = wordsRef.current?.querySelectorAll?.(".formatted") || [];
@@ -434,9 +442,6 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
           />
         ) : (
           <>
-            <div className="mb-4">
-              <PlayersList playerProgress={playerProgress} />
-            </div>
             <MultiplayerArea
               showkey={false}
               handleReset={() => {}}
@@ -450,61 +455,15 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
               mode="words"
               onKeyPress={handleKeyPress}
               isMultiplayer={true}
+              words={words}
             />
+            <div className="mb-4">
+              <PlayersList playerProgress={playerProgress} />
+            </div>
           </>
         )}
       </div>
     </div>
   );
 }
-function MultiplayerArea({
-  showkey,
-  handleReset,
-  focusHereRef,
-  cursorRef,
-  wordsRef,
-  timerRef,
-  lastChar,
-  lastCorrect,
-  timeDuration,
-  mode,
-  onKeyPress,
-  isMultiplayer = false,
-}) {
-  return (
-    <div>
-      <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">
-        <div className="relative max-h-[80vh] overflow-y-auto leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
-          <div
-            ref={wordsRef}
-            className="words transition-opacity duration-500 opacity-100"
-          ></div>
-          <div
-            id="cursor"
-            ref={cursorRef}
-            className="absolute z-10 blink transition-[top,left] duration-200 ease-in-out"
-            style={{
-              left: "22px",
-              top: "16px",
-              width: "3px",
-              height: "2.5rem",
-              backgroundColor: "rgb(30, 168, 163)",
-            }}
-          ></div>
-        </div>
-
-        <div
-          ref={focusHereRef}
-          className="typingarea absolute top-[-0.5rem] left-0 w-full h-[8rem] opacity-0"
-          tabIndex={0}
-        >
-          <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm pointer-events-none">
-            Click here to focus or type any key
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default MultiplayerTypingArea;

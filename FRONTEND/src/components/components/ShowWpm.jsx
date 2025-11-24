@@ -107,25 +107,23 @@ function ShowWpm({ timerVal, typedChars, onReset, isTypingOver, mode, wordCount,
   const { isAuthenticated } = useSelector((state) => state.auth || {});
   const [saved, setSaved] = useState(false);
 
-  // Save typing result when game is over
   useEffect(() => {
     if (isTypingOver && isAuthenticated && !saved) {
       const saveResult = async () => {
         try {
           if (multiplayer && roomId) {
-            // Save race result for multiplayer
+            
             await saveRaceResult({
               roomId,
               roomName: roomName || "Untitled Room",
               wpm,
               accuracy,
               errors: incorrect,
-              position: 1, // This should come from socket.io
-              totalPlayers: 1, // This should come from socket.io
+              position: 1,
+              totalPlayers: 1, 
             });
             console.log("Race result saved successfully");
           } else {
-            // Save single player result
             await saveTypingResult({
               wpm,
               accuracy,

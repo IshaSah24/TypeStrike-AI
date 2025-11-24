@@ -142,7 +142,7 @@ function App() {
         </nav>
         <div className="h-20"></div>
       </div>
-      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 overflow-hidden">
+      <div className=" bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 overflow-hidden">
         <section className="relative px-6 py-32 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {floatingLetters.map((letter, i) => {

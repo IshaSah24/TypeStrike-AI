@@ -37,12 +37,13 @@ export default function InRoom() {
     joinByCode: joinByCodeFn,
     playerProgress,
     latestResults,
+    messages,
+    sendChatMessage,
   } = useRoomSocket();
 
   const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [raceState, setRaceState] = useState("waiting"); // waiting, countdown, running, completed
+  const [raceState, setRaceState] = useState("waiting");
   const [countdown, setCountdown] = useState(0);
   const [startingRace, setStartingRace] = useState(false);
 
@@ -59,7 +60,6 @@ export default function InRoom() {
   const currentSettings =
     room?.gameSettings || roomData?.gameSettings || defaultSettings;
 
-  // Join room on mount if we have room data
   useEffect(() => {
     if (roomData?.roomId && socket?.connected && !room) {
       if (roomData.roomCode) {
@@ -103,23 +103,15 @@ export default function InRoom() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
-    if (message.trim()) {
-      setMessages([
-        ...messages,
-        {
-          id: Date.now().toString(),
-          userId: user?.id || "1",
-          userName: user?.name || "You",
-          message: message.trim(),
-          timestamp: new Date().toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
+    const trimmed = message.trim();
+    if (!trimmed || !currentRoomId) return;
+    try {
+      await sendChatMessage(currentRoomId, trimmed);
       setMessage("");
+    } catch (err) {
+      console.error("chat send error", err);
     }
   };
 
@@ -142,6 +134,8 @@ export default function InRoom() {
     try {
       setStartingRace(true);
       const raceWords = generateRaceWords(currentSettings);
+      console.log("printing  race  words  : ", raceWords);
+      // words sedning  to the backend ----
       await sendWords(currentRoomId, raceWords);
       await startRace(currentRoomId, 3000, raceWords.length);
     } catch (error) {
@@ -364,7 +358,7 @@ export default function InRoom() {
                       </button>
                     )}
                     <button
-                      onClick={() => navigate({ to: "/play/multiplayer" })}
+                      onClick={() => navigate({ to: "/" })}
                       className="px-8 py-5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-lg text-white font-medium transition-colors flex items-center gap-3"
                     >
                       <LogOut className="w-5 h-5" />
@@ -390,32 +384,35 @@ export default function InRoom() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-[500px]">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`${
-                        msg.userId === (user?.id || "1")
-                          ? "ml-auto bg-neutral-800"
-                          : "bg-neutral-900"
-                      } max-w-[85%] rounded-lg p-4 border ${
-                        msg.userId === (user?.id || "1")
-                          ? "border-neutral-700"
-                          : "border-neutral-800"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-neutral-400">
-                          {msg.userName}
-                        </span>
-                        <span className="text-xs text-neutral-600">
-                          {msg.timestamp}
-                        </span>
+                  {messages.map((msg) => {
+                    const isSelf = msg.userId === socket?.id;
+                    const formattedTs = new Date(msg.timestamp || Date.now()).toLocaleTimeString(
+                      "en-US",
+                      { hour: "2-digit", minute: "2-digit" }
+                    );
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`${
+                          isSelf ? "ml-auto bg-neutral-800" : "bg-neutral-900"
+                        } max-w-[85%] rounded-lg p-4 border ${
+                          isSelf ? "border-neutral-700" : "border-neutral-800"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-neutral-400">
+                            {isSelf ? `${msg.name || "You"} (You)` : msg.name || "Player"}
+                          </span>
+                          <span className="text-xs text-neutral-600">
+                            {formattedTs}
+                          </span>
+                        </div>
+                        <p className="text-sm text-neutral-200 break-words leading-relaxed">
+                          {msg.message}
+                        </p>
                       </div>
-                      <p className="text-sm text-neutral-200 break-words leading-relaxed">
-                        {msg.message}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <form
