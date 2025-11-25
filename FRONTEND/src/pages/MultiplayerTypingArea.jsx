@@ -30,6 +30,7 @@ function MultiplayerTypingArea({ roomId, words: initialWords, playerProgress: in
     setHasStarted,
     lastEntry,
     resetGameState,
+    
   } = useMultiplayerProvider();
 
   console.log("testing  in :",wordsRef.current);

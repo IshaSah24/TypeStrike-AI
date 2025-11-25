@@ -17,7 +17,9 @@ function MultiplayerArea({
   isMultiplayer = false,
   words = [],
 }) {
-  console.log(wordsRef);
+  console.log("wordsref  in  typing area :", wordsRef);
+  console.log("printing words in typing  area",words);
+  
   
   const { playersRef } = useMultiplayerProvider();
   // console.log(timeDuration);
