@@ -4,7 +4,6 @@ import "../styles/type.css";
 import { useMultiplayerProvider } from "../context/MultiplayerContext";
 import PlayersList from "../components/components/PlayersList";
 
-
 function MultiplayerArea({
   showkey,
   handleReset,
@@ -15,18 +14,13 @@ function MultiplayerArea({
   timeDuration,
   mode,
   isMultiplayer = false,
+  onKeyPress,
   words = [],
 }) {
   console.log("wordsref  in  typing area :", wordsRef);
-  console.log("printing words in typing  area",words);
-  
-  
-  const { playersRef } = useMultiplayerProvider();
-  // console.log(timeDuration);
-  console.log(mode);
-  if (mode === "time") console.log(timeDuration);
+  console.log("printing words in typing  area", words);
 
-  console.log(wordsRef.current);
+  const { playersRef } = useMultiplayerProvider();
 
   useEffect(() => {
     if (!wordsRef?.current) return;
@@ -57,22 +51,25 @@ function MultiplayerArea({
     if (firstLetter) firstLetter.classList.add("current");
   }, [words, wordsRef]);
 
+  useEffect(() => {
+    focusHereRef?.current?.focus?.();
+  }, []);
+
   return (
     <div>
       <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">
-      
+
         {mode === "time" && (
           <div className="text-right mb-2 text-start">
             <span ref={timerRef}>{timeDuration}</span>s
           </div>
         )}
 
-       
-        <div className="  relative max-h-[80vh] overflow-y-auto leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
-          <div
-            ref={wordsRef}
-            className="words transition-opacity duration-500 opacity-100"
-          ></div>
+        {/* WORDS + CURSOR */}
+        <div className="relative max-h-[80vh] leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
+          <div ref={wordsRef} className="words transition-opacity duration-500 opacity-100"></div>
+
+          {/* Cursor has NO keyboard events */}
           <div
             id="cursor"
             ref={cursorRef}
@@ -87,18 +84,17 @@ function MultiplayerArea({
           ></div>
         </div>
 
-    
         <div
           ref={focusHereRef}
           className="typingarea absolute top-[-0.5rem] left-0 w-full h-[8rem] opacity-0"
           tabIndex={0}
+          onKeyDown={onKeyPress}
         >
           <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm pointer-events-none">
             Click here to focus or type any key
           </div>
         </div>
 
-      
         {!isMultiplayer && (
           <div className="flex justify-center h-10 mt-8 z-1 relative">
             <button
@@ -110,24 +106,14 @@ function MultiplayerArea({
           </div>
         )}
 
-      
         {showkey && (
           <div className="mt-6 text-center text-gray-500">
             [On-screen keyboard coming soon]
           </div>
         )}
       </div>
-
-      {/* <div className="game-container">
-        <div ref={timerRef} className="timer" />
-        <div ref={wordsRef} className="words-box" />
-      
-        <div className="mt-4">
-          <PlayersList />
-        </div>
-      </div> */}
     </div>
   );
 }
+export default React.memo(MultiplayerArea);
 
-export default MultiplayerArea;
