@@ -134,8 +134,7 @@ export default function InRoom() {
     try {
       setStartingRace(true);
       const raceWords = generateRaceWords(currentSettings);
-      console.log("printing  race  words  : ", raceWords);
-      // words sedning  to the backend ----
+      console.log(" before  sedning to the  server  : ", raceWords);
       await sendWords(currentRoomId, raceWords);
       await startRace(currentRoomId, 3000, raceWords.length);
     } catch (error) {
@@ -180,7 +179,6 @@ export default function InRoom() {
     }
   };
 
-  // Show typing area once countdown begins so clients receive raceStart payload
   if (raceState === "countdown" || raceState === "running") {
     return (
       <MultiplayerTypingArea
@@ -191,7 +189,6 @@ export default function InRoom() {
     );
   }
 
-  // Show results when race is completed
   if (raceState === "completed" && latestResults) {
     return (
       <RaceResults

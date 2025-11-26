@@ -153,7 +153,7 @@ export default function GameLobby() {
       } else if (localMode === "words") {
         if (typeof setWordCount === "function") setWordCount(opt);
       }
-      console.log("user's name before creating  room", user);
+      // console.log("user's name before creating  room", user);
       
       const roomData = await createRoom(roomName, user?.name, gameSettings);   
       setGeneratedCode(roomData.code);

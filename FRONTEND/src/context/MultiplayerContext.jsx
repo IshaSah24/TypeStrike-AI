@@ -1,4 +1,3 @@
-
 import React, {
   useState,
   useRef,
@@ -8,25 +7,16 @@ import React, {
   createContext,
   useContext,
 } from "react";
-
-import { io } from "socket.io-client";
+import { useRoomSocket } from "../hooks/useRoomSocket"; 
 
 const PUNCTUATION_MARKS = [".", ",", ";", "!", "?", ":"];
 const QUOTES = [
-  {
-    text: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-  },
+  { text: "Success is not final, failure is not fatal: It is the courage to continue that counts." },
   { text: "Believe you can and you're halfway there." },
   { text: "Don't watch the clock; do what it does. Keep going." },
-  {
-    text: "The future belongs to those who believe in the beauty of their dreams.",
-  },
-  {
-    text: "Hardships often prepare ordinary people for an extraordinary destiny.",
-  },
-  {
-    text: "Your time is limited so don't waste it living someone else's life.",
-  },
+  { text: "The future belongs to those who believe in the beauty of their dreams." },
+  { text: "Hardships often prepare ordinary people for an extraordinary destiny." },
+  { text: "Your time is limited so don't waste it living someone else's life." },
   { text: "Start where you are. Use what you have. Do what you can." },
   { text: "It does not matter how slowly you go as long as you do not stop." },
   { text: "Great things never come from comfort zones." },
@@ -66,10 +56,9 @@ export const MultiplayerProvider = ({ children }) => {
   const [showHeader, setShowHeader] = useState(true);
   const [hasStartedTyping, setHasStartedTyping] = useState(false);
 
+  const [players, setPlayers] = useState({});
 
-  const [players, setPlayers] = useState({}); 
   const lastEntry = typedChars[typedChars.length - 1] || null;
-
 
   const wordsRef = useRef(null);
   const focusHereRef = useRef(null);
@@ -82,161 +71,64 @@ export const MultiplayerProvider = ({ children }) => {
   const totalGameTimeRef = useRef(1000 * 10);
   const logoRef = useRef(null);
   const hasInteractedRef = useRef(false);
-
-  const socketRef = useRef(null);
-
-  const playersRef = useRef(null);
   const lastProgressEmitRef = useRef(0);
-  const playerNameRef = useRef(`P-${Math.random().toString(36).slice(2, 7)}`);
 
   const pendingWordsRef = useRef(null);
+
+  const playerNameRef = useRef(`P-${Math.random().toString(36).slice(2, 7)}`);
+
+  const {
+    socket, 
+    room, 
+    playerProgress, 
+    sendWords: sendWordsToRoom, 
+  } = useRoomSocket();
+
+  useEffect(() => {
+    if (!playerProgress) {
+      setPlayers({});
+      return;
+    }
+    setPlayers(playerProgress);
+  }, [playerProgress]);
+
+  useEffect(() => {
+    const words = room?.words || room?.wordList || null;
+    if (!words || !Array.isArray(words) || !words.length) return;
+
+    if (!wordsRef.current) return;
+
+    wordsRef.current.innerHTML = "";
+    words.forEach((w) => {
+      wordsRef.current.innerHTML += formatWord(w);
+    });
+
+    markFirstElement();
+  }, [room?.words, room?.wordList]);
+
+ 
   const sendToServer = (words) => {
-    const sock = socketRef.current;
-    if (sock && sock.connected) {
-      sock.emit("sendWords", { words, meta: { from: "client" } });
-      console.log("Sent words to server:", words);
+    if (sendWordsToRoom && typeof sendWordsToRoom === "function" && room?.id) {
+      sendWordsToRoom(room.id, words).catch((err) => {
+        console.warn("sendWords failed:", err);
+      });
       pendingWordsRef.current = null;
       return;
     }
 
-    console.warn("Socket not connected yet. Queuing words to send later.");
+    console.warn("Room not ready yet. Queuing words.");
     pendingWordsRef.current = words;
   };
 
+
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000", {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-    });
-
-    const socket = socketRef.current;
-
-    const handleWordsBroadcast = (payload) => {
-      const words = payload?.words || payload?.word; 
-      if (!words || !Array.isArray(words) || !words.length) return;
-
-      if (wordsRef.current) wordsRef.current.innerHTML = "";
-      words.forEach((w) => {
-        wordsRef.current.innerHTML += formatWord(w);
+    if (pendingWordsRef.current && sendWordsToRoom && room?.id) {
+      sendWordsToRoom(room.id, pendingWordsRef.current).catch((err) => {
+        console.warn("Flushing queued words failed:", err);
       });
-
-      
-      markFirstElement();
-      console.log(
-        "Rendered broadcasted words (from server):",
-        words.join(", ")
-      );
-    };
-
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-      
-      if (pendingWordsRef.current) {
-        socket.emit("sendWords", {
-          words: pendingWordsRef.current,
-          meta: { from: "client-queued" },
-        });
-        console.log(
-          "Flushed queued words on connect:",
-          pendingWordsRef.current
-        );
-        pendingWordsRef.current = null;
-      }
-
-
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("Socket connect_error:", err);
-    });
-
-    socket.on("wordsBroadcast", handleWordsBroadcast);
-
-    const handlePlayersUpdate = (playersObj) => {
- 
-      setPlayers(playersObj || {});
-    };
-
-    socket.on("playersUpdate", handlePlayersUpdate);
-
-    return () => {
-      if (socket) {
-        socket.off("wordsBroadcast", handleWordsBroadcast);
-        socket.off("playersUpdate", handlePlayersUpdate);
-        socket.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, []); 
-
-
-  useEffect(
-    () => {
-      const socket = socketRef.current;
-      if (!socket) return;
-
-      const renderPlayers = (playersObj) => {
-      
-        if (!playersRef.current) return;
-
-        playersRef.current.innerHTML = ""; 
-
-        const totalWords =
-          wordsRef.current?.querySelectorAll?.(".formatted")?.length ||
-          currentWords.length ||
-          1;
-
-        Object.entries(playersObj).forEach(([id, p]) => {
-          const row = document.createElement("div");
-          row.className = "player-row flex items-center gap-2 mb-2";
-
-          const nameEl = document.createElement("div");
-          nameEl.textContent = p.name || id.slice(0, 4);
-          nameEl.className = "player-name w-24 text-sm";
-
-          const wpmEl = document.createElement("div");
-          wpmEl.textContent = `${p.wpm || 0} WPM`;
-          wpmEl.className = "player-wpm text-xs w-16";
-
-          const progressWrapper = document.createElement("div");
-          progressWrapper.className =
-            "progress-wrapper flex-1 bg-gray-200 rounded overflow-hidden h-3";
-
-          const progressBar = document.createElement("div");
-          const pct = Math.max(
-            0,
-            Math.min(
-              100,
-              Math.round(
-                (((p.wordIndex || 0) + (p.charIndex || 0) / 10) /
-                  Math.max(1, totalWords)) *
-                  100
-              )
-            )
-          );
-          progressBar.style.width = `${pct}%`;
-          progressBar.style.height = "100%";
-          progressBar.className = "progress-bar bg-gray-700";
-
-          progressWrapper.appendChild(progressBar);
-          row.appendChild(nameEl);
-          row.appendChild(wpmEl);
-          row.appendChild(progressWrapper);
-
-          playersRef.current.appendChild(row);
-        });
-      };
-
-      socket.on("playersUpdate", renderPlayers);
-
-      return () => {
-        socket.off("playersUpdate", renderPlayers);
-      };
-    },
-    [
-     
-    ]
-  );
+      pendingWordsRef.current = null;
+    }
+  }, [room?.id, sendWordsToRoom]);
 
   const getCurrentPosition = () => {
     const wordsEls = wordsRef.current?.querySelectorAll?.(".formatted") || [];
@@ -251,7 +143,7 @@ export const MultiplayerProvider = ({ children }) => {
     }
 
     const currentWord = wordsEls[wordIndex];
-    const letters = [...currentWord.children];
+    const letters = [...(currentWord?.children || [])];
     let charIndex = 0;
     for (let i = 0; i < letters.length; i += 1) {
       if (letters[i].classList.contains("current")) {
@@ -263,23 +155,18 @@ export const MultiplayerProvider = ({ children }) => {
     return { wordIndex, charIndex };
   };
 
+  // ---------- send typing progress (via room socket) ----------
   const sendProgress = (force = false) => {
     const now = Date.now();
-   
     if (!force && now - lastProgressEmitRef.current < 150) return;
     lastProgressEmitRef.current = now;
 
-    const sock = socketRef.current;
-    if (!sock || !sock.connected) return;
+    if (!socket || !socket.connected || !room?.id) return;
 
     const { wordIndex, charIndex } = getCurrentPosition();
-console.log("index : ",wordIndex, " charindex : " ,charIndex);
-
 
     let wpm = 0;
     const typed = typedChars.filter((t) => t && t.timestamp);
-    console.log(typed);
-    
     if (typed.length >= 5) {
       const firstTs = typed[0].timestamp;
       const lastTs = typed[typed.length - 1].timestamp;
@@ -287,12 +174,13 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
       const charsTyped = typed.length;
       wpm = Math.round(charsTyped / 5 / minutes);
     }
-
-    sock.emit("updateProgress", {
+    socket.emit("playerProgress", {
+      roomId: room.id,
       name: playerNameRef.current,
       wordIndex,
       charIndex,
       wpm,
+      timestamp: Date.now(),
     });
   };
 
@@ -304,13 +192,11 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     setShowKey(option === "keyboard");
 
     if (mode === "quote") {
-      console.log(`${mode} selected`);
       handleQuoteMode();
       return;
     }
 
     const count = mode === "words" ? wordCount : 15;
- 
     renderWords(count, option);
   }, [mode, option, wordCount]);
 
@@ -324,8 +210,8 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
 
     markFirstElement();
   };
+
   const renderWords = (count, option) => {
-  
     let words = [];
 
     while (words.length < count) {
@@ -342,11 +228,11 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
       words.push(word);
     }
 
-    console.log(`Client requested words: ${words.join(", ")}`);
     sendToServer(words);
   };
 
   const markFirstElement = () => {
+    if (!wordsRef.current) return;
     const firstWord = wordsRef.current.querySelector(".formatted");
     const firstLetter = wordsRef.current.querySelector(".letter");
     if (firstWord) addClass(firstWord, "current");
@@ -354,7 +240,7 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     updateCursorPosition();
   };
 
-  // ========== TIMER FUNCTIONS =============
+  // ========== TIMER FUNCTIONS ============
   const startTimer = () => {
     startedTypingTimeRef.current = startedTypingTimeRef.current || Date.now();
 
@@ -385,7 +271,7 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     return null;
   };
 
-  // ========== TYPING LOGIC ==============
+  // ========== TYPING LOGIC ==========
   const updateCursorPosition = () => {
     const currentLetter = document.querySelector(".letter.current");
     const cursor = cursorRef.current;
@@ -462,8 +348,6 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
 
   const handleLetter = (typed, expected, letterEl, wordEl) => {
     if (letterEl) {
-      console.log(`Typed: ${typed}, Expected: ${expected}`);
-
       addClass(letterEl, typed === expected ? "correct" : "incorrect");
       removeClass(letterEl, "current");
       if (letterEl.nextSibling) {
@@ -481,9 +365,7 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
 
   const handleSpace = (wordEl, letterEl, expected) => {
     if (!wordEl) return;
-
     if (letterEl === wordEl.firstChild) return;
-
 
     let nextLetter = letterEl;
     while (nextLetter) {
@@ -534,7 +416,6 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
 
   const handleBackspace = (wordEl, letterEl) => {
     if (!wordEl) return;
-    console.log("Handling backspace");
 
     if (wordEl.classList.contains("current")) {
       removeErrorLine(wordEl, "errorLine");
@@ -560,12 +441,9 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
       addClass(letterEl.previousSibling, "current");
       removeClass(letterEl.previousSibling, "incorrect");
       removeClass(letterEl.previousSibling, "correct");
-    }
-
-    else if (wordEl.lastChild?.classList.contains("extra")) {
+    } else if (wordEl.lastChild?.classList.contains("extra")) {
       wordEl.removeChild(wordEl.lastChild);
-    }
-    else if (wordEl.lastChild) {
+    } else if (wordEl.lastChild) {
       addClass(wordEl.lastChild, "current");
       removeClass(wordEl.lastChild, "incorrect");
       removeClass(wordEl.lastChild, "correct");
@@ -595,7 +473,7 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     sendProgress();
   };
 
-  // ========== GAME CONTROLS ===============
+  // ========== GAME CONTROLS ===========
   const resetGame = () => {
     hasInteractedRef.current = true;
 
@@ -659,7 +537,6 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
       setMode((prev) => (prev === newMode ? "custom" : newMode));
       setTypedChars([]);
       setHasStarted(true);
-      console.log(newMode);
       wordsRef.current?.focus();
     });
   };
@@ -670,7 +547,6 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
       setOption(updatedOpt);
       setTypedChars([]);
       setHasStarted(true);
-      console.log(updatedOpt);
       wordsRef.current?.focus();
     });
   };
@@ -779,16 +655,14 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     hasStartedTyping,
     lastEntry,
 
-
     wordsRef,
     focusHereRef,
     cursorRef,
     timerRef,
     logoRef,
-    playersRef,
     players,
-    socketRef,
-
+    room,
+    playerProgress,
 
     setShowKey,
     setMode,
@@ -812,7 +686,10 @@ console.log("index : ",wordIndex, " charindex : " ,charIndex);
     endGame,
     resetGameState,
 
+    requestWords: (count = 50, opt = null) => renderWords(count, opt),
+
     totalGameTime: totalGameTimeRef.current,
+    sendProgressForce: () => sendProgress(true),
   };
 
   return (
@@ -826,7 +703,7 @@ export const useMultiplayerProvider = () => {
   const context = useContext(MultiplayerContext);
   if (!context) {
     throw new Error(
-      "useMultiplayerProvider must be used within a TypingGameProvider"
+      "useMultiplayerProvider must be used within a MultiplayerProvider"
     );
   }
   return context;

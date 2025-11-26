@@ -22,10 +22,7 @@ console.log(wordsRef.current);
 
 
   return (
-    <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">
-
-
-      
+    <div className="mt-8 w-[90%] max-w-8xl text-xl mx-auto relative">      
       {mode === "time" && (
         <div className="text-right mb-2 text-start">
           <span ref={timerRef}>{timeDuration}</span>s
