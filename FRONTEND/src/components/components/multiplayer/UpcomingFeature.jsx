@@ -1,10 +1,10 @@
 import React from "react";
-import { Users, MessageSquare, Zap, Play, ArrowRight } from "lucide-react";
-import battle from "../../../assets/battle.svg";
+import { Users, Cpu, Zap, Play, ArrowRight } from "lucide-react"; // using Cpu for AI
+import aiBattle from "../../../assets/vs.png";
 
 const UpcomingFeature = () => {
   return (
-    <section className="relative min-h-[6rem] py-20 overflow-hidden">
+    <section className="relative min-h-[6rem] py-26 overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div
           className="w-full h-full"
@@ -15,9 +15,7 @@ const UpcomingFeature = () => {
         />
       </div>
 
-
       <div className="relative z-10 max-w-6xl mx-auto px-6">
-
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-light text-white mb-4">
             Upcoming <span className="font-normal italic">Feature</span>
@@ -28,15 +26,15 @@ const UpcomingFeature = () => {
         <div className="relative max-w-4xl mx-auto">
           <div className="absolute inset-4 bg-gradient-to-br from-purple-950/40 via-blue-600/20 to-purple-950/40 rounded-3xl blur-xl" />
 
-          <div className=" bg-black relative bg-gradient-to-br from-gray-900/10 via-gray-950 to-gray-900/10 backdrop-blur-xl border border-gray-700/80 rounded-3xl p-8 md:p-12">
-            <img className="w-16 mx-auto mt-0 mb-8" src={battle} alt="" />
+          <div className="bg-black relative bg-gradient-to-br from-gray-900/10 via-gray-950 to-gray-900/10 backdrop-blur-xl border border-gray-700/80 rounded-3xl p-8 md:p-12">
+            <img className="w-60 mx-auto mt-0 mb-8" src={aiBattle} alt="AI Battle" />
 
             <div className="text-center mb-12">
               <h3 className="text-3xl md:text-4xl font-light text-white mb-4">
-                Multiplayer Mode
+                AI Challenge Mode
               </h3>
               <p className="text-lg text-gray-300 font-light">
-                Challenge your friends in epic real-time typing battles
+                Compete against an AI! Choose your difficulty: Easy, Medium, or Hard.
               </p>
             </div>
 
@@ -45,23 +43,19 @@ const UpcomingFeature = () => {
                 <div className="w-12 h-12 bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/30 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <Play className="w-5 h-5 text-pink-300" />
                 </div>
-                <h4 className="text-white font-medium mb-2">
-                  Real-time Gameplay
-                </h4>
+                <h4 className="text-white font-medium mb-2">Real-time AI Gameplay</h4>
                 <p className="text-gray-400 text-sm font-light">
-                  Type simultaneously with friends
+                  Watch the AI compete with you live.
                 </p>
               </div>
 
               <div className="text-center group">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 rounded-xl mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Users className="w-5 h-5 text-blue-300" />
+                  <Cpu className="w-5 h-5 text-blue-300" />
                 </div>
-                <h4 className="text-white font-medium mb-2">
-                  Friend Challenges
-                </h4>
+                <h4 className="text-white font-medium mb-2">Difficulty Levels</h4>
                 <p className="text-gray-400 text-sm font-light">
-                  Invite and compete with friends
+                  Easy, Medium, Hard – choose the AI level.
                 </p>
               </div>
 
@@ -71,7 +65,7 @@ const UpcomingFeature = () => {
                 </div>
                 <h4 className="text-white font-medium mb-2">Instant Matches</h4>
                 <p className="text-gray-400 text-sm font-light">
-                  Quick matchmaking system
+                  Quick setup to start battling the AI immediately.
                 </p>
               </div>
             </div>
@@ -85,6 +79,7 @@ const UpcomingFeature = () => {
           </div>
         </div>
       </div>
+
       <div className="absolute top-20 left-10 w-2 h-2 bg-white/20 rounded-full animate-pulse" />
       <div className="absolute bottom-20 right-20 w-1 h-1 bg-purple-400/30 rounded-full animate-ping" />
       <div className="absolute top-1/2 right-10 w-1 h-1 bg-blue-400/30 rounded-full animate-ping delay-1000" />
