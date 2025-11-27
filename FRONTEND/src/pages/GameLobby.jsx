@@ -20,9 +20,12 @@ import { useSelector } from "react-redux";
 
 export default function GameLobby() {
   const navigate = useNavigate();
+  //TODO :
+  // 1.  verify  if user  is in  the state or not 
+  // 2. 
   const { user } = useSelector((state) => state.auth || {});
-  const { createRoom, joinByCode, roomCode: socketRoomCode, isConnected } = useRoomSocket();
 
+  const { createRoom, joinByCode, roomCode: socketRoomCode, isConnected } = useRoomSocket();
   const typingGame = useMultiplayerProvider();
   const {
     handleModeSelect,
@@ -30,7 +33,8 @@ export default function GameLobby() {
     setTimeDuration,
     timeDuration,
     setWordCount,
-    wordCount,mode
+    wordCount,
+    mode
   } = typingGame;
 
   const [inRoom, setInRoom] = useState(false);
@@ -59,6 +63,7 @@ export default function GameLobby() {
     setLocalOpt(opt);
   };
 
+  // TODO : converting  fake rooms  into real rooms running
   const activeRooms = [
     {
       id: 1,

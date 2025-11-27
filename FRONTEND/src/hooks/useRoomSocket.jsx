@@ -22,12 +22,12 @@ export const RoomSocketProvider = ({ children }) => {
   const [playerProgress, setPlayerProgress] = useState({});
   const [messages, setMessages] = useState([]);
   const [shouldConnect, setShouldConnect] = useState(false);
+
   const { user } = useSelector((state) => state.auth || {});
 
+  /** SOCKET CONNECT / DISCONNECT */
   useEffect(() => {
-    if (!shouldConnect) {
-      return undefined;
-    }
+    if (!shouldConnect) return;
 
     const socket = io("http://localhost:5000", {
       withCredentials: true,
@@ -49,6 +49,7 @@ export const RoomSocketProvider = ({ children }) => {
       setRoomCode("");
       setPlayerProgress({});
       setLatestResults(null);
+      setMessages([]);
     };
 
     const handleRoomUsers = (data) => {
@@ -58,14 +59,11 @@ export const RoomSocketProvider = ({ children }) => {
           ...prev,
           ...data,
         }));
-        if (data.code) {
-          setRoomCode(data.code);
-        }
+        if (data.code) setRoomCode(data.code);
       }
     };
 
-    const handleKicked = (data) => {
-      console.warn("Kicked from room:", data);
+    const handleKicked = () => {
       setRoom(null);
       setUsers([]);
       setRoomCode("");
@@ -80,6 +78,7 @@ export const RoomSocketProvider = ({ children }) => {
         startTimestamp: data.startTimestamp,
         gameSettings: data.gameSettings || prev?.gameSettings,
       }));
+
       setPlayerProgress({});
       setLatestResults(null);
     };
@@ -131,6 +130,10 @@ export const RoomSocketProvider = ({ children }) => {
       }));
     };
 
+    const handleChatMessage = (chatEntry) => {
+      setMessages((prev) => [...prev, chatEntry]);
+    };
+
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
     socket.on("roomUsers", handleRoomUsers);
@@ -142,11 +145,6 @@ export const RoomSocketProvider = ({ children }) => {
     socket.on("raceComplete", handleRaceComplete);
     socket.on("wordsPrepared", handleWordsPrepared);
     socket.on("wordsBroadcast", handleWordsBroadcast);
-
-    const handleChatMessage = (chatEntry) => {
-      setMessages((prev) => [...prev, chatEntry]);
-    };
-
     socket.on("chatMessage", handleChatMessage);
 
     return () => {
@@ -162,50 +160,30 @@ export const RoomSocketProvider = ({ children }) => {
       socket.off("wordsPrepared", handleWordsPrepared);
       socket.off("wordsBroadcast", handleWordsBroadcast);
       socket.off("chatMessage", handleChatMessage);
+
       socket.disconnect();
       socketRef.current = null;
-      setIsConnected(false);
-      setRoom(null);
-      setUsers([]);
-      setRoomCode("");
-      setPlayerProgress({});
-      setMessages([]);
-      setLatestResults(null);
     };
   }, [shouldConnect]);
 
-  useEffect(() => {
-    if (!shouldConnect) {
-      setIsConnected(false);
-      setRoom(null);
-      setUsers([]);
-      setRoomCode("");
-      setPlayerProgress({});
-      setLatestResults(null);
-      setMessages([]);
-    }
-  }, [shouldConnect]);
-
-  const connectSocket = useCallback(() => {
-    setShouldConnect(true);
-  }, []);
-
-  const disconnectSocket = useCallback(() => {
-    setShouldConnect(false);
-  }, []);
+  const connectSocket = useCallback(() => setShouldConnect(true), []);
+  const disconnectSocket = useCallback(() => setShouldConnect(false), []);
 
   const ensureConnected = useCallback(() => {
     const socket = socketRef.current;
-    if (!socket || !socket.connected) {
-      throw new Error("Socket not connected");
-    }
+
+    if (!socket) throw new Error("Socket not initialized");
+    if (socket.connected === false) throw new Error("Socket not connected yet");
+
     return socket;
   }, []);
+
 
   const createRoom = useCallback(
     (roomName, displayName, gameSettings = {}) =>
       new Promise((resolve, reject) => {
         let socket;
+
         try {
           socket = ensureConnected();
         } catch (err) {
@@ -221,9 +199,8 @@ export const RoomSocketProvider = ({ children }) => {
             gameSettings,
           },
           (error, roomData) => {
-            if (error) {
-              reject(error);
-            } else {
+            if (error) reject(error);
+            else {
               setRoom(roomData);
               setRoomCode(roomData.code);
               setUsers(roomData.users || []);
@@ -254,9 +231,8 @@ export const RoomSocketProvider = ({ children }) => {
             displayName: displayName || user?.name || "Anonymous",
           },
           (error, roomData) => {
-            if (error) {
-              reject(error);
-            } else {
+            if (error) reject(error);
+            else {
               setRoom(roomData);
               setRoomCode(roomData.code);
               setUsers(roomData.users || []);
@@ -287,9 +263,8 @@ export const RoomSocketProvider = ({ children }) => {
             displayName: displayName || user?.name || "Anonymous",
           },
           (error, roomData) => {
-            if (error) {
-              reject(error);
-            } else {
+            if (error) reject(error);
+            else {
               setRoom(roomData);
               setRoomCode(roomData.code);
               setUsers(roomData.users || []);
@@ -314,11 +289,8 @@ export const RoomSocketProvider = ({ children }) => {
         }
 
         socket.emit("toggleReady", { roomId, ready }, (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
+          if (error) reject(error);
+          else resolve(result);
         });
       }),
     [ensureConnected]
@@ -339,11 +311,8 @@ export const RoomSocketProvider = ({ children }) => {
           "startRace",
           { roomId, countdownMs, wordCount },
           (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
-            }
+            if (error) reject(error);
+            else resolve(result);
           }
         );
       }),
@@ -354,6 +323,7 @@ export const RoomSocketProvider = ({ children }) => {
     (roomId, words) =>
       new Promise((resolve, reject) => {
         let socket;
+
         try {
           socket = ensureConnected();
         } catch (err) {
@@ -362,11 +332,8 @@ export const RoomSocketProvider = ({ children }) => {
         }
 
         socket.emit("sendWords", { roomId, words }, (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
+          if (error) reject(error);
+          else resolve(result);
         });
       }),
     [ensureConnected]
@@ -376,6 +343,7 @@ export const RoomSocketProvider = ({ children }) => {
     (roomId, result) =>
       new Promise((resolve, reject) => {
         let socket;
+
         try {
           socket = ensureConnected();
         } catch (err) {
@@ -384,11 +352,8 @@ export const RoomSocketProvider = ({ children }) => {
         }
 
         socket.emit("raceFinish", { roomId, ...result }, (error, data) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(data);
-          }
+          if (error) reject(error);
+          else resolve(data);
         });
       }),
     [ensureConnected]
@@ -398,6 +363,7 @@ export const RoomSocketProvider = ({ children }) => {
     (roomId, text) =>
       new Promise((resolve, reject) => {
         let socket;
+
         try {
           socket = ensureConnected();
         } catch (err) {
@@ -409,11 +375,8 @@ export const RoomSocketProvider = ({ children }) => {
           "chatMessage",
           { roomId, message: text },
           (error, response) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(response);
-            }
+            if (error) reject(error);
+            else resolve(response);
           }
         );
       }),
@@ -422,7 +385,7 @@ export const RoomSocketProvider = ({ children }) => {
 
   const value = useMemo(
     () => ({
-      socket: socketRef.current,
+      socket: socketRef.current || null,
       room,
       users,
       roomCode,
@@ -472,9 +435,7 @@ export const RoomSocketProvider = ({ children }) => {
 };
 
 export const useRoomSocket = () => {
-  const context = useContext(RoomSocketContext);
-  if (!context) {
-    throw new Error("useRoomSocket must be used within a RoomSocketProvider");
-  }
-  return context;
+  const ctx = useContext(RoomSocketContext);
+  if (!ctx) throw new Error("useRoomSocket must be used within provider");
+  return ctx;
 };
