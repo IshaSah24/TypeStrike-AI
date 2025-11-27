@@ -44,7 +44,7 @@ app.get("/", (req, res) => res.send("Welcome to the API"));
 // SOCKET.IO -------------------------------------------------
 
 const rooms = new Map();
-const roomCodes = new Map(); // Map to store roomId -> roomCode
+const roomCodes = new Map(); 
 
 function generateRoomCode() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -476,49 +476,33 @@ io.on("connection", (socket) => {
 
   socket.on("updateProgress", (payload) => {
     try {
-      const {
-        roomId,
-        wordIndex,
-        charIndex,
-        wpm,
-        errors,
-        accuracy,
-        correctChars,
-        incorrectChars,
-      } = payload || {};
-      if (!roomId || !rooms.has(roomId)) {
-        console.warn("updateProgress: Room not found", roomId);
-        return;
-      }
-
+      const { roomId, wordIndex, charIndex, correctChars, incorrectChars } = payload || {};
+      if (!roomId || !rooms.has(roomId)) return;
+  
       const room = rooms.get(roomId);
       const user = room.users.get(socket.id);
       if (!user) return;
       if (room.state !== "running") return;
-
+  
       const totalWords = room.words.length;
       const currentWordProgress =
         charIndex / (room.words[wordIndex]?.length || 1);
       const progressPercent =
         totalWords > 0
-          ? Math.min(
-              100,
-              Math.max(
-                0,
-                ((wordIndex + currentWordProgress) / totalWords) * 100
-              )
-            )
+          ? Math.min(100, Math.max(0, ((wordIndex + currentWordProgress) / totalWords) * 100))
           : 0;
-
       user.progress = progressPercent;
       user.wordIndex = wordIndex || 0;
       user.charIndex = charIndex || 0;
-      user.wpm = wpm || 0;
-      user.errors = errors || 0;
-      user.accuracy = accuracy || 100;
-      user.correctChars = correctChars || 0;
-      user.incorrectChars = incorrectChars || 0;
-
+      user.correctChars = correctChars || user.correctChars;
+      user.incorrectChars = incorrectChars || user.incorrectChars;
+  
+      const now = Date.now();
+      const durationMinutes = Math.max((now - room.startTimestamp) / 60000, 1/60);
+      user.wpm = Math.round(user.correctChars / 5 / durationMinutes);
+      const totalChars = user.correctChars + user.incorrectChars;
+      user.accuracy = totalChars === 0 ? 100 : Math.round((user.correctChars / totalChars) * 100);
+  
       io.to(roomId).emit("playerProgress", {
         userId: socket.id,
         name: user.name,
@@ -526,65 +510,46 @@ io.on("connection", (socket) => {
         wordIndex: user.wordIndex,
         charIndex: user.charIndex,
         wpm: user.wpm,
-        errors: user.errors,
+        errors: user.incorrectChars,
         accuracy: user.accuracy,
         correctChars: user.correctChars,
         incorrectChars: user.incorrectChars,
       });
-
-      io.to(roomId).emit("roomUsers", {
-        roomId,
-        users: Array.from(room.users.values()),
-        ownerId: room.ownerId,
-        state: room.state,
-      });
+  
     } catch (err) {
       console.error("updateProgress error:", err);
     }
   });
+  
 
   socket.on("raceFinish", (payload, ack) => {
     try {
-      const {
-        roomId,
-        wpm,
-        accuracy,
-        errors,
-        correctChars,
-        incorrectChars,
-        totalChars,
-        time,
-      } = payload || {};
-      if (!roomId || !rooms.has(roomId)) {
-        return ack?.({ error: "Room not found" });
-      }
-
+      const { roomId } = payload || {};
+      if (!roomId || !rooms.has(roomId)) return ack?.({ error: "Room not found" });
+  
       const room = rooms.get(roomId);
       const user = room.users.get(socket.id);
-      if (!user) {
-        return ack?.({ error: "User not in room" });
-      }
-
+      if (!user) return ack?.({ error: "User not in room" });
+  
       user.finishedAt = Date.now();
-      user.wpm = wpm || 0;
-      user.accuracy = accuracy || 0;
-      user.errors = errors || 0;
-      user.correctChars = correctChars || 0;
-      user.incorrectChars = incorrectChars || 0;
+  
+      const durationMinutes = Math.max((user.finishedAt - room.startTimestamp) / 60000, 1/60);
+      user.wpm = Math.round(user.correctChars / 5 / durationMinutes);
+      const totalChars = user.correctChars + user.incorrectChars;
+      user.accuracy = totalChars === 0 ? 100 : Math.round((user.correctChars / totalChars) * 100);
+      user.errors = user.incorrectChars;
       user.status = "finished";
-
+  
       const finishedUsers = Array.from(room.users.values())
-        .filter((u) => u.finishedAt)
+        .filter(u => u.finishedAt)
         .sort((a, b) => {
           if (b.wpm !== a.wpm) return b.wpm - a.wpm;
           if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
-
           return a.finishedAt - b.finishedAt;
         });
-
-      const position = finishedUsers.findIndex((u) => u.id === socket.id) + 1;
+  
+      const position = finishedUsers.findIndex(u => u.id === socket.id) + 1;
       user.position = position;
-
       room.results.push({
         userId: socket.id,
         name: user.name,
@@ -593,11 +558,10 @@ io.on("connection", (socket) => {
         errors: user.errors,
         correctChars: user.correctChars,
         incorrectChars: user.incorrectChars,
-        position: user.position,
+        position,
         finishedAt: user.finishedAt,
       });
-
-      // Broadcast finish to all users
+  
       io.to(roomId).emit("playerFinished", {
         userId: socket.id,
         name: user.name,
@@ -606,33 +570,20 @@ io.on("connection", (socket) => {
         errors: user.errors,
         correctChars: user.correctChars,
         incorrectChars: user.incorrectChars,
-        position: user.position,
+        position,
         finishedAt: user.finishedAt,
       });
-
-      const allFinished = Array.from(room.users.values()).every(
-        (u) => u.finishedAt || u.id === socket.id
-      );
-      if (allFinished && room.users.size > 1) {
+  
+      const allFinished = Array.from(room.users.values()).every(u => u.finishedAt);
+      if (allFinished) {
         const finalResults = Array.from(room.users.values())
-          .map((u) => ({
-            userId: u.id,
-            name: u.name,
-            wpm: u.wpm || 0,
-            accuracy: u.accuracy || 0,
-            errors: u.errors || 0,
-            correctChars: u.correctChars || 0,
-            incorrectChars: u.incorrectChars || 0,
-            position: u.position || room.users.size,
-            finishedAt: u.finishedAt || Date.now(),
-          }))
           .sort((a, b) => {
             if (b.wpm !== a.wpm) return b.wpm - a.wpm;
             if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
             return a.finishedAt - b.finishedAt;
           })
           .map((r, idx) => ({ ...r, position: idx + 1 }));
-
+  
         io.to(roomId).emit("raceComplete", {
           roomId,
           results: finalResults,
@@ -640,7 +591,7 @@ io.on("connection", (socket) => {
         });
         room.state = "completed";
       }
-
+  
       io.to(roomId).emit("roomUsers", {
         roomId,
         users: Array.from(room.users.values()),
@@ -648,21 +599,15 @@ io.on("connection", (socket) => {
         state: room.state,
         gameSettings: room.gameSettings,
       });
-
-      ack?.(null, {
-        success: true,
-        position: user.position,
-        totalPlayers: room.users.size,
-      });
-
-      console.log(
-        `Player ${socket.id} finished in room ${roomId} at position ${position}`
-      );
+  
+      ack?.(null, { success: true, position, totalPlayers: room.users.size });
+  
     } catch (err) {
       console.error("raceFinish error:", err);
       ack?.({ error: "Server error" });
     }
   });
+  
 
   socket.on("joinByCode", (payload, ack) => {
     try {

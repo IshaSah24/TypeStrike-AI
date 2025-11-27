@@ -9,7 +9,6 @@ const PlayersList = ({ playerProgress = {} }) => {
       ? playerProgress
       : contextProgress || {};
 
-  // Merge users with their progress
   const playersWithProgress = users.map((user) => {
     const progress = progressSource[user.id] || {};
     return {

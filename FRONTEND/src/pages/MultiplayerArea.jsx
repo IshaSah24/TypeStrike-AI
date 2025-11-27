@@ -17,10 +17,7 @@ function MultiplayerArea({
   onKeyPress,
   words = [],
 }) {
-  console.log("wordsref  in  typing area :", wordsRef);
-  console.log("printing words in typing  area", words);
-
-  const { playersRef } = useMultiplayerProvider();
+  const { players } = useMultiplayerProvider();
 
   useEffect(() => {
     if (!wordsRef?.current) return;
@@ -46,14 +43,44 @@ function MultiplayerArea({
 
     const firstWord = container.querySelector(".formatted");
     const firstLetter = container.querySelector(".letter");
-
     if (firstWord) firstWord.classList.add("current");
     if (firstLetter) firstLetter.classList.add("current");
   }, [words, wordsRef]);
+  useEffect(() => {
+    const focusTimeout = setTimeout(() => {
+      focusHereRef?.current?.focus?.();
+    }, 10);
+
+    return () => clearTimeout(focusTimeout);
+  }, [focusHereRef, words, isMultiplayer]);
 
   useEffect(() => {
-    focusHereRef?.current?.focus?.();
-  }, []);
+    const updateCursor = () => {
+      const currentLetter = document.querySelector(".letter.current");
+      const cursor = cursorRef.current;
+      if (!cursor) return;
+
+      if (currentLetter) {
+        const letterRect = currentLetter.getBoundingClientRect();
+        const containerRect = cursor.parentElement.getBoundingClientRect();
+        cursor.style.top = `${letterRect.top - containerRect.top}px`;
+        cursor.style.left = `${letterRect.left - containerRect.left}px`;
+      } else {
+        const currentWord = document.querySelector(".formatted.current");
+        if (currentWord) {
+          const wordRect = currentWord.getBoundingClientRect();
+          const containerRect = cursor.parentElement.getBoundingClientRect();
+          cursor.style.top = `${wordRect.top - containerRect.top}px`;
+          cursor.style.left = `${
+            wordRect.left - containerRect.left + currentWord.offsetWidth
+          }px`;
+        }
+      }
+    };
+
+    const interval = setInterval(updateCursor, 50);
+    return () => clearInterval(interval);
+  }, [cursorRef]);
 
   return (
     <div>
@@ -65,11 +92,12 @@ function MultiplayerArea({
           </div>
         )}
 
-        {/* WORDS + CURSOR */}
         <div className="relative max-h-[80vh] leading-relaxed text-3xl text-gray-400 overflow-y-hidden">
-          <div ref={wordsRef} className="words transition-opacity duration-500 opacity-100"></div>
+          <div
+            ref={wordsRef}
+            className="words transition-opacity duration-500 opacity-100"
+          ></div>
 
-          {/* Cursor has NO keyboard events */}
           <div
             id="cursor"
             ref={cursorRef}
@@ -88,6 +116,8 @@ function MultiplayerArea({
           ref={focusHereRef}
           className="typingarea absolute top-[-0.5rem] left-0 w-full h-[8rem] opacity-0"
           tabIndex={0}
+          role="textbox"
+          aria-label="Typing area"
           onKeyDown={onKeyPress}
         >
           <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm pointer-events-none">
@@ -111,9 +141,16 @@ function MultiplayerArea({
             [On-screen keyboard coming soon]
           </div>
         )}
+
+        {/* Multiplayer players list */}
+        {/* {isMultiplayer && players && (
+          <div className="mt-6 text-left text-sm text-gray-400">
+            <PlayersList playerProgress={players} />
+          </div>
+        )} */}
       </div>
     </div>
   );
 }
-export default React.memo(MultiplayerArea);
 
+export default React.memo(MultiplayerArea);

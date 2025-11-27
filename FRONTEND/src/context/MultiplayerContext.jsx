@@ -174,13 +174,12 @@ export const MultiplayerProvider = ({ children }) => {
       const charsTyped = typed.length;
       wpm = Math.round(charsTyped / 5 / minutes);
     }
-    socket.emit("playerProgress", {
+    socket.emit("updateProgress", {
       roomId: room.id,
-      name: playerNameRef.current,
+      userId: socket.id,
       wordIndex,
       charIndex,
       wpm,
-      timestamp: Date.now(),
     });
   };
 

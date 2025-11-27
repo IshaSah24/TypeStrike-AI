@@ -1,8 +1,6 @@
-
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import "../styles/type.css";
 import { useTheme } from "../context/ThemeContext";
-import ShowWpm from "../components/components/ShowWpm";
 import MultiplayerArea from "./MultiplayerArea";
 import PlayersList from "../components/components/PlayersList";
 import { useFinalDom } from "../context/FinalDomContext";
@@ -10,8 +8,9 @@ import { useRouterState } from "@tanstack/react-router";
 import { useRoomSocket } from "../hooks/useRoomSocket";
 import { useSelector } from "react-redux";
 import { useMultiplayerProvider } from "../context/MultiplayerContext";
+import MultiplayerWpm from "./MultiplayerWpm";
 
-function MultiplayerTypingArea({
+export default function MultiplayerTypingArea({
   roomId: propRoomId,
   words: initialWords,
   playerProgress: initialProgress,
@@ -20,8 +19,7 @@ function MultiplayerTypingArea({
   const { setFinalDOM } = useFinalDom();
   const { location } = useRouterState();
   const { user } = useSelector((state) => state.auth || {});
-
-  const { socket, finishRace } = useRoomSocket();
+  const { socket } = useRoomSocket();
 
   const {
     wordsRef,
@@ -38,132 +36,171 @@ function MultiplayerTypingArea({
     resetGameState,
     initializeGame,
     handleKeyPress,
-    endGame,
+    sendProgressForce,
+    players: contextPlayers,
+    room,
   } = useMultiplayerProvider();
+
   const [words, setWords] = useState(Array.isArray(initialWords) ? initialWords : []);
-  const [playerProgress, setPlayerProgress] = useState(initialProgress || {});
+  const [players, setPlayers] = useState(initialProgress || {});
   const [raceStarted, setRaceStarted] = useState(false);
   const [startTimestamp, setStartTimestamp] = useState(null);
 
   const lastProgressEmitRef = useRef(0);
-
-  const currentRoomId = propRoomId || location.state?.roomId;
+  const currentRoomId = propRoomId || location.state?.roomId || room?.id;
 
   useEffect(() => {
-    if (Array.isArray(initialWords)) {
-      setWords(initialWords);
-    }
-  }, [initialWords]);
+    if (contextPlayers) setPlayers(contextPlayers);
+  }, [contextPlayers]);
 
+  useEffect(() => {
+    if (Array.isArray(initialWords)) setWords(initialWords);
+  }, [initialWords]);
   useEffect(() => {
     if (!socket) return;
 
     const handleRaceStart = (data) => {
-      console.log("Race started, words received:", data.words);
-      const incomingWords = Array.isArray(data.words) ? data.words : [];
-      setWords(incomingWords);
-
+      setWords(Array.isArray(data.words) ? data.words : []);
       setStartTimestamp(data.startTimestamp || Date.now());
       setHasStarted(true);
-      setTypedChars([]); 
+      setTypedChars([]);
       setIsTypingOver(false);
       setRaceStarted(false);
+
+      setTimeout(() => {
+        initializeGame?.();
+      }, 0);
     };
 
     const handleRaceRunning = (data) => {
-      console.log("Race is now running");
       setRaceStarted(true);
-      if (data.startedAt) {
-        setStartTimestamp(data.startedAt);
-      }
+      if (data?.startedAt) setStartTimestamp(data.startedAt);
     };
 
     const handlePlayerProgress = (data) => {
-      setPlayerProgress((prev) => ({
-        ...prev,
-        [data.userId]: data,
-      }));
+      setPlayers((prev) => ({ ...prev, [data.userId]: data }));
     };
 
     const handlePlayerFinished = (data) => {
-      setPlayerProgress((prev) => ({
+      setPlayers((prev) => ({
         ...prev,
-        [data.userId]: {
-          ...prev[data.userId],
-          ...data,
-          finished: true,
-        },
+        [data.userId]: { ...(prev[data.userId] || {}), ...data, finished: true },
       }));
+    };
+
+    const handleRaceComplete = (data) => {
+      const updatedPlayers = {};
+      data.results.forEach((p) => (updatedPlayers[p.userId] = p));
+      setPlayers(updatedPlayers);
+      setIsTypingOver(true);
     };
 
     socket.on("raceStart", handleRaceStart);
     socket.on("raceRunning", handleRaceRunning);
     socket.on("playerProgress", handlePlayerProgress);
     socket.on("playerFinished", handlePlayerFinished);
+    socket.on("raceComplete", handleRaceComplete);
 
     return () => {
       socket.off("raceStart", handleRaceStart);
       socket.off("raceRunning", handleRaceRunning);
       socket.off("playerProgress", handlePlayerProgress);
       socket.off("playerFinished", handlePlayerFinished);
+      socket.off("raceComplete", handleRaceComplete);
     };
-  }, [socket, setHasStarted, setTypedChars, setIsTypingOver]);
+  }, [socket, initializeGame, setHasStarted, setTypedChars, setIsTypingOver]);
+
   useEffect(() => {
     if (isTypingOver && wordsRef?.current) {
       try {
         const clonedDOM = wordsRef.current.cloneNode(true);
         setFinalDOM(clonedDOM);
-        console.log("Final DOM set for results display.");
       } catch (err) {
         console.warn("Could not clone final DOM:", err);
       }
     }
-  }, [isTypingOver, setFinalDOM, wordsRef]);
+  }, [isTypingOver, wordsRef, setFinalDOM]);
 
   useEffect(() => {
-    return () => {
-      resetGameState();
-    };
+    return () => resetGameState?.();
   }, [resetGameState]);
 
   useEffect(() => {
     if (raceStarted) {
       try {
         focusHereRef?.current?.focus?.();
-      } catch (err) {
-  
-      }
+      } catch {}
     }
   }, [raceStarted, focusHereRef]);
+  const computeCurrentPosition = useCallback(() => {
+    const root = wordsRef.current;
+    if (!root) return { wordIndex: 0, charIndex: 0 };
+
+    const wordEls = root.querySelectorAll?.(".formatted") || [];
+    if (!wordEls.length) return { wordIndex: 0, charIndex: 0 };
+
+    let wordIndex = 0;
+    for (let i = 0; i < wordEls.length; i++) {
+      if (wordEls[i].classList.contains("current")) {
+        wordIndex = i;
+        break;
+      }
+    }
+
+    const letters = [...(wordEls[wordIndex]?.children || [])];
+    let charIndex = 0;
+    for (let i = 0; i < letters.length; i++) {
+      if (letters[i].classList.contains("current")) {
+        charIndex = i;
+        break;
+      }
+    }
+
+    return { wordIndex, charIndex };
+  }, [wordsRef]);
+
+  const emitProgress = useCallback(() => {
+    const now = Date.now();
+    if (now - lastProgressEmitRef.current < 120) return; // throttling
+    lastProgressEmitRef.current = now;
+
+    if (!socket?.connected || !currentRoomId) return;
+
+    const { wordIndex, charIndex } = computeCurrentPosition();
+    const correctChars = typedChars.filter((t) => t?.correct).length;
+    const incorrectChars = typedChars.length - correctChars;
+
+    socket.emit("updateProgress", {
+      roomId: currentRoomId,
+      wordIndex,
+      charIndex,
+      correctChars,
+      incorrectChars,
+    });
+  }, [socket, currentRoomId, computeCurrentPosition, typedChars]);
+
+  const onKeyDown = (e) => {
+    handleKeyPress?.(e);
+
+    setTimeout(() => {
+      sendProgressForce?.();
+      emitProgress();
+    }, 0);
+  };
 
   return (
     <div id="app" data-theme={theme} className="min-h-screen">
       <div className="mt-8">
         {isTypingOver ? (
-          <ShowWpm
-            timerVal={
-              startTimestamp
-                ? (Date.now() - startTimestamp) / 1000
-                : 0
-            }
-            typedChars={typedChars}
-            onReset={() => {}}
-            isTypingOver={isTypingOver}
-            mode="words"
-            wordCount={words.length}
-            multiplayer={true}
-            roomId={currentRoomId}
-            roomName={location.state?.roomName}
-          />
+          <MultiplayerWpm wordsRef={wordsRef} players={players} />
         ) : (
           <>
-            {/* MultiplayerArea is responsible for rendering the words DOM,
-                wiring refs (wordsRef, cursorRef, focusHereRef, timerRef)
-                and forwarding keyboard events to the provider's handleKeyPress.
-                We pass words[] so it can render the incoming words. */}
             <MultiplayerArea
               showkey={false}
-              handleReset={() => {}}
+              handleReset={() => {
+                resetGameState?.();
+                initializeGame?.();
+              }}
               focusHereRef={focusHereRef}
               cursorRef={cursorRef}
               wordsRef={wordsRef}
@@ -172,13 +209,12 @@ function MultiplayerTypingArea({
               lastCorrect={lastEntry?.correct}
               timeDuration={0}
               mode="words"
-              onKeyPress={handleKeyPress} 
+              onKeyPress={onKeyDown}
               isMultiplayer={true}
               words={words}
             />
-
             <div className="mb-4">
-              <PlayersList playerProgress={playerProgress} />
+              <PlayersList playerProgress={players} />
             </div>
           </>
         )}
@@ -186,5 +222,3 @@ function MultiplayerTypingArea({
     </div>
   );
 }
-
-export default MultiplayerTypingArea;
