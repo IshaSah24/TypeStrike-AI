@@ -65,7 +65,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-black relative overflow-hidden">
-
       <div className="relative">
         <nav
           className={`fixed inset-x-0 top-4 z-50 mx-auto w-[95%] max-w-7xl lg:w-full rounded-full px-4 py-2 transition-all duration-300 ${
@@ -90,50 +89,34 @@ function App() {
           />
 
           <div className="flex items-center justify-between relative z-10 py-[1px] px-2">
-            <div className="inline-flex items-center space-x-1 group cursor-pointer">
-              <div className="relative w-10 h-10">
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-400/20 via-slate-500/10 to-slate-600/5 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-700 group-hover:from-slate-300/30 group-hover:via-slate-400/20"></div>
+            <div className="inline-flex items-center space-x-2 group cursor-pointer">
+              {/* Logo container */}
+              <div className="relative w-10 h-10 rounded-xl overflow-hidden">
+                {/* Outer glow / hover effect */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-600/10 via-slate-700/5 to-slate-800/5 blur-md group-hover:blur-xl transition-all duration-500"></div>
 
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-800/90 via-slate-900/95 to-black rounded-xl backdrop-blur-sm border border-slate-700/30 group-hover:border-slate-500/50 transition-all duration-500 shadow-2xl"></div>
-
-                <div className="w-full h-full flex items-center justify-center relative z-10 rounded-xl bg-gradient-to-br from-slate-900 via-black to-slate-900 overflow-hidden group-hover:scale-[1.02] transition-transform duration-500">
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-400/10 via-slate-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(148,163,184,0.15),transparent_50%)]"></div>
-
-                  <div className="relative flex items-center justify-center">
-                    <div className="relative">
-                      <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 group-hover:from-white group-hover:via-slate-100 group-hover:to-slate-300 transition-all duration-500 drop-shadow-[0_2px_8px_rgba(148,163,184,0.4)]">
-                        T
-                      </span>
-                      <div className="absolute inset-0 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-500">
-                        <span className="text-2xl font-bold text-slate-300">
-                          T
-                        </span>
-                      </div>
-
-                      <div className="absolute -top-[1.8px] right-[-4px] w-2 h-2 bg-slate-400 rounded-full animate-ping opacity-95 group-hover:bg-slate-300"></div>
-                      <div className="absolute -top-[1.8px] right-[-4px] opacity-[.5] w-[3px] h-[3px] bg-slate-300 rounded-full shadow-[0_0_8px_rgba(148,163,184,0.8)] group-hover:shadow-[0_0_12px_rgba(226,232,240,1)]"></div>
-                    </div>
-                  </div>
+                {/* Main logo background */}
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-900 via-black to-slate-900 border border-slate-700/30 backdrop-blur-sm shadow-lg group-hover:border-slate-500/50 transition-all duration-500 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 group-hover:from-white group-hover:via-slate-100 group-hover:to-slate-300 transition-all duration-500">
+                    T
+                  </span>
                 </div>
-
-                <div className="absolute -inset-1 bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500 rounded-xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-700"></div>
               </div>
 
+              {/* Text */}
               <div className="flex flex-col -space-y-1">
-                <div className="flex items-baseline mb-[.4]">
-                  <span className="text-md font-extralight text-slate-300 tracking-[0.1em] group-hover:tracking-[0.15em] transition-all duration-500">
+                <div className="flex items-baseline">
+                  <span className="text-md font-extralight text-slate-300 tracking-widest group-hover:tracking-wider transition-all duration-500">
                     Type
                   </span>
-                  <span className="text-xl font-bold text-slate-100 tracking-[0.1em] group-hover:tracking-[0.15em] group-hover:text-white transition-all duration-500">
+                  <span className="text-xl font-bold text-slate-100 group-hover:text-white tracking-wide transition-all duration-500 ml-1">
                     Strike
                   </span>
-                  <span className="text-md font-light text-slate-400 tracking-wide group-hover:text-slate-300 transition-colors duration-500">
+                  <span className="text-md font-light text-slate-400 group-hover:text-slate-300 ml-1">
                     .Ai
                   </span>
                 </div>
-                <div className="h-[1.2px] w-0 group-hover:w-full bg-gradient-to-r from-transparent via-slate-300/50 to-transparent transition-all duration-500"></div>
+                <div className="h-[1px] w-0 group-hover:w-full bg-gradient-to-r from-transparent via-slate-300/50 to-transparent transition-all duration-500 mt-1"></div>
               </div>
             </div>
 
@@ -396,7 +379,6 @@ function App() {
                 key={i}
                 className={`group bg-gradient-to-br ${feature.accent} backdrop-blur-xl rounded-3xl p-8 hover:scale-105 transition-all duration-700 border border-white/5 hover:border-white/10 relative overflow-hidden`}
               >
-
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
                 <div
@@ -425,7 +407,6 @@ function App() {
 
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="bg-gradient-to-br from-white/[0.03] via-white/[0.01] to-white/[0.03] rounded-[2rem] p-16 backdrop-blur-2xl border border-white/10 relative overflow-hidden">
-
             <div className="absolute w-[400px] h-[400px] bg-gradient-radial from-white/[0.05] via-white/[0.02] to-transparent rounded-full top-0 left-0 blur-3xl"></div>
             <div className="absolute w-[300px] h-[300px] bg-gradient-radial from-white/[0.03] via-white/[0.01] to-transparent rounded-full bottom-0 right-0 blur-2xl"></div>
 
@@ -472,7 +453,6 @@ function App() {
           </div>
         </div>
       </section>
-
 
       <section id="testimonials" className="px-6 py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent"></div>
@@ -591,7 +571,6 @@ function App() {
         </div>
       </section>
 
-
       <footer className="relative overflow-hidden bg-gradient-to-b from-neutral-900 via-neutral-950 to-black border-t border-white/10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800/20 via-transparent to-transparent"></div>
 
@@ -599,39 +578,32 @@ function App() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
             <div className="md:col-span-4 space-y-6">
               <div className="inline-flex items-center space-x-4 group cursor-pointer">
-                <div className="relative w-16 h-16">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 via-blue-500/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-700 animate-pulse"></div>
+                <div className="inline-flex items-center space-x-2 group cursor-pointer">
+                  <div className="relative w-10 h-10 rounded-xl overflow-hidden">
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-600/10 via-slate-700/5 to-slate-800/5 blur-md group-hover:blur-xl transition-all duration-500"></div>
 
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-2xl backdrop-blur-sm border border-white/20 group-hover:border-cyan-400/50 transition-all duration-500"></div>
-
-                  <div className="w-full h-full flex items-center justify-center relative z-10 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                    <div className="relative flex items-center justify-center">
-                      <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-br from-cyan-400 via-blue-400 to-cyan-300 group-hover:from-cyan-300 group-hover:to-blue-300 transition-all duration-500">
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-900 via-black to-slate-900 border border-slate-700/30 backdrop-blur-sm shadow-lg group-hover:border-slate-500/50 transition-all duration-500 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 group-hover:from-white group-hover:via-slate-100 group-hover:to-slate-300 transition-all duration-500">
                         T
                       </span>
-                      <div className="absolute -right-1 -top-1 w-2 h-2 bg-cyan-400 rounded-full animate-ping opacity-75"></div>
-                      <div className="absolute -right-1 -top-1 w-2 h-2 bg-cyan-400 rounded-full"></div>
                     </div>
                   </div>
 
-                  <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-700"></div>
-                </div>
-
-                <div className="flex flex-col">
-                  <div className="flex items-center space-x-1">
-                    <span className="text-3xl font-extralight text-white tracking-[0.15em] group-hover:tracking-[0.2em] transition-all duration-500">
-                      Type
-                    </span>
-                    <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 tracking-[0.15em] group-hover:tracking-[0.2em] transition-all duration-500">
-                      Strike
-                    </span>
-                    <span className="text-xl font-light text-cyan-400/80 tracking-wider">
-                      .Ai
-                    </span>
+                  {/* Text */}
+                  <div className="flex flex-col -space-y-1">
+                    <div className="flex items-baseline">
+                      <span className="text-md font-extralight text-slate-300 tracking-widest group-hover:tracking-wider transition-all duration-500">
+                        Type
+                      </span>
+                      <span className="text-xl font-bold text-slate-100 group-hover:text-white tracking-wide transition-all duration-500 ml-1">
+                        Strike
+                      </span>
+                      <span className="text-md font-light text-slate-400 group-hover:text-slate-300 ml-1">
+                        .Ai
+                      </span>
+                    </div>
+                    <div className="h-[1px] w-0 group-hover:w-full bg-gradient-to-r from-transparent via-slate-300/50 to-transparent transition-all duration-500 mt-1"></div>
                   </div>
-                  <div className="h-px w-0 group-hover:w-full bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent transition-all duration-700 mt-1"></div>
                 </div>
               </div>
 
