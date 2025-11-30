@@ -155,33 +155,32 @@ export const MultiplayerProvider = ({ children }) => {
     return { wordIndex, charIndex };
   };
 
-  // ---------- send typing progress (via room socket) ----------
-  const sendProgress = (force = false) => {
-    const now = Date.now();
-    if (!force && now - lastProgressEmitRef.current < 150) return;
-    lastProgressEmitRef.current = now;
+  // const sendProgress = (force = false) => {
+  //   const now = Date.now();
+  //   if (!force && now - lastProgressEmitRef.current < 150) return;
+  //   lastProgressEmitRef.current = now;
 
-    if (!socket || !socket.connected || !room?.id) return;
+  //   if (!socket || !socket.connected || !room?.id) return;
 
-    const { wordIndex, charIndex } = getCurrentPosition();
+  //   const { wordIndex, charIndex } = getCurrentPosition();
 
-    let wpm = 0;
-    const typed = typedChars.filter((t) => t && t.timestamp);
-    if (typed.length >= 5) {
-      const firstTs = typed[0].timestamp;
-      const lastTs = typed[typed.length - 1].timestamp;
-      const minutes = Math.max(1 / 60, (lastTs - firstTs) / 1000 / 60);
-      const charsTyped = typed.length;
-      wpm = Math.round(charsTyped / 5 / minutes);
-    }
-    socket.emit("updateProgress", {
-      roomId: room.id,
-      userId: socket.id,
-      wordIndex,
-      charIndex,
-      wpm,
-    });
-  };
+  //   let wpm = 0;
+  //   const typed = typedChars.filter((t) => t && t.timestamp);
+  //   if (typed.length >= 5) {
+  //     const firstTs = typed[0].timestamp;
+  //     const lastTs = typed[typed.length - 1].timestamp;
+  //     const minutes = Math.max(1 / 60, (lastTs - firstTs) / 1000 / 60);
+  //     const charsTyped = typed.length;
+  //     wpm = Math.round(charsTyped / 5 / minutes);
+  //   }
+  //   socket.emit("updateProgress", {
+  //     roomId: room.id,
+  //     userId: socket.id,
+  //     wordIndex,
+  //     charIndex,
+  //     wpm,
+  //   });
+  // };
 
   // ========== GAME INITIALIZATION ==========
   const initializeGame = useCallback(() => {
@@ -455,7 +454,9 @@ export const MultiplayerProvider = ({ children }) => {
 
   const trackTypingMetrics = (typed, expected) => {
     if (typed.length !== 1 || typed === " ") {
-      if (typed === " ") sendProgress();
+      if (typed === " ") 
+        // ui testing ..
+        // sendProgress();
       return;
     }
 
@@ -469,7 +470,8 @@ export const MultiplayerProvider = ({ children }) => {
       startTimer();
     }
 
-    sendProgress();
+    // ui testing ...
+    // sendProgress();
   };
 
   // ========== GAME CONTROLS ===========
@@ -688,7 +690,7 @@ export const MultiplayerProvider = ({ children }) => {
     requestWords: (count = 50, opt = null) => renderWords(count, opt),
 
     totalGameTime: totalGameTimeRef.current,
-    sendProgressForce: () => sendProgress(true),
+    // sendProgressForce: () => sendProgress(true),
   };
 
   return (

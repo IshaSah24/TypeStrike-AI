@@ -161,12 +161,15 @@ export default function MultiplayerTypingArea({
 
   const emitProgress = useCallback(() => {
     const now = Date.now();
-    if (now - lastProgressEmitRef.current < 120) return; // throttling
+    if (now - lastProgressEmitRef.current < 200) return;
     lastProgressEmitRef.current = now;
 
     if (!socket?.connected || !currentRoomId) return;
 
     const { wordIndex, charIndex } = computeCurrentPosition();
+    console.log("word index : ", wordIndex);
+    console.log("char index : ", charIndex);
+    
     const correctChars = typedChars.filter((t) => t?.correct).length;
     const incorrectChars = typedChars.length - correctChars;
 
@@ -183,7 +186,9 @@ export default function MultiplayerTypingArea({
     handleKeyPress?.(e);
 
     setTimeout(() => {
-      sendProgressForce?.();
+      //testing local 
+      // sendProgressForce?.();
+
       emitProgress();
     }, 0);
   };
