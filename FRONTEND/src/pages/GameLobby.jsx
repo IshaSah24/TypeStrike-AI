@@ -22,7 +22,6 @@ export default function GameLobby() {
   const navigate = useNavigate();
   //TODO :
   // 1.  verify  if user  is in  the state or not 
-  // 2. 
   const { user } = useSelector((state) => state.auth || {});
 
   const { createRoom, joinByCode, roomCode: socketRoomCode, isConnected } = useRoomSocket();
