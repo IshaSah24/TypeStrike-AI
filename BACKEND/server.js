@@ -475,8 +475,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateProgress", (payload) => {
+    // console.log("server received", payload);
     try {
-      const { roomId, wordIndex, charIndex, correctChars, incorrectChars } = payload || {};
+      const { roomId, wordIndex, charIndex, correctChars, incorrectChars, estWpm } = payload || {};
       if (!roomId || !rooms.has(roomId)) return;
   
       const room = rooms.get(roomId);
@@ -485,18 +486,26 @@ io.on("connection", (socket) => {
       if (room.state !== "running") return;
   
       const totalWords = room.words.length;
-      const currentWordProgress =
-        charIndex / (room.words[wordIndex]?.length || 1);
-      const progressPercent =
-        totalWords > 0
-          ? Math.min(100, Math.max(0, ((wordIndex + currentWordProgress) / totalWords) * 100))
-          : 0;
+      const currentWordProgress = charIndex / (room.words[wordIndex]?.length || 1);
+      const progressPercent = totalWords > 0 ? Math.min(100, Math.max(0, ((wordIndex + currentWordProgress) / totalWords) * 100)) : 0;
+
       user.progress = progressPercent;
-      user.wordIndex = wordIndex || 0;
-      user.charIndex = charIndex || 0;
-      user.correctChars = correctChars || user.correctChars;
-      user.incorrectChars = incorrectChars || user.incorrectChars;
-  
+
+      // validatation  of the  client's numbers line wordindex,  charindex etc..
+      user.wordIndex  = Number.isFinite(wordIndex) ? wordIndex : (user.wordIndex || 0);
+      user.charIndex = Number.isFinite(charIndex) ? charIndex : (user.charIndex || 0);
+      user.correctChars = Number.isFinite(correctChars) ?  Math.max(0, correctChars) : (user.correctChars || 0)
+      user.incorrectChars = Number.isFinite (incorrectChars) ? Math.max(0, incorrectChars) : (user.incorrectChars || 0);
+
+      // user's temporary wpm in runtime
+      if(typeof estWpm === 'number'){
+        user.estWpm = Math.max(0, Math.round(estWpm));
+      }else {
+        user.estWpm = user.estWpm || 0;
+      }
+
+
+      // server's authoritative wpm 
       const now = Date.now();
       const durationMinutes = Math.max((now - room.startTimestamp) / 60000, 1/60);
       user.wpm = Math.round(user.correctChars / 5 / durationMinutes);
@@ -514,6 +523,7 @@ io.on("connection", (socket) => {
         accuracy: user.accuracy,
         correctChars: user.correctChars,
         incorrectChars: user.incorrectChars,
+        estWpm : user.estWpm
       });
   
     } catch (err) {

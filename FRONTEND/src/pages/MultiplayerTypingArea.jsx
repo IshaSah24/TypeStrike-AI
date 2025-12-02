@@ -41,7 +41,9 @@ export default function MultiplayerTypingArea({
     room,
   } = useMultiplayerProvider();
 
-  const [words, setWords] = useState(Array.isArray(initialWords) ? initialWords : []);
+  const [words, setWords] = useState(
+    Array.isArray(initialWords) ? initialWords : []
+  );
   const [players, setPlayers] = useState(initialProgress || {});
   const [raceStarted, setRaceStarted] = useState(false);
   const [startTimestamp, setStartTimestamp] = useState(null);
@@ -56,6 +58,10 @@ export default function MultiplayerTypingArea({
   useEffect(() => {
     if (Array.isArray(initialWords)) setWords(initialWords);
   }, [initialWords]);
+
+
+
+  // socket  events....
   useEffect(() => {
     if (!socket) return;
 
@@ -84,7 +90,11 @@ export default function MultiplayerTypingArea({
     const handlePlayerFinished = (data) => {
       setPlayers((prev) => ({
         ...prev,
-        [data.userId]: { ...(prev[data.userId] || {}), ...data, finished: true },
+        [data.userId]: {
+          ...(prev[data.userId] || {}),
+          ...data,
+          finished: true,
+        },
       }));
     };
 
@@ -110,6 +120,8 @@ export default function MultiplayerTypingArea({
     };
   }, [socket, initializeGame, setHasStarted, setTypedChars, setIsTypingOver]);
 
+  
+// final  dom  clone 
   useEffect(() => {
     if (isTypingOver && wordsRef?.current) {
       try {
@@ -159,34 +171,74 @@ export default function MultiplayerTypingArea({
     return { wordIndex, charIndex };
   }, [wordsRef]);
 
+  // server wpm calcultation...
+  // const emitProgress = useCallback(() => {
+  //   const now = Date.now();
+  //   if (now - lastProgressEmitRef.current < 200) return;
+  //   lastProgressEmitRef.current = now;
+
+  //   if (!socket?.connected || !currentRoomId) return;
+
+  //   const { wordIndex, charIndex } = computeCurrentPosition();
+  //   console.log("word index : ", wordIndex);
+  //   console.log("char index : ", charIndex);
+
+  //   const correctChars = typedChars.filter((t) => t?.correct).length;
+  //   const incorrectChars = typedChars.length - correctChars;
+
+  //   socket.emit("updateProgress", {
+  //     roomId: currentRoomId,
+  //     wordIndex,
+  //     charIndex,
+  //     correctChars,
+  //     incorrectChars,
+  //   });
+  // }, [socket, currentRoomId, computeCurrentPosition, typedChars]);
+
+  // client(estWpm) + server (wpm) calculation
   const emitProgress = useCallback(() => {
     const now = Date.now();
     if (now - lastProgressEmitRef.current < 200) return;
     lastProgressEmitRef.current = now;
 
-    if (!socket?.connected || !currentRoomId) return;
+    if (!socket?.connected || !currentRoomId) {
+      return;
+    }
 
     const { wordIndex, charIndex } = computeCurrentPosition();
-    console.log("word index : ", wordIndex);
-    console.log("char index : ", charIndex);
-    
-    const correctChars = typedChars.filter((t) => t?.correct).length;
+    const correctChars = typedChars.filter((t) => {
+      return t?.correct;
+    }).length;
     const incorrectChars = typedChars.length - correctChars;
 
-    socket.emit("updateProgress", {
+    let estWpm = 0;
+    const typed = typedChars.filter((t) => t && t.timestamp);
+
+    if (typed.length >= 5) {
+      const firstTs = typed[0].timestamp;
+      const lastTs = typed[typed.length - 1].timestamp;
+      const minutes = Math.max(1 / 60, (lastTs - firstTs) / 1000 / 60);
+      estWpm = Math.round(typed.length / 5 / minutes);
+    }
+
+    const payload = {
       roomId: currentRoomId,
       wordIndex,
       charIndex,
       correctChars,
       incorrectChars,
-    });
+      estWpm,
+    };
+    // console.log("client emits on updateProgress: ", payload);
+    socket.emit("updateProgress", payload);
   }, [socket, currentRoomId, computeCurrentPosition, typedChars]);
 
   const onKeyDown = (e) => {
     handleKeyPress?.(e);
+    // console.log("on  key  down  : ", e.key);
 
     setTimeout(() => {
-      //testing local 
+      //testing local
       // sendProgressForce?.();
 
       emitProgress();

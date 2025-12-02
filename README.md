@@ -67,15 +67,7 @@ This document provides a concise technical summary of the major updates, fixes, 
 - Fully secure password hashing.
 - Login, registration, session persistence, and protected multiplayer access.
 
----
-
-## Known Issues
-- Chat messages are not broadcasting.
-- Word list (`words[]`) is empty and requires correction.
-
----
-
-## Recommended Testing Before Deployment
+## Testing Before Deployment
 - Authentication (register, login, session persistence).
 - Single-player flow (typing, results, database saving).
 - Multiplayer room creation, joining, racing, and result saving.
@@ -83,8 +75,16 @@ This document provides a concise technical summary of the major updates, fixes, 
 
 ---
 
-## Suggested Next Enhancements
+## Next Enhancements
 - User profiles with statistics.
 - Battle with  ai - easy,  medium , hard 
 - Difficulty modes and custom word lists.
 
+
+
+## Todo Section
+- calcuating  estimated wpm for  current flow of the race  client(estWpm) ---> server --> clients✅
+- And original wpm via server brodcasts at the  end of the race . server (wpm) ---> clients✅
+- tested multiplayer socket conection  and sync ✅
+- graph to  show all  users result  with  their overall typing details
+- 
