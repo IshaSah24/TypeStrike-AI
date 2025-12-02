@@ -8,8 +8,6 @@ import {
   Play,
   Settings,
   LogOut,
-  UserX,
-  Shield,
 } from "lucide-react";
 import { useRoomSocket } from "../../../../hooks/useRoomSocket";
 import { generateRaceWords } from "../../../../utils/generateRaceWords";
@@ -23,7 +21,7 @@ export default function InRoom() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth || {});
   const roomData = location.state;
-  
+
   const {
     room,
     users,
@@ -47,10 +45,11 @@ export default function InRoom() {
   const [countdown, setCountdown] = useState(0);
   const [startingRace, setStartingRace] = useState(false);
 
+  const currentUsers = users.length > 0 ? users : roomData?.users || [];
   const currentRoomCode = roomCode || roomData?.roomCode || "";
   const currentRoomId = room?.id || roomData?.roomId;
   const isOwner = room?.ownerId === socket?.id;
-  const currentUsers = users.length > 0 ? users : roomData?.users || [];
+
   const defaultSettings = {
     mode: "words",
     option: 10,
@@ -60,19 +59,22 @@ export default function InRoom() {
   const currentSettings =
     room?.gameSettings || roomData?.gameSettings || defaultSettings;
 
+  // =================== Room Joining Fix ===================
+  // Only join if socket is connected and room not already joined
   useEffect(() => {
-    if (roomData?.roomId && socket?.connected && !room) {
-      if (roomData.roomCode) {
-        joinByCodeFn(roomData.roomCode, user?.name).catch(console.error);
-      } else if (roomData.roomId) {
-        joinRoomFn(roomData.roomId, user?.name).catch(console.error);
-      }
+    if (!socket?.connected || room) return;
+
+    if (roomData?.roomCode) {
+      joinByCodeFn(roomData.roomCode, user?.name).catch(console.error);
+    } else if (roomData?.roomId) {
+      joinRoomFn(roomData.roomId, user?.name).catch(console.error);
     }
-  }, [roomData, socket, room, joinRoomFn, joinByCodeFn, user]);
+  }, [socket?.connected, room, joinRoomFn, joinByCodeFn, roomData, user?.name]);
 
   useEffect(() => {
-    if (!room?.state) return;
-    setRaceState(room.state);
+    if (room?.state) {
+      setRaceState(room.state);
+    }
   }, [room?.state]);
 
   useEffect(() => {
@@ -82,14 +84,16 @@ export default function InRoom() {
     }
 
     const updateCountdown = () => {
+      if (room?.state !== "countdown") return; 
       const remaining = Math.ceil((room.startTimestamp - Date.now()) / 1000);
       setCountdown(Math.max(0, remaining));
     };
 
     updateCountdown();
-    const interval = setInterval(updateCountdown, 200);
+    const interval = setInterval(updateCountdown, 100); 
     return () => clearInterval(interval);
   }, [room?.state, room?.startTimestamp]);
+
 
   useEffect(() => {
     if (latestResults && latestResults.length) {
@@ -105,8 +109,9 @@ export default function InRoom() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
+    if (!socket?.connected || !currentRoomId) return;
     const trimmed = message.trim();
-    if (!trimmed || !currentRoomId) return;
+    if (!trimmed) return;
     try {
       await sendChatMessage(currentRoomId, trimmed);
       setMessage("");
@@ -120,21 +125,26 @@ export default function InRoom() {
       alert("Room ID not found");
       return;
     }
-
     if (!isOwner) {
       alert("Only the host can start the race");
       return;
     }
-
     if (currentUsers.length < 2) {
       alert("Need at least 2 players to start");
       return;
     }
+    if (startingRace) return;
 
     try {
       setStartingRace(true);
+
       const raceWords = generateRaceWords(currentSettings);
-      console.log(" before  sedning to the  server  : ", raceWords);
+      if (!raceWords.length) {
+        alert("Failed to generate race words");
+        return;
+      }
+
+      console.log("Sending words to server:", raceWords);
       await sendWords(currentRoomId, raceWords);
       await startRace(currentRoomId, 3000, raceWords.length);
     } catch (error) {
@@ -177,6 +187,12 @@ export default function InRoom() {
       default:
         return "Idle";
     }
+  };
+
+  // =================== Player Progress Fix =============
+  // Default fallback to prevent undefined WPM/accuracy
+  const getPlayerProgress = (userId) => {
+    return playerProgress[userId] ?? { wpm: 0, accuracy: 0, progress: 0 };
   };
 
   if (raceState === "countdown" || raceState === "running") {
@@ -265,7 +281,7 @@ export default function InRoom() {
 
                   <div className="space-y-3">
                     {currentUsers.map((user) => {
-                      const progress = playerProgress[user.id];
+                      const progress = getPlayerProgress(user.id);
                       return (
                         <div
                           key={user.id}
@@ -305,21 +321,19 @@ export default function InRoom() {
                                       </span>
                                       <span className="text-sm text-neutral-500">•</span>
                                       <span className="text-sm text-green-400">
-                                        {progress.accuracy?.toFixed(1)}% acc
+                                        {progress.accuracy.toFixed(1)}% acc
                                       </span>
                                     </>
                                   )}
                                 </div>
-                                {progress && (
-                                  <div className="mt-2">
-                                    <div className="w-full bg-neutral-700 rounded-full h-2">
-                                      <div
-                                        className="bg-blue-500 h-2 rounded-full transition-all"
-                                        style={{ width: `${progress.progress || 0}%` }}
-                                      />
-                                    </div>
+                                <div className="mt-2">
+                                  <div className="w-full bg-neutral-700 rounded-full h-2">
+                                    <div
+                                      className="bg-blue-500 h-2 rounded-full transition-all"
+                                      style={{ width: `${progress.progress}%` }}
+                                    />
                                   </div>
-                                )}
+                                </div>
                               </div>
                             </div>
 
@@ -366,6 +380,7 @@ export default function InRoom() {
               </div>
             </div>
 
+            {/* Chat Section */}
             <div className="lg:col-span-1 bg-black">
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-neutral-800">
