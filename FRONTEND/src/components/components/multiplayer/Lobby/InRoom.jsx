@@ -14,7 +14,7 @@ import { generateRaceWords } from "../../../../utils/generateRaceWords";
 import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import MultiplayerTypingArea from "../../../../pages/MultiplayerTypingArea";
-import RaceResults from "./RaceResults";
+import RaceResults from "../RaceResultViews/RaceResults";
 
 export default function InRoom() {
   const { location } = useRouterState();
@@ -39,6 +39,13 @@ export default function InRoom() {
     sendChatMessage,
   } = useRoomSocket();
 
+  useEffect(() => {
+    if (latestResults && latestResults.length > 0) {
+      console.log("[DEBUG] Race completed! latestResults:", latestResults);
+      console.log("[DEBUG] room.state:", room?.state); 
+    }
+  }, [latestResults, room?.state]);
+
   const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState("");
   const [raceState, setRaceState] = useState("waiting");
@@ -59,8 +66,6 @@ export default function InRoom() {
   const currentSettings =
     room?.gameSettings || roomData?.gameSettings || defaultSettings;
 
-  // =================== Room Joining Fix ===================
-  // Only join if socket is connected and room not already joined
   useEffect(() => {
     if (!socket?.connected || room) return;
 
@@ -72,10 +77,18 @@ export default function InRoom() {
   }, [socket?.connected, room, joinRoomFn, joinByCodeFn, roomData, user?.name]);
 
   useEffect(() => {
-    if (room?.state) {
+    if (room?.state === "completed") {
+      setRaceState("completed");
+    } else if (room?.state) {
       setRaceState(room.state);
     }
   }, [room?.state]);
+
+  useEffect(() => {
+    if (latestResults && latestResults.length > 0) {
+      setRaceState("completed");
+    }
+  }, [latestResults]);
 
   useEffect(() => {
     if (room?.state !== "countdown" || !room?.startTimestamp) {
@@ -95,12 +108,20 @@ export default function InRoom() {
   }, [room?.state, room?.startTimestamp]);
 
 
-  useEffect(() => {
-    if (latestResults && latestResults.length) {
-      setRaceState("completed");
-    }
-  }, [latestResults]);
+  // useEffect(() => {
+  //   if (latestResults && latestResults.length) {
+  //     setRaceState("completed");
+  //   }
+  // }, [latestResults]);
 
+
+
+  useEffect(() => {
+    console.log("[DEBUG] InRoom - room?.state:", room?.state);
+    console.log("[DEBUG] InRoom - raceState:", raceState);
+    console.log("[DEBUG] InRoom - latestResults:", latestResults);
+  }, [room?.state, raceState, latestResults]);
+  
   const copyRoomCode = () => {
     navigator.clipboard.writeText(currentRoomCode);
     setCopied(true);
@@ -189,8 +210,7 @@ export default function InRoom() {
     }
   };
 
-  // =================== Player Progress Fix =============
-  // Default fallback to prevent undefined WPM/accuracy
+
   const getPlayerProgress = (userId) => {
     return playerProgress[userId] ?? { wpm: 0, accuracy: 0, progress: 0 };
   };
@@ -205,7 +225,10 @@ export default function InRoom() {
     );
   }
 
-  if (raceState === "completed" && latestResults) {
+
+  const shouldShowResults = latestResults && latestResults.length > 0 && (raceState === "completed" || room?.state === "completed");
+  
+  if (shouldShowResults) {
     return (
       <RaceResults
         results={latestResults}
@@ -380,7 +403,6 @@ export default function InRoom() {
               </div>
             </div>
 
-            {/* Chat Section */}
             <div className="lg:col-span-1 bg-black">
               <div className="flex flex-col h-full">
                 <div className="p-6 border-b border-neutral-800">

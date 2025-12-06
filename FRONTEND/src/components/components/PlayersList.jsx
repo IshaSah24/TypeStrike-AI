@@ -34,8 +34,6 @@ const PlayersList = ({ playerProgress = {} }) => {
   }, []);
 
 
-
-
   return (
     <div className="max-w-4xl mx-auto mb-6">
       <div className="bg-neutral-900/80 backdrop-blur-sm rounded-lg border border-neutral-800 p-4">

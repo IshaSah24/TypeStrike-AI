@@ -19,7 +19,7 @@ export default function MultiplayerTypingArea({
   const { setFinalDOM } = useFinalDom();
   const { location } = useRouterState();
   const { user } = useSelector((state) => state.auth || {});
-  const { socket } = useRoomSocket();
+  const { socket, finishRace } = useRoomSocket();
 
   const {
     wordsRef,
@@ -41,27 +41,25 @@ export default function MultiplayerTypingArea({
     room,
   } = useMultiplayerProvider();
 
-  const [words, setWords] = useState(
-    Array.isArray(initialWords) ? initialWords : []
-  );
+  const [words, setWords] = useState(Array.isArray(initialWords) ? initialWords : []);
   const [players, setPlayers] = useState(initialProgress || {});
   const [raceStarted, setRaceStarted] = useState(false);
   const [startTimestamp, setStartTimestamp] = useState(null);
+  const [hasFinishedRace, setHasFinishedRace] = useState(false);
 
   const lastProgressEmitRef = useRef(0);
   const currentRoomId = propRoomId || location.state?.roomId || room?.id;
 
+  // Sync context players
   useEffect(() => {
     if (contextPlayers) setPlayers(contextPlayers);
   }, [contextPlayers]);
 
+  // Sync initial words
   useEffect(() => {
     if (Array.isArray(initialWords)) setWords(initialWords);
   }, [initialWords]);
 
-
-
-  // socket  events....
   useEffect(() => {
     if (!socket) return;
 
@@ -72,10 +70,9 @@ export default function MultiplayerTypingArea({
       setTypedChars([]);
       setIsTypingOver(false);
       setRaceStarted(false);
+      setHasFinishedRace(false);
 
-      setTimeout(() => {
-        initializeGame?.();
-      }, 0);
+      setTimeout(() => initializeGame?.(), 0);
     };
 
     const handleRaceRunning = (data) => {
@@ -90,15 +87,12 @@ export default function MultiplayerTypingArea({
     const handlePlayerFinished = (data) => {
       setPlayers((prev) => ({
         ...prev,
-        [data.userId]: {
-          ...(prev[data.userId] || {}),
-          ...data,
-          finished: true,
-        },
+        [data.userId]: { ...(prev[data.userId] || {}), ...data, finished: true },
       }));
     };
 
     const handleRaceComplete = (data) => {
+      console.log("[DEBUG] Race complete received in MultiplayerTypingArea:", data);
       const updatedPlayers = {};
       data.results.forEach((p) => (updatedPlayers[p.userId] = p));
       setPlayers(updatedPlayers);
@@ -120,30 +114,6 @@ export default function MultiplayerTypingArea({
     };
   }, [socket, initializeGame, setHasStarted, setTypedChars, setIsTypingOver]);
 
-  
-// final  dom  clone 
-  useEffect(() => {
-    if (isTypingOver && wordsRef?.current) {
-      try {
-        const clonedDOM = wordsRef.current.cloneNode(true);
-        setFinalDOM(clonedDOM);
-      } catch (err) {
-        console.warn("Could not clone final DOM:", err);
-      }
-    }
-  }, [isTypingOver, wordsRef, setFinalDOM]);
-
-  useEffect(() => {
-    return () => resetGameState?.();
-  }, [resetGameState]);
-
-  useEffect(() => {
-    if (raceStarted) {
-      try {
-        focusHereRef?.current?.focus?.();
-      } catch {}
-    }
-  }, [raceStarted, focusHereRef]);
   const computeCurrentPosition = useCallback(() => {
     const root = wordsRef.current;
     if (!root) return { wordIndex: 0, charIndex: 0 };
@@ -170,50 +140,78 @@ export default function MultiplayerTypingArea({
 
     return { wordIndex, charIndex };
   }, [wordsRef]);
+  // Call finishRace when user completes typing
+  useEffect(() => {
+    if (isTypingOver && raceStarted && !hasFinishedRace && currentRoomId && finishRace) {
+      const { wordIndex, charIndex } = computeCurrentPosition();
+      const correctChars = typedChars.filter((t) => t?.correct).length;
+      const incorrectChars = typedChars.length - correctChars;
+      
+      let wpm = 0;
+      const typed = typedChars.filter((t) => t && t.timestamp);
+      if (typed.length >= 5 && startTimestamp) {
+        const durationMinutes = Math.max((Date.now() - startTimestamp) / 60000, 1/60);
+        wpm = Math.round(typed.length / 5 / durationMinutes);
+      }
 
-  // server wpm calcultation...
-  // const emitProgress = useCallback(() => {
-  //   const now = Date.now();
-  //   if (now - lastProgressEmitRef.current < 200) return;
-  //   lastProgressEmitRef.current = now;
+      const accuracy = typedChars.length === 0 ? 100 : Math.round((correctChars / typedChars.length) * 100);
 
-  //   if (!socket?.connected || !currentRoomId) return;
+      finishRace(currentRoomId, {
+        wordIndex,
+        charIndex,
+        correctChars,
+        incorrectChars,
+        wpm,
+        accuracy,
+      }).then(() => {
+        console.log("[DEBUG] finishRace called successfully");
+        setHasFinishedRace(true);
+      }).catch((err) => {
+        console.error("[DEBUG] finishRace error:", err);
+      });
+    }
+  }, [isTypingOver, raceStarted, hasFinishedRace, currentRoomId, finishRace, typedChars, startTimestamp, computeCurrentPosition]);
 
-  //   const { wordIndex, charIndex } = computeCurrentPosition();
-  //   console.log("word index : ", wordIndex);
-  //   console.log("char index : ", charIndex);
+  // Final DOM clone
+  useEffect(() => {
+    if (isTypingOver && wordsRef?.current) {
+      try {
+        const clonedDOM = wordsRef.current.cloneNode(true);
+        setFinalDOM(clonedDOM);
+      } catch (err) {
+        console.warn("Could not clone final DOM:", err);
+      }
+    }
+  }, [isTypingOver, wordsRef, setFinalDOM]);
 
-  //   const correctChars = typedChars.filter((t) => t?.correct).length;
-  //   const incorrectChars = typedChars.length - correctChars;
+  // Reset game on unmount
+  useEffect(() => () => resetGameState?.(), [resetGameState]);
 
-  //   socket.emit("updateProgress", {
-  //     roomId: currentRoomId,
-  //     wordIndex,
-  //     charIndex,
-  //     correctChars,
-  //     incorrectChars,
-  //   });
-  // }, [socket, currentRoomId, computeCurrentPosition, typedChars]);
+  // Focus input when race starts
+  useEffect(() => {
+    if (raceStarted) {
+      try {
+        focusHereRef?.current?.focus?.();
+      } catch {}
+    }
+  }, [raceStarted, focusHereRef]);
 
-  // client(estWpm) + server (wpm) calculation
+
+
+  // Emit progress to server
   const emitProgress = useCallback(() => {
     const now = Date.now();
     if (now - lastProgressEmitRef.current < 200) return;
     lastProgressEmitRef.current = now;
 
-    if (!socket?.connected || !currentRoomId) {
-      return;
-    }
+    if (!socket?.connected || !currentRoomId) return;
 
     const { wordIndex, charIndex } = computeCurrentPosition();
-    const correctChars = typedChars.filter((t) => {
-      return t?.correct;
-    }).length;
+    const correctChars = typedChars.filter((t) => t?.correct).length;
     const incorrectChars = typedChars.length - correctChars;
 
     let estWpm = 0;
     const typed = typedChars.filter((t) => t && t.timestamp);
-
     if (typed.length >= 5) {
       const firstTs = typed[0].timestamp;
       const lastTs = typed[typed.length - 1].timestamp;
@@ -221,36 +219,25 @@ export default function MultiplayerTypingArea({
       estWpm = Math.round(typed.length / 5 / minutes);
     }
 
-    const payload = {
+    socket.emit("updateProgress", {
       roomId: currentRoomId,
       wordIndex,
       charIndex,
       correctChars,
       incorrectChars,
       estWpm,
-    };
-    // console.log("client emits on updateProgress: ", payload);
-    socket.emit("updateProgress", payload);
+    });
   }, [socket, currentRoomId, computeCurrentPosition, typedChars]);
 
   const onKeyDown = (e) => {
     handleKeyPress?.(e);
-    // console.log("on  key  down  : ", e.key);
-
-    setTimeout(() => {
-      //testing local
-      // sendProgressForce?.();
-
-      emitProgress();
-    }, 0);
+    setTimeout(() => emitProgress(), 0);
   };
 
   return (
     <div id="app" data-theme={theme} className="min-h-screen">
       <div className="mt-8">
-        {isTypingOver ? (
-          <MultiplayerWpm wordsRef={wordsRef} players={players} />
-        ) : (
+
           <>
             <MultiplayerArea
               showkey={false}
@@ -274,7 +261,7 @@ export default function MultiplayerTypingArea({
               <PlayersList playerProgress={players} />
             </div>
           </>
-        )}
+        
       </div>
     </div>
   );
