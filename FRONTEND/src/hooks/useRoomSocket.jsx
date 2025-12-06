@@ -53,12 +53,21 @@ export const RoomSocketProvider = ({ children }) => {
     };
 
     const handleRoomUsers = (data) => {
+      console.log("[  DEBUG:SOCKET] roomUsers:", data);
       setUsers(data.users || []);
       if (data.roomId) {
-        setRoom((prev) => ({
-          ...prev,
-          ...data,
-        }));
+        setRoom((prev) => {
+          // Preserve "completed" state if already set, unless explicitly changed
+          const newState = {
+            ...prev,
+            ...data,
+          };
+          // If room was completed and new data doesn't explicitly change state, keep it completed
+          if (prev?.state === "completed" && (!data.state || data.state === "completed")) {
+            newState.state = "completed";
+          }
+          return newState;
+        });
         if (data.code) setRoomCode(data.code);
       }
     };
@@ -80,7 +89,9 @@ export const RoomSocketProvider = ({ children }) => {
       }));
 
       setPlayerProgress({});
+      console.log("latest race  result : ", latestResults);
       setLatestResults(null);
+      
     };
 
     const handleRaceRunning = () => {
@@ -91,10 +102,11 @@ export const RoomSocketProvider = ({ children }) => {
     };
 
     const handlePlayerProgress = (data) => {
-      setPlayerProgress((prev) => ({
-        ...prev,
-        [data.userId]: data,
-      }));
+      setPlayerProgress((prev) => {
+        const next = { ...prev, [data.userId]: data };
+        // console.log("[SOCKET] playerProgress update:", data);
+        return next;
+      });
     };
 
     const handlePlayerFinished = (data) => {
@@ -109,11 +121,22 @@ export const RoomSocketProvider = ({ children }) => {
     };
 
     const handleRaceComplete = (data) => {
+      console.log("[DBUG:SOCKET] handleRaceComplete payload:", data);
+
       setRoom((prev) => ({
         ...prev,
         state: "completed",
       }));
-      setLatestResults(data.results || []);
+
+      const results = data?.results || [];
+      setLatestResults(results);
+    
+      const finalProgress = {};
+      results.forEach((p) => {
+        if (p && p.userId) finalProgress[p.userId] = p;
+      });
+
+      setPlayerProgress(finalProgress);
     };
 
     const handleWordsPrepared = (data) => {

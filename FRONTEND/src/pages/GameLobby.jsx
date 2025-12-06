@@ -62,7 +62,6 @@ export default function GameLobby() {
     setLocalOpt(opt);
   };
 
-  // TODO : converting  fake rooms  into real rooms running
   const activeRooms = [
     {
       id: 1,
