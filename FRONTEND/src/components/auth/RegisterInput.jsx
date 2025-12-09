@@ -38,7 +38,6 @@ export default function RegisterInput() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Full Name */}
       <div className="group">
         <input
           type="text"
@@ -50,7 +49,6 @@ export default function RegisterInput() {
         />
       </div>
 
-      {/* Email */}
       <div className="group">
         <input
           type="email"
@@ -62,7 +60,6 @@ export default function RegisterInput() {
         />
       </div>
 
-      {/* Password */}
       <div className="group relative">
         <input
           type={showPassword ? "text" : "password"}
@@ -81,7 +78,6 @@ export default function RegisterInput() {
         </button>
       </div>
 
-      {/* Confirm Password */}
       <div className="group relative">
         <input
           type={showConfirmPassword ? "text" : "password"}
@@ -100,7 +96,6 @@ export default function RegisterInput() {
         </button>
       </div>
 
-      {/* Submit button */}
       <motion.button
         type="submit"
         whileHover={{ scale: 1.02 }}

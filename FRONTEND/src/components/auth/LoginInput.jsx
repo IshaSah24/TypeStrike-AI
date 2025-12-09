@@ -24,7 +24,9 @@ export default function LoginInput() {
 
       console.log("Login success:", result);
       
-      navigate({ to: "/" });
+      // navigate({ to: "/" });
+      const from = location.state?.from?.pathname || "/";
+      navigate({ to: from, replace: true });
     } catch (err) {
       console.error(err);
       alert(err || "Login failed");
@@ -77,7 +79,6 @@ export default function LoginInput() {
         </button>
       </div>
 
-      {/* Submit button */}
       <motion.button
         type="submit"
         initial={{ opacity: 0, y: 10 }}
