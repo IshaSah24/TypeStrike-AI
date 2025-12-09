@@ -475,7 +475,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateProgress", (payload) => {
-    // console.log("server received", payload);
     try {
       const {
         roomId,
@@ -508,7 +507,6 @@ io.on("connection", (socket) => {
 
       user.progress = progressPercent;
 
-      // validatation  of the  client's numbers line wordindex,  charindex etc..
       user.wordIndex = Number.isFinite(wordIndex)
         ? wordIndex
         : user.wordIndex || 0;
@@ -522,14 +520,12 @@ io.on("connection", (socket) => {
         ? Math.max(0, incorrectChars)
         : user.incorrectChars || 0;
 
-      // user's temporary wpm in runtime
       if (typeof estWpm === "number") {
         user.estWpm = Math.max(0, Math.round(estWpm));
       } else {
         user.estWpm = user.estWpm || 0;
       }
 
-      // server's authoritative wpm
       const now = Date.now();
       const durationMinutes = Math.max(
         (now - room.startTimestamp) / 60000,
@@ -670,12 +666,9 @@ io.on("connection", (socket) => {
           results: finalResults,
           gameSettings: room.gameSettings,
         });
-
-        // Mark room as completed
         room.state = "completed";
       }
 
-      // Always update roomUsers
       io.to(roomId).emit("roomUsers", {
         roomId,
         users: Array.from(room.users.values()),

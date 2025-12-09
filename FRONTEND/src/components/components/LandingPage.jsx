@@ -27,6 +27,7 @@ import MultiplayerBtn from "./multiplayer/MultiplayerBtn";
 import LandingAuthBtns from "./Landing-auth-btns";
 import CreateJoinRoomPage from "../../pages/CreateJoinRoomPage";
 import Footer from "./Footer";
+import PricingPlans from "./PricingPlans";
 
 function App() {
   const navigate = useNavigate();
@@ -232,16 +233,16 @@ function App() {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+            <div className=" flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
               <button
                 onClick={() => {
                   navigate({ to: "/play/single" });
                 }}
-                className="group bg-gradient-to-r from-white via-neutral-50 to-white text-black px-10 py-4 rounded-xl font-medium text-lg hover:from-neutral-50 hover:via-white hover:to-neutral-50 transition-all duration-500 flex items-center shadow-2xl hover:shadow-white/10 relative overflow-hidden"
+                className="group cursor-pointer bg-gradient-to-r from-white via-neutral-50 to-white text-black px-10 py-4 rounded-xl font-medium text-lg hover:from-neutral-50 hover:via-white hover:to-neutral-50 transition-all duration-500 flex items-center shadow-2xl hover:shadow-white/10 relative overflow-hidden"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                <div className=" absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                 <Play className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-                <span className="relative z-10 tracking-wide">
+                <span className="relative z-10 tracking-wide ">
                   Begin Training
                 </span>
               </button>
@@ -250,7 +251,7 @@ function App() {
                 onClick={() => {
                   navigate({ to: "/play/multiplayer" });
                 }}
-                className="group bg-neutral-800/50 backdrop-blur-xl text-white px-10 py-4 rounded-xl font-medium text-lg hover:bg-neutral-700/50 transition-all duration-500 flex items-center border border-white/10 hover:border-white/20"
+                className="cursor-pointer group bg-neutral-800/50 backdrop-blur-xl text-white px-10 py-4 rounded-xl font-medium text-lg hover:bg-neutral-700/50 transition-all duration-500 flex items-center border border-white/10 hover:border-white/20"
               >
                 <Users className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
                 <span className="tracking-wide">Multiplayer Mode</span>
@@ -319,84 +320,109 @@ function App() {
       </div>
       <UpcomingFeature />
 
-      <section id="features" className="px-6 py-32 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/30 to-transparent"></div>
+      <section id="features" className="px-6 py-24 md:py-28 relative">
+  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/30 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center bg-white/5  rounded-full px-6 py-3 text-sm text-neutral-300 border border-white/10 mb-8">
-              <Award className="h-4 w-4 mr-2" />
-              <span className="font-light tracking-wider">
-                Premium Features
-              </span>
-            </div>
+  <div className="relative z-10 max-w-7xl mx-auto">
+    <div className="text-center mb-12 md:mb-16">
+      <div className="inline-flex items-center bg-white/5 rounded-full px-5 py-2 text-sm text-neutral-300 border border-white/10 mb-6">
+        <Award className="h-4 w-4 mr-2" aria-hidden="true" />
+        <span className="font-light tracking-wider">Premium Features</span>
+      </div>
 
-            <h2 className="text-5xl md:text-6xl font-extralight text-white mb-6 tracking-wide">
-              Crafted for
-              <span className="block font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-white">
-                Excellence
-              </span>
-            </h2>
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-extralight text-white mb-4 tracking-tight">
+        Crafted for
+        <span className="block font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-white">
+          Excellence
+        </span>
+      </h2>
 
-            <p className="text-xl text-neutral-300 max-w-3xl mx-auto font-extralight leading-relaxed tracking-wide">
-              Every detail designed to elevate your typing experience to
-              professional standards
-            </p>
+      <p className="text-md sm:text-lg text-neutral-300 max-w-3xl mx-auto font-extralight leading-relaxed">
+        Every detail is designed to sharpen speed, accuracy and competitive edge — smart analytics, curated challenges, and pro tools.
+      </p>
+    </div>
+
+    <div className="grid gap-6 md:grid-cols-3">
+      {[
+        {
+          icon: Target,
+          title: "Precision Mastery",
+          description:
+            "Real-time error detection and guided corrections that reduce mistakes and improve muscle memory.",
+          accent: "from-blue-400/10 to-cyan-400/10",
+          iconBg: "from-blue-400/20 to-cyan-400/20",
+        },
+        {
+          icon: BarChart3,
+          title: "Analytics Suite",
+          description:
+            "Rich, actionable insights — speed trends, weakness heatmaps, and drill recommendations personalized to you.",
+          accent: "from-emerald-400/10 to-teal-400/10",
+          iconBg: "from-emerald-400/20 to-teal-400/20",
+        },
+        {
+          icon: Zap,
+          title: "Elite Challenges",
+          description:
+            "Timed drills, tournaments and adaptive opponents that push you beyond plateaus and keep practice engaging.",
+          accent: "from-amber-400/10 to-orange-400/10",
+          iconBg: "from-amber-400/20 to-orange-400/20",
+        },
+      ].map((feature, i) => (
+        <article
+          key={i}
+          aria-labelledby={`feature-${i}-title`}
+          className={`group relative bg-gradient-to-br ${feature.accent} backdrop-blur-xl rounded-2xl p-6 md:p-8 transition-transform duration-500 hover:-translate-y-2 border border-white/5 overflow-hidden`}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+          <div className={`inline-flex p-3 rounded-xl ${feature.iconBg} mb-4 items-center justify-center shadow-sm`} aria-hidden="true">
+            <feature.icon className="h-6 w-6 text-white/95" />
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Target,
-                title: "Precision Mastery",
-                description:
-                  "Advanced error detection with intelligent correction guidance and real-time feedback systems",
-                accent: "from-blue-400/10 to-cyan-400/10",
-                iconBg: "from-blue-400/20 to-cyan-400/20",
-              },
-              {
-                icon: BarChart3,
-                title: "Analytics Suite",
-                description:
-                  "Comprehensive progress tracking with detailed insights into speed, accuracy, and improvement patterns",
-                accent: "from-emerald-400/10 to-teal-400/10",
-                iconBg: "from-emerald-400/20 to-teal-400/20",
-              },
-              {
-                icon: Zap,
-                title: "Elite Challenges",
-                description:
-                  "Curated speed challenges and competitive tournaments designed for serious improvement",
-                accent: "from-amber-400/10 to-orange-400/10",
-                iconBg: "from-amber-400/20 to-orange-400/20",
-              },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className={`group bg-gradient-to-br ${feature.accent} backdrop-blur-xl rounded-3xl p-8 hover:scale-105 transition-all duration-700 border border-white/5 hover:border-white/10 relative overflow-hidden`}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          <h3 id={`feature-${i}-title`} className="text-xl font-medium text-white mb-2">
+            {feature.title}
+          </h3>
 
-                <div
-                  className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${feature.iconBg} mb-6 group-hover:scale-110 transition-transform duration-500`}
-                >
-                  <feature.icon className="h-7 w-7 text-white/90" />
-                </div>
+          <p className="text-neutral-300 text-sm leading-relaxed mb-4">
+            {feature.description}
+          </p>
 
-                <h3 className="text-2xl font-light text-white mb-4 tracking-wide">
-                  {feature.title}
-                </h3>
+          <ul className="text-sm text-neutral-300 space-y-3 mt-2">
+            {/* concise bullets to add rhythm and scannability */}
+            <li className="flex items-start">
+              <span className="inline-flex mt-0.5 mr-3 text-emerald-400">●</span>
+              <span>Instant feedback & correction hints</span>
+            </li>
+            <li className="flex items-start">
+              <span className="inline-flex mt-0.5 mr-3 text-emerald-400">●</span>
+              <span>Progress snapshots & exportable reports</span>
+            </li>
+            <li className="flex items-start">
+              <span className="inline-flex mt-0.5 mr-3 text-emerald-400">●</span>
+              <span>Lightweight UI optimized for speed</span>
+            </li>
+          </ul>
 
-                <p className="text-neutral-300 leading-relaxed font-extralight tracking-wide">
-                  {feature.description}
-                </p>
-
-                <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-              </div>
-            ))}
+          <div className="mt-6">
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="inline-flex items-center text-sm font-medium text-white/90 bg-white/5 hover:bg-white/8 px-3 py-2 rounded-lg border border-white/6 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/20"
+              aria-label={`Learn more about ${feature.title}`}
+            >
+              Learn more
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </a>
           </div>
-        </div>
-      </section>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+
+      <PricingPlans/>
 
       <section id="stats" className="px-6 py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-neutral-800/10 via-neutral-700/5 to-neutral-800/10"></div>
@@ -474,7 +500,7 @@ function App() {
                 role: "Senior Data Analyst",
                 content:
                   "Transformed my workflow efficiency. From 45 WPM to 95 WPM in two months. The precision training is unmatched.",
-                rating: 5,
+                rating: 4,
                 avatar: "SC",
               },
               {
@@ -552,7 +578,7 @@ function App() {
               </p>
 
               <button
-                onClick={() => navigate({ to: "/single/play" })}
+                onClick={() => navigate({ to: "/play/single" })}
                 className="bg-gradient-to-r from-white via-neutral-50 to-white text-black px-16 py-5 rounded-2xl font-medium text-xl hover:from-neutral-50 hover:via-white hover:to-neutral-50 transition-all duration-500 hover:scale-105 shadow-2xl hover:shadow-white/10 relative overflow-hidden group tracking-wide"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>

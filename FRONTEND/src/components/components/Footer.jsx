@@ -50,7 +50,7 @@ const Footer = () => {
               Product
             </h3>
             <nav className="flex flex-col space-y-4">
-              {["Features", "Pricing", "Updates", "Beta"].map((item) => (
+              {["Features", "Pricing", "Updates"].map((item) => (
                 <a
                   key={item}
                   href="#"
@@ -68,10 +68,9 @@ const Footer = () => {
             </h3>
             <nav className="flex flex-col space-y-4">
               {[
-                "My Journey",
                 "Why I Built This",
-                "Learning Log",
                 "Future Plans",
+                "Blog Posts"
               ].map((item) => (
                 <a
                   key={item}
