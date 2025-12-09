@@ -57,6 +57,12 @@ function App() {
   ];
 
   useEffect(() => {
+
+    try {
+      sessionStorage.setItem("appVisited", "1");
+    } catch (e) {}
+
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
