@@ -3,7 +3,7 @@ import { cookieConfigurations } from "../config/cookieConfig.js";
 import {
   loginUserService,
   registerUserService,
-} from "../services/User.service.js";
+} from "../services/user.service.js";
 import { catchAsync } from "../utils/TryCatchWrapper.js";
 
 export const registerUser = catchAsync(async (req, res) => {
