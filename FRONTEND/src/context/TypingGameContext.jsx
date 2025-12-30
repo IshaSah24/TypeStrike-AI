@@ -1,7 +1,5 @@
 
 import React, { useState, useRef, useCallback, useEffect, useLayoutEffect, createContext, useContext } from "react";
-
-// ========== CONSTANTS & UTILITIES ========== //
 const PUNCTUATION_MARKS = [".", ",", ";", "!", "?", ":"];
 const QUOTES = [
   {

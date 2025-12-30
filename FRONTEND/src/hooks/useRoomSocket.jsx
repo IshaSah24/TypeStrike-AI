@@ -25,11 +25,10 @@ export const RoomSocketProvider = ({ children }) => {
 
   const { user } = useSelector((state) => state.auth || {});
 
-  /** SOCKET CONNECT / DISCONNECT */
   useEffect(() => {
     if (!shouldConnect) return;
 
-    const socket = io("http://localhost:5000", {
+    const socket = io(import.meta.env.VITE_BACKEND_URL, {
       withCredentials: true,
       transports: ["websocket", "polling"],
     });
@@ -57,12 +56,10 @@ export const RoomSocketProvider = ({ children }) => {
       setUsers(data.users || []);
       if (data.roomId) {
         setRoom((prev) => {
-          // Preserve "completed" state if already set, unless explicitly changed
           const newState = {
             ...prev,
             ...data,
           };
-          // If room was completed and new data doesn't explicitly change state, keep it completed
           if (prev?.state === "completed" && (!data.state || data.state === "completed")) {
             newState.state = "completed";
           }
