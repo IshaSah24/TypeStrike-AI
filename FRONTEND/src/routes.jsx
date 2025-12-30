@@ -15,7 +15,7 @@ import ShowWpm from "./components/components/ShowWpm";
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 import CreateJoinRoomPage from "./pages/CreateJoinRoomPage.jsx";
 import SinglePlayerHome from "./components/components/multiplayer/SinglePlayerHome.jsx";
-import MultiplayerHome from "./components/components/multiplayer/MultiplayerHome.jsx";
+// import MultiplayerHome from "./components/components/multiplayer/MultiplayerHome.jsx";
 import MultiplayerTypingArea from "./pages/MultiplayerTypingArea.jsx";
 import InRoom from "./components/components/multiplayer/Lobby/InRoom.jsx";
 
