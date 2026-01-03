@@ -77,7 +77,7 @@ const TypeLogo = ({ onClick }) => {
           </div>
         </div>
 
-        <div className="flex flex-col -space-y-1">
+        <div onClick={handleLogoClick} className="flex flex-col -space-y-1">
           <div className="flex items-baseline">
             <span
               className="text-md font-extralight tracking-widest transition-all duration-500 group-hover:tracking-wider"
