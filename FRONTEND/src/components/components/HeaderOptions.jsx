@@ -1,35 +1,27 @@
-import { Bell, LogIn, Settings, User } from "lucide-react";
-import React from "react";
-import { useNavigate } from "@tanstack/react-router"; 
+import { Bell, Settings } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
-
-const HeaderOptions = () => {
+const HeaderOptions = ({ user }) => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    console.log("clicking...");
-    navigate({ to: "/login" }); 
-  };
-
   return (
-    <div className="flex items-center justify-betwesen mt-4 h-16">
-      <div className="flex items-center space-x-2">
-        <button className="p-4 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
-          <Bell className="w-5 h-5" />
-        </button>
-        <button className="p-4 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
-          <Settings className="w-5 h-5" />
-        </button>
+    <div className="flex items-center">
+      <button className="p-3 text-gray-500 hover:text-gray-300">
+        <Bell size={18} />
+      </button>
 
+      <button className="p-3 text-gray-500 hover:text-gray-300">
+        <Settings size={18} />
+      </button>
+
+      {!user && (
         <button
-        onClick={handleClick}
-          className="flex items-center space-x-2 text-gray-500 hover:text-gray-300 transition-colors pr-6 cursor-pointer"
+          onClick={() => navigate({ to: "/login" })}
+          className="text-sm text-gray-400 hover:text-gray-200 px-3"
         >
-          
-          <User className="w-5 h-5" />
-          <span className="hidden sm:inline text-sm">Login</span>
+          Login
         </button>
-      </div>
+      )}
     </div>
   );
 };

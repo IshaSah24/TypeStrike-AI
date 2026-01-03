@@ -1,78 +1,163 @@
-import { Zap } from "lucide-react";
-import React from "react";
-import HeaderOptions from "./HeaderOptions";
+import React, { useState } from "react";
 import { useNavigate, useRouter } from "@tanstack/react-router";
-const TypeLogo = ({ showHeader, onClick }) => {
+import HeaderOptions from "./HeaderOptions";
+
+const getUserFromStorage = () => {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    return parsed.user || null;
+  } catch {
+    return null;
+  }
+};
+
+const TypeLogo = ({ onClick }) => {
   const navigate = useNavigate();
   const router = useRouter();
 
-  const handleClick = (e) => {
-    const currentPath = router.state.location.pathname;
-    if (currentPath === "/play/single") {
-      console.log(currentPath);
+  const [user, setUser] = useState(getUserFromStorage);
+  const [open, setOpen] = useState(false);
 
-      
-      if (onClick) {
-        onClick(e);
-      }
-    } else {
-      console.log("clicked");
-      
-      navigate({ to: "/play/single" });
-    }
+  const handleLogoClick = (e) => {
+    const path = router.state.location.pathname;
+    path === "/play/single" ? onClick?.(e) : navigate({ to: "/play/single" });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate({ to: "/login" });
+  };
+
+  const firstLetter =
+    user?.name?.charAt(0)?.toUpperCase() ||
+    user?.email?.charAt(0)?.toUpperCase();
+
   return (
-    <div className=" w-full flex justify-between px-8">
-      <div
-        onClick={handleClick}
-        className="inline-flex items-center space-x-1 group cursor-pointer"
-      >
-        <div className="relative w-10 h-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-400/20 via-slate-500/10 to-slate-600/5 rounded-xl blur-xl group-hover:blur-2xl transition-all duration-700 group-hover:from-slate-300/30 group-hover:via-slate-400/20"></div>
-
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-800/90 via-slate-900/95 to-black rounded-xl backdrop-blur-sm border border-slate-700/30 group-hover:border-slate-500/50 transition-all duration-500 shadow-2xl"></div>
-
-          <div className="w-full h-full flex items-center justify-center relative z-10 rounded-xl bg-gradient-to-br from-slate-900 via-black to-slate-900 overflow-hidden group-hover:scale-[1.02] transition-transform duration-500">
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-400/10 via-slate-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(148,163,184,0.15),transparent_50%)]"></div>
-
-            <div className="relative flex items-center justify-center">
-              <div className="relative">
-                <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 group-hover:from-white group-hover:via-slate-100 group-hover:to-slate-300 transition-all duration-500 drop-shadow-[0_2px_8px_rgba(148,163,184,0.4)]">
-                  T
-                </span>
-                <div className="absolute inset-0 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-500">
-                  <span className="text-2xl font-bold text-slate-300">T</span>
-                </div>
-
-                <div className="absolute -top-[1.8px] right-[-4px] w-2 h-2 bg-slate-400 rounded-full animate-ping opacity-95 group-hover:bg-slate-300"></div>
-                <div className="absolute -top-[1.8px] right-[-4px] opacity-[.5] w-[3px] h-[3px] bg-slate-300 rounded-full shadow-[0_0_8px_rgba(148,163,184,0.8)] group-hover:shadow-[0_0_12px_rgba(226,232,240,1)]"></div>
-              </div>
-            </div>
+    <div className="w-full flex justify-between items-center px-8 py-2">
+      <div className="inline-flex items-center space-x-2 group cursor-pointer">
+        <div className="relative w-10 h-10 rounded-xl overflow-hidden">
+          <div
+            className="absolute inset-0 rounded-xl blur-md group-hover:blur-xl transition-all duration-500"
+            style={{
+              background: `linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          rgba(255,255,255,0.05) 50%,
+          var(--primary-color) 80%
+        )`,
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-xl border backdrop-blur-sm shadow-lg flex items-center justify-center transition-all duration-500 group-hover:shadow-xl"
+            style={{
+              background: `linear-gradient(
+          135deg,
+          var(--header-bg),
+          var(--bg-color)
+        )`,
+              borderColor: "var(--primary-color)",
+            }}
+          >
+            <span
+              className="text-2xl font-bold text-transparent bg-clip-text transition-all duration-500"
+              style={{
+                backgroundImage: `linear-gradient(
+            135deg,
+            var(--header-text),
+            var(--text-color)
+          )`,
+              }}
+            >
+              T
+            </span>
           </div>
-
-          <div className="absolute -inset-1 bg-gradient-to-r from-slate-500 via-slate-400 to-slate-500 rounded-xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-700"></div>
         </div>
 
         <div className="flex flex-col -space-y-1">
-          <div className="flex items-baseline mb-[.4]">
-            <span className="text-md font-extralight text-slate-300 tracking-[0.1em] group-hover:tracking-[0.15em] transition-all duration-500">
+          <div className="flex items-baseline">
+            <span
+              className="text-md font-extralight tracking-widest transition-all duration-500 group-hover:tracking-wider"
+              style={{ color: "var(--text-color)" }}
+            >
               Type
             </span>
-            <span className="text-xl font-bold text-slate-100 tracking-[0.1em] group-hover:tracking-[0.15em] group-hover:text-white transition-all duration-500">
+            <span
+              className="text-xl font-bold ml-1 transition-all duration-500 group-hover:tracking-wider"
+              style={{ color: "var(--header-text)" }}
+            >
               Strike
             </span>
-            <span className="text-md font-light text-slate-400 tracking-wide group-hover:text-slate-300 transition-colors duration-500">
+            <span
+              className="text-md font-light ml-1 transition-all duration-500"
+              style={{ color: "var(--text-color)" }}
+            >
               .Ai
             </span>
           </div>
-          <div className="h-[1.2px] w-0 group-hover:w-full bg-gradient-to-r from-transparent via-slate-300/50 to-transparent transition-all duration-500"></div>
+          <div
+            className="h-[1px] w-0 group-hover:w-full transition-all duration-500 mt-1"
+            style={{
+              background: `linear-gradient(
+          to right,
+          transparent,
+          var(--primary-color),
+          transparent
+        )`,
+            }}
+          />
         </div>
       </div>
 
-      <HeaderOptions />
+      <div className="flex items-center gap-4 relative">
+        <HeaderOptions user={user} />
+
+        {user ? (
+          <div className="relative">
+            <button
+              onClick={() => setOpen(!open)}
+              className="w-9 h-9 rounded-full bg-slate-800 border border-slate-600 text-slate-200 font-semibold"
+            >
+              {firstLetter}
+            </button>
+
+            {open && (
+              <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-lg">
+                <div className="px-4 py-3 border-b border-slate-700">
+                  <p className="text-sm font-medium text-slate-100">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-slate-400">{user.email}</p>
+                </div>
+
+                <button
+                  onClick={() => navigate({ to: "/profile" })}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-slate-800"
+                >
+                  View Profile
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-800"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={() => navigate({ to: "/login" })}
+            className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200"
+          >
+            Login
+          </button>
+        )}
+      </div>
     </div>
   );
 };

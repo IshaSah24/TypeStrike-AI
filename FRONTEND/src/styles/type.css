@@ -241,6 +241,28 @@ body {
 }
 
 
+#app[data-theme="light"] {
+    --logo-text-start: #506477;
+    --logo-text-mid: #708298;
+    --logo-text-end: #91a3bd;
+}
+
+#app[data-theme="dark"] {
+    --logo-text-start: #91a3bd;
+    --logo-text-mid: #c0cbd8;
+    --logo-text-end: #ffffff;
+}
+
+#app[data-theme="blue-rush"] {
+    --logo-text-start: #135898;
+    --logo-text-mid: #4573b5;
+    --logo-text-end: #91a3bd;
+}
+
+/* Add similar variables for other themes */
+
+
+
 .header-theme {
     background-color: var(--header-bg);
     color: var(--header-text);
