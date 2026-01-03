@@ -46,8 +46,6 @@ const Header = ({
       "
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Mobile Navigation */}
         <div className="md:hidden pb-3">
           <nav className="flex items-center space-x-2 overflow-x-auto">
             {modes.map((mode) => {

@@ -112,7 +112,7 @@ function App() {
                   <span className="text-md font-extralight text-slate-300 tracking-widest group-hover:tracking-wider transition-all duration-500">
                     Type
                   </span>
-                  <span className="text-xl font-bold text-slate-100 group-hover:text-white tracking-wide transition-all duration-500 ml-1">
+                  <span className="text-xl font-bold text-slate-100 group-hover:text-white tracking-wider transition-all duration-500 ml-1">
                     Strike
                   </span>
                   <span className="text-md font-light text-slate-400 group-hover:text-slate-300 ml-1">
