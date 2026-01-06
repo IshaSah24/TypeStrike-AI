@@ -118,12 +118,16 @@ const authSlice = createSlice({
           state.isAuthenticated = true;
           localStorage.setItem("user", JSON.stringify(action.payload.user));
         } else {
-          state.isAuthenticated = !!state.user; 
+          // testing // state.isAuthenticated = !!state.user; 
+          state.user = null;
+          state.isAuthenticated = false;
+          localStorage.removeItem("user");
         }
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.loading = false;
-        state.isAuthenticated = !!state.user;
+        state.user = null;
+        state.isAuthenticated = false;
       })
 
       // -------- LOGOUT --------
