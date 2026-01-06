@@ -26,9 +26,11 @@ router.get("/me", async (req, res) => {
     }
 
     return res.status(200).json({
-      id: user._id,
-      email: user.email,
-      name: user.username,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.username,
+      },
     });
   } catch (err) {
     console.error("JWT Verify Error:", err.message);
