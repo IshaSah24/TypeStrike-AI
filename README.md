@@ -82,9 +82,9 @@ This document provides a concise technical summary of the major updates, fixes, 
 
 
 
-## Todo Section
+##  Personal Todo Section
 - calcuating  estimated wpm for  current flow of the race  client(estWpm) ---> server --> clients✅
 - And original wpm via server brodcasts at the  end of the race . server (wpm) ---> clients✅
 - tested multiplayer socket conection  and sync ✅
-- graph to  show all  users result  with  their overall typing details
+- graph to  show all  users result  with  their overall typing details✅
 - 
