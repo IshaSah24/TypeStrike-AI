@@ -11,7 +11,7 @@
 
 
 export const cookieConfigurations = () => {
-  const  isProduction  =  process.env.NODE_ENV ===  'production' ;
+  const isProduction = process.env.FRONTEND_URL?.startsWith("https");
     return {
       httpOnly: true,
       secure:  isProduction, 
