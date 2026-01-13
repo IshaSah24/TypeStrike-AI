@@ -14,7 +14,7 @@ const getUserIdFromToken = (req) => {
 export const saveTypingResult = catchAsync(async (req, res) => {
   try {
     const userId = getUserIdFromToken(req);
-    const { wpm, accuracy, errors, correctChars, incorrectChars, totalChars, time, mode, wordCount } = req.body;
+    const { wpm, accuracy, errors, correctChars, incorrectChars, totalChars, time, mode, wordCount, words, wordErrors } = req.body;
 
     if (!wpm || !accuracy || time === undefined) {
       return res.status(400).json({ message: "WPM, accuracy, and time are required" });
@@ -31,6 +31,26 @@ export const saveTypingResult = catchAsync(async (req, res) => {
       mode: mode || 'words',
       wordCount: wordCount || 0,
     });
+
+    const user = await findById(userId);
+    if (user) {
+      const crypto = await import('crypto');
+      user.games.push({
+        id: crypto.randomUUID(),
+        mode: 'solo',
+        words: words || [],
+        wpm,
+        accuracy,
+        errors: errors || 0,
+        correctChars: correctChars || 0,
+        incorrectChars: incorrectChars || 0,
+        durationMs: time * 1000,
+        position: null,
+        opponents: [],
+        wordErrors: wordErrors || {},
+      });
+      await user.save();
+    }
 
     res.status(200).json({
       success: true,

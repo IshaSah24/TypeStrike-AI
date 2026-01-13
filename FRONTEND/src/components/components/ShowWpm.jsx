@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 
 function ShowWpm({ timerVal, typedChars, onReset, isTypingOver, mode, wordCount, multiplayer, roomId, roomName }) {
 
+  const [words, setWords] = useState([]);
+  const [wordErrors, setWordErrors] = useState({});
   let correctWords = [];
   let incorrectWords = [];
   const correctChars = typedChars.filter((char) => char.correct).length;
@@ -14,17 +16,27 @@ function ShowWpm({ timerVal, typedChars, onReset, isTypingOver, mode, wordCount,
 
   useEffect(() => {
     if (finalDOM) {
-     
+      const allWords = [];
+      const errors = {};
 
       finalDOM.querySelectorAll('.formatted').forEach((wordEl) => {
+        const wordText = wordEl.textContent.trim();
+        allWords.push(wordText);
+        
         const isCorrect = [...wordEl.querySelectorAll('.letter')].every(
           (letter) => letter.classList.contains('correct')
         );
-        isCorrect 
-          ? correctWords.push(wordEl.textContent) 
-          : incorrectWords.push(wordEl.textContent);
+        
+        if (!isCorrect) {
+          errors[wordText] = (errors[wordText] || 0) + 1;
+          incorrectWords.push(wordText);
+        } else {
+          correctWords.push(wordText);
+        }
       });
 
+      setWords(allWords);
+      setWordErrors(errors);
       console.log('Correct:', correctWords, 'Incorrect:', incorrectWords);
     }
   }, [finalDOM]);
@@ -129,6 +141,8 @@ function ShowWpm({ timerVal, typedChars, onReset, isTypingOver, mode, wordCount,
               time: Math.round(durationInSeconds),
               mode: mode || 'words',
               wordCount: wordCount || 0,
+              words: words,
+              wordErrors: wordErrors,
             });
             console.log("Typing result saved successfully");
           }
@@ -139,7 +153,7 @@ function ShowWpm({ timerVal, typedChars, onReset, isTypingOver, mode, wordCount,
       };
       saveResult();
     }
-  }, [isTypingOver, isAuthenticated, saved, multiplayer, roomId, roomName, wpm, accuracy, incorrect, correct, totalChars, durationInSeconds, mode, wordCount]);
+  }, [isTypingOver, isAuthenticated, saved, multiplayer, roomId, roomName, wpm, accuracy, incorrect, correct, totalChars, durationInSeconds, mode, wordCount, words, wordErrors]);
 
   return (
     <div className="w-full text-center mt-18">

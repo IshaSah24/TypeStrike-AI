@@ -217,6 +217,7 @@ export const RoomSocketProvider = ({ children }) => {
             name: roomName,
             displayName: displayName || user?.name || "Anonymous",
             gameSettings,
+            userId: user?.id || null,
           },
           (error, roomData) => {
             if (error) reject(error);
@@ -249,6 +250,7 @@ export const RoomSocketProvider = ({ children }) => {
           {
             roomId,
             displayName: displayName || user?.name || "Anonymous",
+            userId: user?.id || null,
           },
           (error, roomData) => {
             if (error) reject(error);
@@ -281,6 +283,7 @@ export const RoomSocketProvider = ({ children }) => {
           {
             code: code?.toUpperCase(),
             displayName: displayName || user?.name || "Anonymous",
+            userId: user?.id || null,
           },
           (error, roomData) => {
             if (error) reject(error);

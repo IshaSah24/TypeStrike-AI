@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Cpu, Zap, Play, ArrowRight } from "lucide-react"; // using Cpu for AI
+import { Users, Cpu, Zap, Play, ArrowRight } from "lucide-react"; 
 import aiBattle from "../../../assets/vs.png";
 
 const UpcomingFeature = () => {

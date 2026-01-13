@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useRoomSocket } from "../hooks/useRoomSocket";
 
-const MULTIPLAYER_PATHS = [/^\/play\/multiplayer/, /^\/multiplayer\/area/];
+const MULTIPLAYER_PATHS = [/^\/play\/multiplayer/, /^\/play\/bot/, /^\/multiplayer\/area/];
 
 const Layout = ({ children }) => {
   const { location } = useRouterState();

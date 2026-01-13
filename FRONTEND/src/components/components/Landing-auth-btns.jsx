@@ -11,14 +11,12 @@ const LandingAuthBtns = () => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // 🧠 Get avatar letter
   const avatarLetter = useMemo(() => {
     if (!user) return "";
     const source = user.name?.trim() || user.email?.trim() || "";
     return source.charAt(0).toUpperCase();
   }, [user]);
 
-  // 🔄 Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -29,7 +27,6 @@ const LandingAuthBtns = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // 📡 Fetch current user on page load
   useEffect(() => {
     dispatch(fetchCurrentUser());
   }, [dispatch]);
@@ -40,14 +37,12 @@ const LandingAuthBtns = () => {
     navigate({ to: "/" });
   };
 
-  // ⏳ Loading state
   if (loading) {
     return (
       <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse" />
     );
   }
 
-  // ❌ Not logged in
   if (!isAuthenticated) {
     return (
       <div className="flex items-center space-x-3">
@@ -68,7 +63,6 @@ const LandingAuthBtns = () => {
     );
   }
 
-  // ✅ Logged in
   return (
     <div className="relative flex items-center" ref={dropdownRef}>
       <button
@@ -84,7 +78,9 @@ const LandingAuthBtns = () => {
 
       {open && (
         <div className="absolute right-0 top-12 z-50 w-48 bg-white dark:bg-gray-900 shadow-lg rounded-lg p-2">
-          <p className="px-3 py-2 text-sm border-b">{user.name || user.email}</p>
+          <p className="px-3 py-2 text-sm border-b">
+            {user.name || user.email}
+          </p>
           <button
             onClick={handleLogout}
             className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"

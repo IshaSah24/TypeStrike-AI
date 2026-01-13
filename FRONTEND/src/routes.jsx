@@ -18,6 +18,9 @@ import SinglePlayerHome from "./components/components/multiplayer/SinglePlayerHo
 // import MultiplayerHome from "./components/components/multiplayer/MultiplayerHome.jsx";
 import MultiplayerTypingArea from "./pages/MultiplayerTypingArea.jsx";
 import InRoom from "./components/components/multiplayer/Lobby/InRoom.jsx";
+import BotModePage from "./pages/BotModePage.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import GameDetail from "./pages/GameDetail.jsx";
 
 const RootRoute = createRootRoute({
   component: () => (
@@ -76,6 +79,24 @@ const MultiplayerLobbyRoute = createRoute({
     </ProtectedRoute>
   ),
 });
+
+const BotModeRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/play/bot",
+  component: BotModePage,
+});
+
+const DashboardRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/dashboard",
+  component: Dashboard,
+});
+
+const GameDetailRoute = createRoute({
+  getParentRoute: () => RootRoute,
+  path: "/dashboard/$gameId",
+  component: GameDetail,
+});
 // testing...
 // const MultiplayerGameRoute = createRoute({
 //   getParentRoute: () => RootRoute,
@@ -94,6 +115,9 @@ export const router = createRouter({
     ShowWpmRoute,
     SinglePlayerRoute,
     MultiplayerLobbyRoute,
+    BotModeRoute,
+    DashboardRoute,
+    GameDetailRoute,
     /*testing...
      MultiplayerGameRoute, */
     MultiplayerTypingAreaRoute,

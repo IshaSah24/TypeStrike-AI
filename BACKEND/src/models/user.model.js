@@ -76,6 +76,48 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
+  games: [
+    {
+      id: {
+        type: String,
+        default: function() {
+          const { randomUUID } = require('crypto');
+          return randomUUID();
+        },
+      },
+      mode: {
+        type: String,
+        enum: ['solo', 'multiplayer', 'bot'],
+        required: true,
+      },
+      roomId: String,
+      words: [String],
+      wpm: Number,
+      accuracy: Number,
+      errors: Number,
+      correctChars: Number,
+      incorrectChars: Number,
+      durationMs: Number,
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      position: Number,
+      opponents: [
+        {
+          name: String,
+          wpm: Number,
+          accuracy: Number,
+          isBot: Boolean,
+        },
+      ],
+      wordErrors: {
+        type: Map,
+        of: Number,
+        default: {},
+      },
+    },
+  ],
 });
 
 const User = mongoose.model("User", userSchema);
