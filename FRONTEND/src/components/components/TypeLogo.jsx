@@ -150,12 +150,14 @@ const TypeLogo = ({ onClick }) => {
             )}
           </div>
         ) : (
-          <button
-            onClick={() => navigate({ to: "/login" })}
-            className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200"
-          >
-            Login
-          </button>
+        //   <button
+        //     onClick={() => navigate({ to: "/login" })}
+        //     className="px-4 py-2 rounded-lg bg-slate-800 text-slate-200"
+        //   >
+        //     Login
+        //   </button>
+        // 
+      <button></button>
         )}
       </div>
     </div>

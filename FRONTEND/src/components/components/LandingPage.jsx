@@ -17,6 +17,7 @@ import {
   Mail,
   Phone,
   MapPin,
+  Bot,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import zig from "./../../assets/TLP.png";
@@ -28,8 +29,16 @@ import LandingAuthBtns from "./Landing-auth-btns";
 import CreateJoinRoomPage from "../../pages/CreateJoinRoomPage";
 import Footer from "./Footer";
 import PricingPlans from "./PricingPlans";
+import BottomFixedNav from "./BottomFixedNav";
 
 function App() {
+    const handlePlayBot = () => {
+    console.log('Navigate to /play/bot');
+  };
+
+  const handleWatchDemo = () => {
+    console.log('Open demo modal');
+  };
   const navigate = useNavigate();
 
   const [scrolled, setScrolled] = useState(false);
@@ -57,11 +66,9 @@ function App() {
   ];
 
   useEffect(() => {
-
     try {
       sessionStorage.setItem("appVisited", "1");
     } catch (e) {}
-
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -73,8 +80,32 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-black relative overflow-hidden">
       <div className="relative">
+        {/* Add at the very top of your component */}
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <div className="bg-black/90 backdrop-blur-xl border-b border-white/10">
+            <div className="max-w-7xl mx-auto px-4 py-2">
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse"></div>
+                  <span className="text-sm font-light text-white tracking-wide">
+                    ✨ NEW FEATURE:
+                  </span>
+                </div>
+                <span className="text-sm text-white/90 font-light">
+                  Compete with Adaptive AI is now live!
+                </span>
+                <button
+                  onClick={() => navigate({ to: "/play/bot" })}
+                  className="ml-2 px-3 py-1 text-xs bg-white/10 hover:bg-white/20 text-white rounded-full border border-white/10 transition-all duration-300"
+                >
+                  Try Now →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <nav
-          className={`fixed inset-x-0 top-4 z-50 mx-auto w-[95%] max-w-7xl lg:w-full rounded-full px-4 py-2 transition-all duration-300 ${
+          className={`fixed inset-x-0 top-14 z-50 mx-auto w-[95%] max-w-7xl lg:w-full rounded-full px-4 py-2 transition-all duration-300 ${
             scrolled
               ? "bg-white/30 dark:bg-neutral-900/40 backdrop-blur-md shadow-lg"
               : "bg-transparent"
@@ -122,8 +153,20 @@ function App() {
                 <div className="h-[1px] w-0 group-hover:w-full bg-gradient-to-r from-transparent via-slate-300/50 to-transparent transition-all duration-500 mt-1"></div>
               </div>
             </div>
-
-            <LandingAuthBtns />
+            <div>
+              <div className="flex justify-between gap-8">
+                <button
+                  onClick={() => {
+                    navigate({ to: "/dashboard" });
+                  }}
+                  className="cursor-pointer group text-gray-500 hover:text-white rounded-lg font-medium text-base transition-all duration-00 flex items-center"
+                >
+                  <BarChart3 className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-100" />
+                  <span className="tracking-wide">Dashboard</span>
+                </button>
+                <LandingAuthBtns />
+              </div>
+            </div>
           </div>
         </nav>
         <div className="h-20"></div>
@@ -262,6 +305,20 @@ function App() {
                 <Users className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
                 <span className="tracking-wide">Multiplayer Mode</span>
               </button>
+
+              {/* Replace the current Compete With AI button with this more prominent version */}
+              <div className="fixed bottom-6 right-6 z-50">
+                <div className="group relative">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/10 via-white/5 to-white/10 flex items-center justify-center mr-3 border border-white/10">
+                    <Bot className="h-5 w-5 text-neutral-300" />
+                  </div>
+
+                  <div className="absolute bottom-full right-0 mb-3 px-3 py-2 bg-gradient-to-r from-purple-900/90 to-cyan-900/90 backdrop-blur-md rounded-lg text-white text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                    Try AI Challenge
+                    <div className="absolute top-full right-5 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-purple-900/90"></div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
@@ -308,6 +365,212 @@ function App() {
           </div>
         </section>
 
+        <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950">
+      <section className="px-6 py-24 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/20 to-transparent pointer-events-none" />
+
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+            <div className="flex items-center gap-2 px-5 py-2 bg-white/5 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+              <span className="text-sm font-light text-white tracking-widest uppercase">
+                New Feature
+              </span>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <div className="inline-flex items-center bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10">
+                <Sparkles className="h-4 w-4 mr-2 text-neutral-300" />
+                <span className="text-sm font-light tracking-wide text-neutral-300">
+                  Intelligent Opponent
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-5xl md:text-6xl font-extralight text-white leading-tight">
+                  Challenge Our
+                </h2>
+                <h2 className="text-5xl md:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-300">
+                  Adaptive AI
+                </h2>
+              </div>
+
+              <p className="text-lg text-neutral-300 font-light leading-relaxed max-w-xl">
+                Experience next-generation typing competition against an AI that learns from your patterns, adapts to your skill level, and helps accelerate your growth.
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  "Dynamic difficulty adjustment",
+                  "Personalized challenge generation",
+                  "Real-time performance analysis",
+                  "Predictive error prevention",
+                ].map((feature, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center text-neutral-300 group hover:translate-x-1 transition-transform duration-300"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/60 mr-4"></div>
+                    <span className="font-light tracking-wide">
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-4 pt-6">
+                <button
+                  onClick={handlePlayBot}
+                  className="group bg-white text-neutral-900 px-8 py-4 rounded-xl font-medium hover:bg-neutral-100 transition-all duration-300 flex items-center shadow-xl hover:shadow-white/20 hover:scale-105"
+                >
+                  <Bot className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+                  <span className="tracking-wide">Try AI Challenge</span>
+                </button>
+
+                <button
+                  onClick={handleWatchDemo}
+                  className="group bg-white/5 backdrop-blur-xl text-white px-8 py-4 rounded-xl font-medium hover:bg-white/10 transition-all duration-300 flex items-center border border-white/10 hover:border-white/30"
+                >
+                  <Play className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
+                  <span className="tracking-wide">Watch Demo</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] backdrop-blur-xl rounded-3xl p-8 border border-white/10 hover:border-white/20 transition-all duration-500 shadow-2xl">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between pb-6 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10">
+                        <Bot className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-white font-medium tracking-wide">
+                          AI Opponent
+                        </div>
+                        <div className="text-sm text-neutral-400 font-light">
+                          Adaptive Intelligence
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-light text-white">98%</div>
+                      <div className="text-xs text-neutral-400">Match Rate</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 rounded-2xl p-5 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                      <div className="text-sm text-neutral-400 font-light mb-2">
+                        Current WPM
+                      </div>
+                      <div className="text-3xl font-light text-white mb-2">82</div>
+                      <div className="text-xs text-emerald-400 font-light flex items-center">
+                        <TrendingUp className="h-3 w-3 mr-1" />
+                        +12% this week
+                      </div>
+                    </div>
+
+                    <div className="bg-white/5 rounded-2xl p-5 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                      <div className="text-sm text-neutral-400 font-light mb-2">
+                        AI Level
+                      </div>
+                      <div className="text-3xl font-light text-white mb-2">Pro</div>
+                      <div className="text-xs text-neutral-400 font-light">
+                        Matches your pace
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/10">
+                    <div className="text-sm text-neutral-400 font-light mb-4">
+                      Performance Comparison
+                    </div>
+                    <div className="space-y-4">
+                      {[
+                        { name: "Speed", value: 60 },
+                        { name: "Accuracy", value: 70 },
+                        { name: "Consistency", value: 80 },
+                        { name: "Learning", value: 90 },
+                      ].map((metric, i) => (
+                        <div key={i} className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-neutral-300 font-light">
+                              {metric.name}
+                            </span>
+                            <span className="text-white font-light">
+                              {metric.value}%
+                            </span>
+                          </div>
+                          <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-neutral-100 to-neutral-300 rounded-full transition-all duration-1000"
+                              style={{ width: `${metric.value}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-white/10">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/10 flex-shrink-0">
+                        <span className="text-sm text-white font-light">ES</span>
+                      </div>
+                      <div>
+                        <div className="text-sm text-white font-light mb-1 leading-relaxed">
+                          "The AI adapts perfectly to my level. Absolute game changer!"
+                        </div>
+                        <div className="text-xs text-neutral-400">— Early Tester</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/80 backdrop-blur-xl rounded-full border border-white/10 shadow-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                  <span className="text-sm text-neutral-300 font-light">
+                    <span className="text-white font-medium">127</span> users testing now
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-20 pt-12 border-t border-white/10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex-1">
+                <h4 className="text-2xl font-light text-white mb-3 tracking-wide">
+                  Ready to test your skills?
+                </h4>
+                <p className="text-neutral-300 font-light max-w-lg leading-relaxed">
+                  Join <span className="text-white font-medium">127 active users</span> who have already challenged our AI this week and improved their typing speed.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={handlePlayBot}
+                  className="px-8 py-4 bg-white text-neutral-900 rounded-xl font-medium hover:bg-neutral-100 transition-all duration-300 flex items-center shadow-xl hover:shadow-white/20 hover:scale-105"
+                >
+                  <Bot className="h-5 w-5 mr-2" />
+                  Start Free Challenge
+                </button>
+                <div className="px-6 py-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+                  <div className="text-xs text-neutral-400 mb-1">Limited Time</div>
+                  <div className="text-sm text-white font-medium">Early Access</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
         <style>{`
         @keyframes gentleFloat {
           0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -324,111 +587,126 @@ function App() {
         }
       `}</style>
       </div>
-      <UpcomingFeature />
+      {/* <UpcomingFeature /> */}
 
       <section id="features" className="px-6 py-24 md:py-28 relative">
-  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/30 to-transparent pointer-events-none" />
 
-  <div className="relative z-10 max-w-7xl mx-auto">
-    <div className="text-center mb-12 md:mb-16">
-      <div className="inline-flex items-center bg-white/5 rounded-full px-5 py-2 text-sm text-neutral-300 border border-white/10 mb-6">
-        <Award className="h-4 w-4 mr-2" aria-hidden="true" />
-        <span className="font-light tracking-wider">Premium Features</span>
-      </div>
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <div className="inline-flex items-center bg-white/5 rounded-full px-5 py-2 text-sm text-neutral-300 border border-white/10 mb-6">
+              <Award className="h-4 w-4 mr-2" aria-hidden="true" />
+              <span className="font-light tracking-wider">
+                Premium Features
+              </span>
+            </div>
 
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-extralight text-white mb-4 tracking-tight">
-        Crafted for
-        <span className="block font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-white">
-          Excellence
-        </span>
-      </h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extralight text-white mb-4 tracking-tight">
+              Crafted for
+              <span className="block font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-white">
+                Excellence
+              </span>
+            </h2>
 
-      <p className="text-md sm:text-lg text-neutral-300 max-w-3xl mx-auto font-extralight leading-relaxed">
-        Every detail is designed to sharpen speed, accuracy and competitive edge — smart analytics, curated challenges, and pro tools.
-      </p>
-    </div>
-
-    <div className="grid gap-6 md:grid-cols-3">
-      {[
-        {
-          icon: Target,
-          title: "Precision Mastery",
-          description:
-            "Real-time error detection and guided corrections that reduce mistakes and improve muscle memory.",
-          accent: "from-blue-400/10 to-cyan-400/10",
-          iconBg: "from-blue-400/20 to-cyan-400/20",
-        },
-        {
-          icon: BarChart3,
-          title: "Analytics Suite",
-          description:
-            "Rich, actionable insights — speed trends, weakness heatmaps, and drill recommendations personalized to you.",
-          accent: "from-emerald-400/10 to-teal-400/10",
-          iconBg: "from-emerald-400/20 to-teal-400/20",
-        },
-        {
-          icon: Zap,
-          title: "Elite Challenges",
-          description:
-            "Timed drills, tournaments and adaptive opponents that push you beyond plateaus and keep practice engaging.",
-          accent: "from-amber-400/10 to-orange-400/10",
-          iconBg: "from-amber-400/20 to-orange-400/20",
-        },
-      ].map((feature, i) => (
-        <article
-          key={i}
-          aria-labelledby={`feature-${i}-title`}
-          className={`group relative bg-gradient-to-br ${feature.accent} backdrop-blur-xl rounded-2xl p-6 md:p-8 transition-transform duration-500 hover:-translate-y-2 border border-white/5 overflow-hidden`}
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-
-          <div className={`inline-flex p-3 rounded-xl ${feature.iconBg} mb-4 items-center justify-center shadow-sm`} aria-hidden="true">
-            <feature.icon className="h-6 w-6 text-white/95" />
+            <p className="text-md sm:text-lg text-neutral-300 max-w-3xl mx-auto font-extralight leading-relaxed">
+              Every detail is designed to sharpen speed, accuracy and
+              competitive edge — smart analytics, curated challenges, and pro
+              tools.
+            </p>
           </div>
 
-          <h3 id={`feature-${i}-title`} className="text-xl font-medium text-white mb-2">
-            {feature.title}
-          </h3>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                icon: Target,
+                title: "Precision Mastery",
+                description:
+                  "Real-time error detection and guided corrections that reduce mistakes and improve muscle memory.",
+                accent: "from-blue-400/10 to-cyan-400/10",
+                iconBg: "from-blue-400/20 to-cyan-400/20",
+              },
+              {
+                icon: BarChart3,
+                title: "Analytics Suite",
+                description:
+                  "Rich, actionable insights — speed trends, weakness heatmaps, and drill recommendations personalized to you.",
+                accent: "from-emerald-400/10 to-teal-400/10",
+                iconBg: "from-emerald-400/20 to-teal-400/20",
+              },
+              {
+                icon: Zap,
+                title: "Elite Challenges",
+                description:
+                  "Timed drills, tournaments and adaptive opponents that push you beyond plateaus and keep practice engaging.",
+                accent: "from-amber-400/10 to-orange-400/10",
+                iconBg: "from-amber-400/20 to-orange-400/20",
+              },
+            ].map((feature, i) => (
+              <article
+                key={i}
+                aria-labelledby={`feature-${i}-title`}
+                className={`group relative bg-gradient-to-br ${feature.accent} backdrop-blur-xl rounded-2xl p-6 md:p-8 transition-transform duration-500 hover:-translate-y-2 border border-white/5 overflow-hidden`}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-white/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-          <p className="text-neutral-300 text-sm leading-relaxed mb-4">
-            {feature.description}
-          </p>
+                <div
+                  className={`inline-flex p-3 rounded-xl ${feature.iconBg} mb-4 items-center justify-center shadow-sm`}
+                  aria-hidden="true"
+                >
+                  <feature.icon className="h-6 w-6 text-white/95" />
+                </div>
 
-          <ul className="text-sm text-neutral-300 space-y-3 mt-2">
-            {/* concise bullets to add rhythm and scannability */}
-            <li className="flex items-start">
-              <span className="inline-flex mt-0.5 mr-3 text-emerald-400">●</span>
-              <span>Instant feedback & correction hints</span>
-            </li>
-            <li className="flex items-start">
-              <span className="inline-flex mt-0.5 mr-3 text-emerald-400">●</span>
-              <span>Progress snapshots & exportable reports</span>
-            </li>
-            <li className="flex items-start">
-              <span className="inline-flex mt-0.5 mr-3 text-emerald-400">●</span>
-              <span>Lightweight UI optimized for speed</span>
-            </li>
-          </ul>
+                <h3
+                  id={`feature-${i}-title`}
+                  className="text-xl font-medium text-white mb-2"
+                >
+                  {feature.title}
+                </h3>
 
-          <div className="mt-6">
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="inline-flex items-center text-sm font-medium text-white/90 bg-white/5 hover:bg-white/8 px-3 py-2 rounded-lg border border-white/6 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/20"
-              aria-label={`Learn more about ${feature.title}`}
-            >
-              Learn more
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </a>
+                <p className="text-neutral-300 text-sm leading-relaxed mb-4">
+                  {feature.description}
+                </p>
+
+                <ul className="text-sm text-neutral-300 space-y-3 mt-2">
+                  {/* concise bullets to add rhythm and scannability */}
+                  <li className="flex items-start">
+                    <span className="inline-flex mt-0.5 mr-3 text-emerald-400">
+                      ●
+                    </span>
+                    <span>Instant feedback & correction hints</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-flex mt-0.5 mr-3 text-emerald-400">
+                      ●
+                    </span>
+                    <span>Progress snapshots & exportable reports</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="inline-flex mt-0.5 mr-3 text-emerald-400">
+                      ●
+                    </span>
+                    <span>Lightweight UI optimized for speed</span>
+                  </li>
+                </ul>
+
+                <div className="mt-6">
+                  <a
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    className="inline-flex items-center text-sm font-medium text-white/90 bg-white/5 hover:bg-white/8 px-3 py-2 rounded-lg border border-white/6 shadow-sm focus:outline-none focus:ring-2 focus:ring-white/20"
+                    aria-label={`Learn more about ${feature.title}`}
+                  >
+                    Learn more
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </a>
+                </div>
+              </article>
+            ))}
           </div>
-        </article>
-      ))}
-    </div>
-  </div>
-</section>
+        </div>
+      </section>
 
-
-      <PricingPlans/>
+      <PricingPlans />
 
       <section id="stats" className="px-6 py-32 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-neutral-800/10 via-neutral-700/5 to-neutral-800/10"></div>
@@ -599,6 +877,7 @@ function App() {
         </div>
       </section>
       <Footer />
+      <BottomFixedNav />
     </div>
   );
 }

@@ -150,8 +150,16 @@ export default function InRoom() {
       alert("Only the host can start the race");
       return;
     }
-    if (currentUsers.length < 2) {
+    const isBotMode = currentSettings?.mode === "bot";
+    const humanUsers = currentUsers.filter((u) => !u.isBot);
+    
+    if (!isBotMode && currentUsers.length < 2) {
       alert("Need at least 2 players to start");
+      return;
+    }
+    
+    if (isBotMode && humanUsers.length < 1) {
+      alert("Need at least 1 human player to start");
       return;
     }
     if (startingRace) return;
@@ -383,7 +391,10 @@ export default function InRoom() {
                       <button
                         onClick={handleStartRace}
                         disabled={
-                          !isConnected || currentUsers.length < 2 || startingRace
+                          !isConnected || 
+                          ((currentSettings?.mode !== "bot" && currentUsers.length < 2) ||
+                          (currentSettings?.mode === "bot" && currentUsers.filter((u) => !u.isBot).length < 1)) ||
+                          startingRace
                         }
                         className="flex-1 px-8 py-5 bg-white hover:bg-neutral-100 rounded-lg text-black font-medium text-lg transition-all flex items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
                       >

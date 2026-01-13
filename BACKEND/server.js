@@ -50,14 +50,18 @@ app.use(cookieParser());
 
 import typingRoutes from "./src/routes/typing.route.js";
 
+import dashboardRoutes from "./src/routes/dashboard.route.js";
+
 app.use("/api/auth", authRoutes);
 app.use("/api/typing", typingRoutes);
+app.use("/api/user/dashboard", dashboardRoutes);
 app.get("/", (req, res) => res.send("Welcome to the API"));
 
 // SOCKET.IO -------------------------------------------------
 
 const rooms = new Map();
 const roomCodes = new Map();
+const botIntervals = new Map();
 
 function generateRoomCode() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -92,6 +96,222 @@ function getRoomIdByCode(code) {
     if (roomCode === normalized) return roomId;
   }
   return null;
+}
+
+function getBotConfig(level) {
+  const configs = {
+    easy: {
+      wpmMin: 35,
+      wpmMax: 45,
+      accuracyMin: 88,
+      accuracyMax: 92,
+      startDelay: 800,
+      charDelayMin: 120,
+      charDelayMax: 180,
+    },
+    medium: {
+      wpmMin: 55,
+      wpmMax: 70,
+      accuracyMin: 93,
+      accuracyMax: 96,
+      startDelay: 500,
+      charDelayMin: 80,
+      charDelayMax: 120,
+    },
+    hard: {
+      wpmMin: 80,
+      wpmMax: 100,
+      accuracyMin: 97,
+      accuracyMax: 99,
+      startDelay: 200,
+      charDelayMin: 50,
+      charDelayMax: 80,
+    },
+  };
+  return configs[level] || configs.medium;
+}
+
+function startBotTyping(roomId, botId, botLevel) {
+  const room = rooms.get(roomId);
+  if (!room || !room.words || room.words.length === 0) return;
+
+  const bot = room.users.get(botId);
+  if (!bot || !bot.isBot) return;
+
+  const config = getBotConfig(botLevel);
+  const words = room.words;
+  let wordIndex = 0;
+  let charIndex = 0;
+  let correctChars = 0;
+  let incorrectChars = 0;
+
+  const targetAccuracy = config.accuracyMin + Math.random() * (config.accuracyMax - config.accuracyMin);
+  const targetWPM = config.wpmMin + Math.random() * (config.wpmMax - config.wpmMin);
+  const charsPerMinute = targetWPM * 5;
+  const msPerChar = (60 * 1000) / charsPerMinute;
+  const baseDelay = Math.max(config.charDelayMin, Math.min(config.charDelayMax, msPerChar));
+
+  const typeNextChar = () => {
+    if (!rooms.has(roomId)) {
+      return;
+    }
+    const currentRoom = rooms.get(roomId);
+    if (currentRoom.state !== "running") {
+      if (currentRoom.botIntervals) {
+        currentRoom.botIntervals.delete(botId);
+      }
+      return;
+    }
+
+    const currentBot = currentRoom.users.get(botId);
+    if (!currentBot || currentBot.finishedAt) {
+      if (currentRoom.botIntervals) {
+        currentRoom.botIntervals.delete(botId);
+      }
+      return;
+    }
+
+    if (wordIndex >= words.length) {
+      currentBot.finishedAt = Date.now();
+      currentBot.wordIndex = words.length;
+      currentBot.charIndex = 0;
+      
+      const durationMinutes = Math.max(
+        (currentBot.finishedAt - currentRoom.startTimestamp) / 60000,
+        1 / 60
+      );
+      currentBot.wpm = Math.round(currentBot.correctChars / 5 / durationMinutes);
+      const totalChars = currentBot.correctChars + currentBot.incorrectChars;
+      currentBot.accuracy = totalChars === 0
+        ? 100
+        : Math.round((currentBot.correctChars / totalChars) * 100);
+      currentBot.errors = currentBot.incorrectChars;
+
+      io.to(roomId).emit("playerFinished", {
+        userId: botId,
+        name: currentBot.name,
+        wpm: currentBot.wpm,
+        accuracy: currentBot.accuracy,
+        errors: currentBot.errors,
+        correctChars: currentBot.correctChars,
+        incorrectChars: currentBot.incorrectChars,
+        position: null,
+        finishedAt: currentBot.finishedAt,
+      });
+
+      const allFinished = Array.from(currentRoom.users.values()).every(
+        (u) => u.finishedAt !== null && u.finishedAt !== undefined
+      );
+      if (allFinished) {
+        const finalResults = Array.from(currentRoom.users.values())
+          .sort((a, b) => {
+            if (b.wpm !== a.wpm) return b.wpm - a.wpm;
+            if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+            return a.finishedAt - b.finishedAt;
+          })
+          .map((r, idx) => ({
+            userId: r.id,
+            name: r.name,
+            wpm: r.wpm,
+            accuracy: r.accuracy,
+            errors: r.errors,
+            correctChars: r.correctChars,
+            incorrectChars: r.incorrectChars,
+            position: idx + 1,
+            finishedAt: r.finishedAt,
+          }));
+
+        io.to(roomId).emit("raceComplete", {
+          roomId,
+          results: finalResults,
+          gameSettings: currentRoom.gameSettings,
+        });
+        currentRoom.state = "completed";
+      }
+
+      io.to(roomId).emit("roomUsers", {
+        roomId,
+        users: Array.from(currentRoom.users.values()),
+        ownerId: currentRoom.ownerId,
+        state: currentRoom.state,
+        gameSettings: currentRoom.gameSettings,
+      });
+
+      if (currentRoom.botIntervals) {
+        currentRoom.botIntervals.delete(botId);
+      }
+      return;
+    }
+
+    const currentWord = words[wordIndex];
+    if (charIndex >= currentWord.length) {
+      wordIndex++;
+      charIndex = 0;
+      if (wordIndex >= words.length) {
+        typeNextChar();
+        return;
+      }
+    }
+
+    const currentChar = words[wordIndex][charIndex];
+    const shouldMakeError = Math.random() * 100 > targetAccuracy;
+    
+    if (shouldMakeError) {
+      incorrectChars++;
+      currentBot.incorrectChars = incorrectChars;
+    } else {
+      correctChars++;
+      currentBot.correctChars = correctChars;
+    }
+
+    charIndex++;
+    currentBot.wordIndex = wordIndex;
+    currentBot.charIndex = charIndex;
+
+    const totalWords = words.length;
+    const currentWordProgress = charIndex / (words[wordIndex]?.length || 1);
+    const progressPercent = totalWords > 0
+      ? Math.min(100, Math.max(0, ((wordIndex + currentWordProgress) / totalWords) * 100))
+      : 0;
+    currentBot.progress = progressPercent;
+
+    const now = Date.now();
+    const durationMinutes = Math.max(
+      (now - currentRoom.startTimestamp) / 60000,
+      1 / 60
+    );
+    currentBot.wpm = Math.round(currentBot.correctChars / 5 / durationMinutes);
+    const totalChars = currentBot.correctChars + currentBot.incorrectChars;
+    currentBot.accuracy = totalChars === 0
+      ? 100
+      : Math.round((currentBot.correctChars / totalChars) * 100);
+
+    io.to(roomId).emit("playerProgress", {
+      userId: botId,
+      name: currentBot.name,
+      progress: currentBot.progress,
+      wordIndex: currentBot.wordIndex,
+      charIndex: currentBot.charIndex,
+      wpm: currentBot.wpm,
+      errors: currentBot.incorrectChars,
+      accuracy: currentBot.accuracy,
+      correctChars: currentBot.correctChars,
+      incorrectChars: currentBot.incorrectChars,
+      estWpm: currentBot.wpm,
+    });
+
+    const delay = baseDelay + (Math.random() - 0.5) * (baseDelay * 0.3);
+    const intervalId = setTimeout(typeNextChar, Math.max(50, delay));
+    if (currentRoom.botIntervals) {
+      currentRoom.botIntervals.set(botId, intervalId);
+    }
+  };
+
+  setTimeout(() => {
+    if (rooms.has(roomId) && room.state === "running") {
+      typeNextChar();
+    }
+  }, config.startDelay);
 }
 
 io.on("connection", (socket) => {
@@ -141,6 +361,9 @@ io.on("connection", (socket) => {
         startTimestamp: null,
         results: [],
         chat: [],
+        botIntervals: new Map(),
+        wordErrors: new Map(),
+        userSocketMap: new Map(),
       });
 
       const creatorUser = {
@@ -156,7 +379,37 @@ io.on("connection", (socket) => {
       };
 
       rooms.get(roomId).users.set(socket.id, creatorUser);
+      rooms.get(roomId).userSocketMap.set(socket.id, payload?.userId || null);
+      rooms.get(roomId).wordErrors.set(socket.id, new Map());
       socket.join(roomId);
+
+      if (gameSettings.mode === "bot") {
+        const botLevel = incomingSettings.botLevel || "medium";
+        const botId = `bot_${uuidv4()}`;
+        const botName = `TypeStrike AI (${botLevel.charAt(0).toUpperCase() + botLevel.slice(1)})`;
+        
+        const botUser = {
+          id: botId,
+          name: botName,
+          avatar: "🤖",
+          isOwner: false,
+          isBot: true,
+          botLevel: botLevel,
+          progress: 0,
+          wpm: 0,
+          errors: 0,
+          finishedAt: null,
+          status: "ready",
+          wordIndex: 0,
+          charIndex: 0,
+          correctChars: 0,
+          incorrectChars: 0,
+          accuracy: 100,
+        };
+
+        rooms.get(roomId).users.set(botId, botUser);
+        console.log(`Bot created: ${botId} in room ${roomId}`);
+      }
 
       const roomCode = getRoomCode(roomId);
       ack?.(null, {
@@ -290,8 +543,15 @@ io.on("connection", (socket) => {
         return ack?.({ error: "Only owner can start the race" });
       }
 
-      if (room.users.size < 2) {
+      const isBotMode = room.gameSettings?.mode === "bot";
+      const humanUsers = Array.from(room.users.values()).filter((u) => !u.isBot);
+      
+      if (!isBotMode && room.users.size < 2) {
         return ack?.({ error: "Need at least 2 players to start the race" });
+      }
+      
+      if (isBotMode && humanUsers.length < 1) {
+        return ack?.({ error: "Need at least 1 human player to start the race" });
       }
 
       if (!Array.isArray(room.words) || room.words.length === 0) {
@@ -320,6 +580,16 @@ io.on("connection", (socket) => {
         user.finishedAt = null;
         user.status = "ready";
         user.position = null;
+        user.lastIncorrectChars = 0;
+      }
+      
+      if (!room.wordErrors) {
+        room.wordErrors = new Map();
+      }
+      for (const [sid] of room.users.entries()) {
+        if (!room.wordErrors.has(sid)) {
+          room.wordErrors.set(sid, new Map());
+        }
       }
 
       io.to(roomId).emit("raceStart", {
@@ -339,6 +609,13 @@ io.on("connection", (socket) => {
           roomId,
           startedAt: startTimestamp,
         });
+
+        if (r.gameSettings?.mode === "bot") {
+          const bots = Array.from(r.users.values()).filter((u) => u.isBot);
+          bots.forEach((bot) => {
+            startBotTyping(roomId, bot.id, bot.botLevel || "medium");
+          });
+        }
       }, Math.max(0, startTimestamp - Date.now()));
 
       ack?.(null, {
@@ -379,6 +656,11 @@ io.on("connection", (socket) => {
       };
 
       room.users.set(socket.id, JoiningUserData);
+      room.userSocketMap.set(socket.id, payload?.userId || null);
+      if (!room.wordErrors) {
+        room.wordErrors = new Map();
+      }
+      room.wordErrors.set(socket.id, new Map());
       socket.join(roomId);
       const roomCode = getRoomCode(roomId);
       ack?.(null, {
@@ -526,12 +808,23 @@ io.on("connection", (socket) => {
       user.charIndex = Number.isFinite(charIndex)
         ? charIndex
         : user.charIndex || 0;
+      const prevIncorrectChars = user.incorrectChars || 0;
       user.correctChars = Number.isFinite(correctChars)
         ? Math.max(0, correctChars)
         : user.correctChars || 0;
       user.incorrectChars = Number.isFinite(incorrectChars)
         ? Math.max(0, incorrectChars)
         : user.incorrectChars || 0;
+      
+      if (user.incorrectChars > prevIncorrectChars && wordIndex >= 0 && wordIndex < room.words.length) {
+        const currentWord = room.words[wordIndex];
+        if (currentWord && room.wordErrors) {
+          const userWordErrors = room.wordErrors.get(socket.id) || new Map();
+          const currentCount = userWordErrors.get(currentWord) || 0;
+          userWordErrors.set(currentWord, currentCount + 1);
+          room.wordErrors.set(socket.id, userWordErrors);
+        }
+      }
 
       if (typeof estWpm === "number") {
         user.estWpm = Math.max(0, Math.round(estWpm));
@@ -680,6 +973,71 @@ io.on("connection", (socket) => {
           gameSettings: room.gameSettings,
         });
         room.state = "completed";
+        
+        if (room.botIntervals) {
+          room.botIntervals.forEach((intervalId) => {
+            clearTimeout(intervalId);
+          });
+          room.botIntervals.clear();
+        }
+
+        const saveGamesForUsers = async () => {
+          try {
+            const User = (await import("./src/models/user.model.js")).default;
+            const mode = room.gameSettings?.mode === "bot" ? "bot" : "multiplayer";
+            
+            for (const result of finalResults) {
+              const userId = room.userSocketMap.get(result.userId);
+              if (!userId) continue;
+              
+              const user = await User.findById(userId);
+              if (!user) continue;
+              
+              const userWordErrors = room.wordErrors.get(result.userId) || new Map();
+              const wordErrorsObj = {};
+              for (const [word, count] of userWordErrors.entries()) {
+                wordErrorsObj[word] = count;
+              }
+              
+              const opponents = finalResults
+                .filter((r) => r.userId !== result.userId)
+                .map((r) => {
+                  const oppUser = room.users.get(r.userId);
+                  return {
+                    name: r.name,
+                    wpm: r.wpm,
+                    accuracy: r.accuracy,
+                    isBot: oppUser?.isBot || false,
+                  };
+                });
+              
+              const durationMs = result.finishedAt - room.startTimestamp;
+              
+              const { randomUUID } = await import('crypto');
+              user.games.push({
+                id: randomUUID(),
+                mode,
+                roomId: roomId,
+                words: room.words || [],
+                wpm: result.wpm,
+                accuracy: result.accuracy,
+                errors: result.errors,
+                correctChars: result.correctChars || 0,
+                incorrectChars: result.incorrectChars || 0,
+                durationMs,
+                position: result.position,
+                opponents,
+                wordErrors: wordErrorsObj,
+              });
+              
+              await user.save();
+            }
+          } catch (err) {
+            console.error("Error saving games:", err);
+          }
+        };
+        
+        saveGamesForUsers();
       }
 
       io.to(roomId).emit("roomUsers", {
@@ -734,6 +1092,11 @@ io.on("connection", (socket) => {
       };
 
       room.users.set(socket.id, JoiningUserData);
+      room.userSocketMap.set(socket.id, payload?.userId || null);
+      if (!room.wordErrors) {
+        room.wordErrors = new Map();
+      }
+      room.wordErrors.set(socket.id, new Map());
       socket.join(roomId);
 
       ack?.(null, {
@@ -771,12 +1134,21 @@ io.on("connection", (socket) => {
 
     for (const [roomId, room] of rooms.entries()) {
       if (room.users.has(socket.id)) {
+        const isOwner = room.ownerId === socket.id;
+        const isBotMode = room.gameSettings?.mode === "bot";
+        
         room.users.delete(socket.id);
 
-        if (room.ownerId === socket.id) {
+        if (isOwner || (isBotMode && !Array.from(room.users.values()).some((u) => !u.isBot))) {
+          if (room.botIntervals) {
+            room.botIntervals.forEach((intervalId) => {
+              clearTimeout(intervalId);
+            });
+            room.botIntervals.clear();
+          }
           rooms.delete(roomId);
           roomCodes.delete(roomId);
-          console.log(`Room ${roomId} deleted (owner left)`);
+          console.log(`Room ${roomId} deleted (owner left or bot mode ended)`);
         } else {
           io.to(roomId).emit("userLeft", { id: socket.id });
           io.to(roomId).emit("roomUsers", {
